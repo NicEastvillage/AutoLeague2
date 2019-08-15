@@ -1,11 +1,12 @@
 # -------------- STRUCTURE --------------
-# <ladder>.txt   # Given through arguments. Contains current ladder. Bot names separated by newlines.
-# <ladder>_new.txt   # The ladder generated. Contains resulting ladder. Bot names separated by newlines.
+# ladder.txt   # Contains current ladder. Bot names separated by newlines.
+# ladder_new.txt   # The ladder generated. Contains resulting ladder. Bot names separated by newlines.
+# current_match.json    # Contains some information about the current match. Used by overlay scripts.
 # bots/
 #     skybot/..
 #     botimus/..
 #     ...
-# <ladder>_results/
+# results/
 #     # This directory contains the match results. One json file for each match with all the info
 #     quantum_bot1_vs_bot2_result.json
 #     quantum_bot1_vs_bot3_result.json
@@ -29,17 +30,17 @@ class WorkingDir:
     An object to make it convenient and safe to access file system paths within the working directory.
     """
 
-    def __init__(self, ladder_path: Path):
-        working_dir = ladder_path.parent.absolute()
-        self._working_dir = working_dir
-        self.ladder = ladder_path
-        self.new_ladder = self._working_dir / f'{ladder_path.stem}_new.txt'
-        self.match_results = working_dir / f'{ladder_path.stem}_results'
+    def __init__(self, working_dir: Path):
+        self._working_dir = working_dir.absolute()
+        self.ladder = self._working_dir / 'ladder.txt'
+        self.new_ladder = self._working_dir / 'ladder_new.txt'
+        self.match_results = self._working_dir / f'results'
         self.bots = working_dir / 'bots'
         self.overlay_interface = working_dir / 'current_match.json'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
+        self.ladder.touch(exist_ok=True)
         self.match_results.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
 

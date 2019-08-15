@@ -12,6 +12,10 @@ def list_matches(working_dir: WorkingDir, odd_week: bool, show_results: bool):
     ladder = Ladder.read(working_dir.ladder)
     playing_division_indices = get_playing_division_indices(ladder, odd_week)
 
+    if len(ladder.bots) < 2:
+        print(f'Not enough bots on the ladder to play any matches')
+        return
+
     print(f'Matches to play:')
 
     # The divisions play in reverse order, but we don't print them that way.

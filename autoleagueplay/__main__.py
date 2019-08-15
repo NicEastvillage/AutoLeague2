@@ -1,8 +1,9 @@
 """AutoLeague
 
 Usage:
-    autoleagueplay (odd | even) <ladder> [--replays=R] [--list|--results]
-    autoleagueplay fetch <week_num> <league_dir>
+    autoleagueplay setup <working_dir>
+    autoleagueplay (odd | even) [--replays=R] [--list|--results]
+    autoleagueplay fetch <week_num>
     autoleagueplay (-h | --help)
     autoleagueplay --version
 
@@ -23,50 +24,55 @@ from autoleagueplay.list_matches import list_matches
 from autoleagueplay.paths import WorkingDir
 from autoleagueplay.replays import ReplayPreference
 from autoleagueplay.run_matches import run_league_play
+from autoleagueplay.settings import PersistentSettings
 from autoleagueplay.sheets import fetch_ladder_from_sheets
 from autoleagueplay.version import __version__
 
 
 def main():
     arguments = docopt(__doc__, version=__version__)
+    settings = PersistentSettings.load()
 
-    if arguments['odd'] or arguments['even']:
-
-        ladder_path = Path(arguments['<ladder>'])
-        if not ladder_path.exists():
-            print(f'\'{ladder_path}\' does not exist.')
-            sys.exit(1)
-
-        working_dir = WorkingDir(ladder_path)
-
-        replay_preference = ReplayPreference(arguments['--replays'])
-
-        if arguments['--results']:
-            list_matches(working_dir, arguments['odd'], True)
-        elif arguments['--list']:
-            list_matches(working_dir, arguments['odd'], False)
-        else:
-            run_league_play(working_dir, arguments['odd'], replay_preference)
-
-    elif arguments['fetch']:
-        week_num = int(arguments['<week_num>'])
-        if week_num < 0:
-            print(f'Week number must be a positive integer.')
-            sys.exit(1)
-
-        league_dir = Path(arguments['<league_dir>'])
-        if not league_dir.is_dir():
-            league_dir = league_dir.parent
-        league_dir.mkdir(exist_ok=True)
-        ladder_path = league_dir / 'ladder.txt'
-
-        ladder = fetch_ladder_from_sheets(week_num)
-        ladder.write(ladder_path)
-
-        print(f'Successfully fetched week {week_num} to \'{ladder_path}\'')
+    if arguments['setup']:
+        working_dir = Path(arguments['<working_dir>'])
+        working_dir.mkdir(exist_ok=True, parents=True)
+        WorkingDir(working_dir)   # Creates relevant directories and files
+        settings.working_dir_raw = str(working_dir)
+        settings.save()
+        print(f'Working directory successfully set to \'{working_dir}\'')
 
     else:
-        raise NotImplementedError()
+        # Following commands require a working dir. Make sure it is set.
+        if settings.working_dir_raw is None:
+            print('No working directory set, use \'autoleagueplay setup <working_dir>\'')
+            sys.exit(0)
+
+        working_dir = WorkingDir(Path(settings.working_dir_raw))
+
+        if arguments['odd'] or arguments['even']:
+
+            replay_preference = ReplayPreference(arguments['--replays'])
+
+            if arguments['--results']:
+                list_matches(working_dir, arguments['odd'], True)
+            elif arguments['--list']:
+                list_matches(working_dir, arguments['odd'], False)
+            else:
+                run_league_play(working_dir, arguments['odd'], replay_preference)
+
+        elif arguments['fetch']:
+            week_num = int(arguments['<week_num>'])
+            if week_num < 0:
+                print(f'Week number must be a positive integer.')
+                sys.exit(1)
+
+            ladder = fetch_ladder_from_sheets(week_num)
+            ladder.write(working_dir.ladder)
+
+            print(f'Successfully fetched week {week_num} to \'{working_dir.ladder}\'')
+
+        else:
+            raise NotImplementedError()
 
 
 if __name__ == '__main__':

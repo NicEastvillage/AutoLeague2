@@ -1,8 +1,12 @@
 # https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package
 
-__version__ = '0.2.1'
+__version__ = '0.3.0'
 
 release_notes = {
+    '0.3.0': '''
+        - Working directory is now set once with a command. # NicEastvillage
+        - Added a fetch command that fetches a ladder from Google Sheets. # NicEastvillage
+    ''',
     '0.2.1': '''
         - Added a --list and --results option to show matches that will be played and their results # NicEastvillage
         - Now places info about current match in a `current_match.json` which can be used for overlays # NicEastvillage 
