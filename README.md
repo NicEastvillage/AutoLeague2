@@ -12,11 +12,12 @@ Installation:
 
 Usage:
 ```
-autoleagueplay setup <working_dir>                 | Setup a league directory. Required for some other commands.
-autoleagueplay (odd | even) [--list | --results]   | Plays (or lists) an odd or even week from the given ladder.
-autoleagueplay fetch <week_num>                    | Fetches the given ladder from the Google Sheets.
-autoleagueplay (-h | --help)                       | Show commands and options.
-autoleagueplay --version                           | Show version.
+autoleagueplay setup <working_dir>                       | Setup a league directory. Required for some other commands.
+autoleagueplay (odd | even) [--list | --results --test]  | Plays (or lists) an odd or even week from the given ladder.
+autoleagueplay fetch <week_num>                          | Fetches the given ladder from the Google Sheets.
+autoleagueplay test                                      | Checks if all bots are present in the bot folder.
+autoleagueplay (-h | --help)                             | Show commands and options.
+autoleagueplay --version                                 | Show version.
 ```
 
 Options:
@@ -24,6 +25,7 @@ Options:
 --replays=R          What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: calculated_gg]
 --list               Instead of playing the matches, the list of matches is printed.
 --results            Like --list but also shows the result of matches that has been played.
+--test               Checks if all needed bots are present in the bot folder.
 -h --help            Show this screen.
 --version            Show version.
 ```

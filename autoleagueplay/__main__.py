@@ -2,7 +2,8 @@
 
 Usage:
     autoleagueplay setup <working_dir>
-    autoleagueplay (odd | even) [--replays=R] [--list|--results]
+    autoleagueplay (odd | even) [--replays=R|--list|--results|--test]
+    autoleagueplay test
     autoleagueplay fetch <week_num>
     autoleagueplay (-h | --help)
     autoleagueplay --version
@@ -11,6 +12,7 @@ Options:
     --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: calculated_gg]
     --list                       Instead of playing the matches, the list of matches is printed.
     --results                    Like --list but also shows the result of matches that has been played.
+    --test                       Checks if all needed bots are in the bot folder.
     -h --help                    Show this screen.
     --version                    Show version.
 """
@@ -21,6 +23,7 @@ from pathlib import Path
 from docopt import docopt
 
 from autoleagueplay.list_matches import list_matches
+from autoleagueplay.load_bots import check_bot_folder
 from autoleagueplay.paths import WorkingDir
 from autoleagueplay.replays import ReplayPreference
 from autoleagueplay.run_matches import run_league_play
@@ -57,8 +60,13 @@ def main():
                 list_matches(working_dir, arguments['odd'], True)
             elif arguments['--list']:
                 list_matches(working_dir, arguments['odd'], False)
+            elif arguments['--test']:
+                check_bot_folder(working_dir, arguments['odd'])
             else:
                 run_league_play(working_dir, arguments['odd'], replay_preference)
+
+        elif arguments['test']:
+            check_bot_folder(working_dir)
 
         elif arguments['fetch']:
             week_num = int(arguments['<week_num>'])
