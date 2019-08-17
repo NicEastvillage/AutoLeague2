@@ -1,6 +1,4 @@
 import pickle
-import string
-from pathlib import Path
 from typing import List
 
 from google.auth.transport.requests import Request
@@ -10,7 +8,8 @@ from googleapiclient.discovery import build
 from autoleagueplay.ladder import Ladder
 from autoleagueplay.paths import PackageFiles
 
-SHEET_ID = '1u7iWUg0LA4wWaTMoDuBbBuA4de_fdL_kSxLyIQruvkg'
+SHEET_ID = '1XULvW97g46EdrYRuhiHBfARDkviULYjRO5dA8sMmxkY'
+SHEET_NAME = 'Off Season 0'
 INITIAL_LADDER_COL = 4   # D
 RANK_ONE_ROW = 4
 LADDER_LENGTH = 45
@@ -21,7 +20,7 @@ SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
 def fetch_ladder_from_sheets(week_num: int) -> Ladder:
-    values = get_values_from_sheet(get_credentials(), SHEET_ID, get_ladder_range(week_num))
+    values = get_values_from_sheet(get_credentials(), SHEET_ID, get_ladder_range(week_num), SHEET_NAME)
     bots = [row[0] for row in values]
     return Ladder(bots)
 
@@ -75,7 +74,7 @@ def get_credentials():
     return creds
 
 
-def get_values_from_sheet(creds, spreadsheet_id: str, range: str, sheet_name: str = "Ark1") -> List[List[str]]:
+def get_values_from_sheet(creds, spreadsheet_id: str, range: str, sheet_name: str) -> List[List[str]]:
     """
     Uses the Google Sheets API v4 to fetch the values from a spreadsheet.
     :param creds: credentials

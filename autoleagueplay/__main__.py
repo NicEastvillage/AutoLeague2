@@ -77,7 +77,9 @@ def main():
             ladder = fetch_ladder_from_sheets(week_num)
             ladder.write(working_dir.ladder)
 
-            print(f'Successfully fetched week {week_num} to \'{working_dir.ladder}\'')
+            print(f'Successfully fetched week {week_num} to \'{working_dir.ladder}\':')
+            for bot in ladder.bots:
+                print(bot)
 
         else:
             raise NotImplementedError()
