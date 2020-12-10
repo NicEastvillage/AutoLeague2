@@ -1,19 +1,16 @@
 from dataclasses import dataclass, field
-from typing import Iterable, Any, Mapping, Optional
+from typing import Optional
 
-from rlbot.matchconfig.match_config import MatchConfig
 from rlbot.training.training import Grade, Pass, Fail
 from rlbot.utils.game_state_util import GameState
-from rlbot.utils.rendering.rendering_manager import RenderingManager
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 from rlbottraining.grading.grader import Grader
 from rlbottraining.grading.training_tick_packet import TrainingTickPacket
-from rlbottraining.match_configs import make_default_match_config
 from rlbottraining.rng import SeededRandomNumberGenerator
 from rlbottraining.training_exercise import TrainingExercise
 
 from match_result import MatchResult
-from replays import ReplayPreference, ReplayMonitor
+from replays import ReplayMonitor
 
 
 class FailDueToNoReplay(Fail):

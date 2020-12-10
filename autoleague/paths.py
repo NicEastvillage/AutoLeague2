@@ -17,10 +17,6 @@
 This module contains file system paths that are used by autoleague.
 """
 from pathlib import Path
-from typing import Mapping
-
-from rlbot.parsing.bot_config_bundle import BotConfigBundle
-from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 
 
 class WorkingDir:

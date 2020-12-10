@@ -25,7 +25,7 @@ def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
     bots[psyonix_pro.name] = psyonix_pro
     bots[psyonix_rookie.name] = psyonix_rookie
 
-    # Psyonix bots have skill values. If a bot is not a Psyonix bot, it wont be in this dict
+    # Psyonix bots have skill values
     psyonix_bot_skill[psyonix_allstar.name] = 1.0
     psyonix_bot_skill[psyonix_pro.name] = 0.5
     psyonix_bot_skill[psyonix_rookie.name] = 0.0
