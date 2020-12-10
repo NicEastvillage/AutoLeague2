@@ -1,7 +1,6 @@
-from autoleagueplay.generate_matches import get_playing_division_indices, generate_round_robin_matches
-from autoleagueplay.ladder import Ladder
-from autoleagueplay.match_result import MatchResult
-from autoleagueplay.paths import WorkingDir
+from ladder import Ladder
+from match_result import MatchResult
+from paths import WorkingDir
 
 
 def list_matches(working_dir: WorkingDir, odd_week: bool, show_results: bool):
