@@ -18,12 +18,14 @@ from docopt import docopt
 
 from bots import load_all_bots
 from paths import WorkingDir
+from ranking_system import RankingSystem
 from settings import PersistentSettings
 
 
 def main():
     arguments = docopt(__doc__)
     settings = PersistentSettings.load()
+    RankingSystem.setup()
 
     if arguments['setup']:
         wd = Path(arguments['<working_dir>'])
@@ -43,8 +45,12 @@ def main():
 
         if arguments["test"]:
 
+            rank_sys = RankingSystem.load(wd)
             bots = load_all_bots(wd)
-            print(bots)
+            for bot in bots:
+                print(f"{bot}: {rank_sys.get(bot)}")
+
+            rank_sys.save(wd)
 
         else:
             raise NotImplementedError()

@@ -21,13 +21,18 @@ def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
     psyonix_allstar = get_bot_config_bundle(PackageFiles.psyonix_allstar)
     psyonix_pro = get_bot_config_bundle(PackageFiles.psyonix_pro)
     psyonix_rookie = get_bot_config_bundle(PackageFiles.psyonix_rookie)
-    bots[psyonix_allstar.name] = psyonix_allstar
-    bots[psyonix_pro.name] = psyonix_pro
-    bots[psyonix_rookie.name] = psyonix_rookie
+
+    psyonix_allstar_name = psyonix_allstar.name.lower().replace(" ", "_")
+    psyonix_pro_name = psyonix_pro.name.lower().replace(" ", "_")
+    psyonix_rookie_name = psyonix_rookie.name.lower().replace(" ", "_")
+
+    bots[psyonix_allstar_name] = psyonix_allstar
+    bots[psyonix_pro_name] = psyonix_pro
+    bots[psyonix_rookie_name] = psyonix_rookie
 
     # Psyonix bots have skill values
-    psyonix_bot_skill[psyonix_allstar.name] = 1.0
-    psyonix_bot_skill[psyonix_pro.name] = 0.5
-    psyonix_bot_skill[psyonix_rookie.name] = 0.0
+    psyonix_bot_skill[psyonix_allstar_name] = 1.0
+    psyonix_bot_skill[psyonix_pro_name] = 0.5
+    psyonix_bot_skill[psyonix_rookie_name] = 0.0
 
     return bots

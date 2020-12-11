@@ -1,4 +1,5 @@
 # -------------- Working Dir Structure --------------
+# rankings.json              # contains bots' ranks
 # bots/
 #     skybot/..
 #     botimus/..
@@ -26,6 +27,7 @@ class WorkingDir:
         self._working_dir = working_dir.absolute()
         self.match_history = self._working_dir / f'match_history'
         self.bots = working_dir / 'bots'
+        self.rankings = working_dir / 'rankings.json'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
