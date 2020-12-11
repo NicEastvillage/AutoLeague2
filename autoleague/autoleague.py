@@ -17,6 +17,7 @@ from pathlib import Path
 from docopt import docopt
 
 from bots import load_all_bots
+from match_maker import TicketSystem
 from paths import WorkingDir
 from ranking_system import RankingSystem
 from settings import PersistentSettings
@@ -45,12 +46,12 @@ def main():
 
         if arguments["test"]:
 
-            rank_sys = RankingSystem.load(wd)
             bots = load_all_bots(wd)
-            for bot in bots:
-                print(f"{bot}: {rank_sys.get(bot)}")
+            rank_sys = RankingSystem.load(wd)
+            ticket_sys = TicketSystem.load(wd)
 
             rank_sys.save(wd)
+            ticket_sys.save(wd)
 
         else:
             raise NotImplementedError()
