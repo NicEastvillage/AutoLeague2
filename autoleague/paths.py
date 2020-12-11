@@ -1,15 +1,12 @@
-# -------------- STRUCTURE --------------
-# ladder.txt   # Contains current ladder. Bot names separated by newlines.
-# ladder_new.txt   # The ladder generated. Contains resulting ladder. Bot names separated by newlines.
-# current_match.json    # Contains some information about the current match. Used by overlay scripts.
+# -------------- Working Dir Structure --------------
 # bots/
 #     skybot/..
 #     botimus/..
 #     ...
-# results/
-#     # This directory contains the match results. One json file for each match with all the info
-#     quantum_bot1_vs_bot2_result.json
-#     quantum_bot1_vs_bot3_result.json
+# match history/
+#     # This directory contains match results of previous matches. One json file for each match.
+#     202101151506_bot1_bot2_bot3_vs_bot4_bot5_bot6.json
+#     202101151516_bot7_bot8_bot9_vs_bot10_bot11_bot12.json
 #     ...
 #
 
@@ -22,20 +19,17 @@ from pathlib import Path
 class WorkingDir:
     """
     An object to make it convenient and safe to access file system paths within the working directory.
+    Structure:
     """
 
     def __init__(self, working_dir: Path):
         self._working_dir = working_dir.absolute()
-        self.ladder = self._working_dir / 'ladder.txt'
-        self.new_ladder = self._working_dir / 'ladder_new.txt'
-        self.match_results = self._working_dir / f'results'
+        self.match_history = self._working_dir / f'match_history'
         self.bots = working_dir / 'bots'
-        self.overlay_interface = working_dir / 'current_match.json'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
-        self.ladder.touch(exist_ok=True)
-        self.match_results.mkdir(exist_ok=True)
+        self.match_history.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
 
 
