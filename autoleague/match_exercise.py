@@ -15,12 +15,11 @@ from replays import ReplayMonitor
 
 class FailDueToNoReplay(Fail):
     def __repr__(self):
-        return 'FAIL: Match finished but no replay was written to disk.'
+        return "FAIL: Match finished but no replay was written to disk."
 
 
 @dataclass
 class MatchGrader(Grader):
-
     replay_monitor: ReplayMonitor = field(default_factory=ReplayMonitor)
 
     last_match_time: float = 0
@@ -31,6 +30,7 @@ class MatchGrader(Grader):
         self.replay_monitor.ensure_monitoring()
         self.last_game_tick_packet = tick.game_tick_packet
         game_info = tick.game_tick_packet.game_info
+        print(f"Match over: {game_info.is_match_ended}")
         if game_info.is_match_ended:
             self.fetch_match_score(tick.game_tick_packet)
             if self.replay_monitor.replay_id:
@@ -63,7 +63,6 @@ class MatchGrader(Grader):
 
 @dataclass
 class MatchExercise(TrainingExercise):
-
     grader: Grader = field(default_factory=MatchGrader)
 
     def make_game_state(self, rng: SeededRandomNumberGenerator) -> GameState:

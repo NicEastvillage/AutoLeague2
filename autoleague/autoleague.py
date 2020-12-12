@@ -18,8 +18,10 @@ from docopt import docopt
 
 from bots import load_all_bots
 from match_maker import TicketSystem, MatchMaker
+from match_runner import run_match
 from paths import WorkingDir
 from ranking_system import RankingSystem
+from replays import ReplayPreference
 from settings import PersistentSettings
 
 
@@ -50,7 +52,9 @@ def main():
             rank_sys = RankingSystem.load(wd)
             ticket_sys = TicketSystem.load(wd)
 
-            MatchMaker.make_next(bots, rank_sys, ticket_sys)
+            match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
+            result = run_match(match, bots, ReplayPreference.SAVE)
+            print(result)
 
             rank_sys.save(wd)
             ticket_sys.save(wd)

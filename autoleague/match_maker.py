@@ -1,15 +1,14 @@
 import json
+from datetime import datetime
 from random import shuffle, choice
 from typing import Dict, List, Iterable, Mapping, Tuple
 
 import trueskill
-from rlbot.matchconfig.conversions import read_match_config_from_file
-from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 from bots import BotID
 from match import MatchDetails
-from paths import WorkingDir, PackageFiles
+from paths import WorkingDir
 from ranking_system import RankingSystem
 
 # Number of tickets given to new bots
@@ -82,6 +81,7 @@ class MatchMaker:
         """
 
         blue, orange = MatchMaker.decide_on_players(bots.keys(), rank_sys, ticket_sys)
+        name = MatchMaker.make_name(blue, orange)
         map = choice([
             "ChampionsField",
             "DFHStadium",
@@ -90,7 +90,16 @@ class MatchMaker:
             "UrbanCentral",
             "BeckwithPark",
         ])
-        return MatchDetails(blue, orange, map)
+        return MatchDetails(name, blue, orange, map)
+
+    @staticmethod
+    def make_name(blue: List[BotID], orange: List[BotID]):
+        """
+        Produces a string of the form "20201212135519_bot1_bot2_bot3_vs_bot4_bot5_bot6" where the number is
+        the current time.
+        """
+        now = datetime.now()
+        return "_".join([now.strftime("%Y%m%d%H%M%S")] + blue + ["vs"] + orange)
 
     @staticmethod
     def decide_on_players(bot_ids: Iterable[BotID], rank_sys: RankingSystem,

@@ -1,6 +1,6 @@
 from typing import Dict, Mapping
 
-from rlbot.parsing.bot_config_bundle import get_bot_config_bundle, BotConfigBundle
+from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 
 from paths import PackageFiles, WorkingDir

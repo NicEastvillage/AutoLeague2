@@ -7,12 +7,13 @@ from rlbot.matchconfig.conversions import read_match_config_from_file
 from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID
+from bots import BotID, psyonix_bot_skill
 from paths import PackageFiles
 
 
 @dataclass
 class MatchDetails:
+    name: str
     blue: List[BotID]
     orange: List[BotID]
     map: str
@@ -21,14 +22,22 @@ class MatchDetails:
         match_config = read_match_config_from_file(PackageFiles.default_match_config)
         match_config.game_map = self.map
         match_config.player_configs = [
-            PlayerConfig.bot_config(bots[self.blue[0]].config_path, Team.BLUE),
-            PlayerConfig.bot_config(bots[self.blue[1]].config_path, Team.BLUE),
-            PlayerConfig.bot_config(bots[self.blue[2]].config_path, Team.BLUE),
-            PlayerConfig.bot_config(bots[self.orange[0]].config_path, Team.BLUE),
-            PlayerConfig.bot_config(bots[self.orange[1]].config_path, Team.BLUE),
-            PlayerConfig.bot_config(bots[self.orange[2]].config_path, Team.BLUE),
+            self.bot_to_config(self.blue[0], bots, Team.BLUE),
+            self.bot_to_config(self.blue[1], bots, Team.BLUE),
+            self.bot_to_config(self.blue[2], bots, Team.BLUE),
+            self.bot_to_config(self.orange[0], bots, Team.ORANGE),
+            self.bot_to_config(self.orange[1], bots, Team.ORANGE),
+            self.bot_to_config(self.orange[2], bots, Team.ORANGE),
         ]
         return match_config
+
+    def bot_to_config(self, bot: BotID, bots: Mapping[BotID, BotConfigBundle], team: Team) -> PlayerConfig:
+        config = PlayerConfig.bot_config(Path(bots[bot].config_path), team)
+        # Resolve Psyonix bots -- only Psyonix bots are in this list
+        if bot in psyonix_bot_skill:
+            config.rlbot_controlled = False
+            config.bot_skill = psyonix_bot_skill[bot]
+        return config
 
 
 class MatchResult:
