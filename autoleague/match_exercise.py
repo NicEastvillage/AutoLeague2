@@ -9,7 +9,7 @@ from rlbottraining.grading.training_tick_packet import TrainingTickPacket
 from rlbottraining.rng import SeededRandomNumberGenerator
 from rlbottraining.training_exercise import TrainingExercise
 
-from match_result import MatchResult
+from match import MatchResult
 from replays import ReplayMonitor
 
 

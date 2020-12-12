@@ -1,5 +1,34 @@
 import json
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable, Mapping, List
+
+from rlbot.matchconfig.conversions import read_match_config_from_file
+from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
+from rlbot.parsing.bot_config_bundle import BotConfigBundle
+
+from bots import BotID
+from paths import PackageFiles
+
+
+@dataclass
+class MatchDetails:
+    blue: List[BotID]
+    orange: List[BotID]
+    map: str
+
+    def to_config(self, bots: Mapping[BotID, BotConfigBundle]) -> MatchConfig:
+        match_config = read_match_config_from_file(PackageFiles.default_match_config)
+        match_config.game_map = self.map
+        match_config.player_configs = [
+            PlayerConfig.bot_config(bots[self.blue[0]].config_path, Team.BLUE),
+            PlayerConfig.bot_config(bots[self.blue[1]].config_path, Team.BLUE),
+            PlayerConfig.bot_config(bots[self.blue[2]].config_path, Team.BLUE),
+            PlayerConfig.bot_config(bots[self.orange[0]].config_path, Team.BLUE),
+            PlayerConfig.bot_config(bots[self.orange[1]].config_path, Team.BLUE),
+            PlayerConfig.bot_config(bots[self.orange[2]].config_path, Team.BLUE),
+        ]
+        return match_config
 
 
 class MatchResult:

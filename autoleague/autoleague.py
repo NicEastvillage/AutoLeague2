@@ -17,7 +17,7 @@ from pathlib import Path
 from docopt import docopt
 
 from bots import load_all_bots
-from match_maker import TicketSystem
+from match_maker import TicketSystem, MatchMaker
 from paths import WorkingDir
 from ranking_system import RankingSystem
 from settings import PersistentSettings
@@ -49,6 +49,8 @@ def main():
             bots = load_all_bots(wd)
             rank_sys = RankingSystem.load(wd)
             ticket_sys = TicketSystem.load(wd)
+
+            MatchMaker.make_next(bots, rank_sys, ticket_sys)
 
             rank_sys.save(wd)
             ticket_sys.save(wd)
