@@ -17,6 +17,7 @@ from pathlib import Path
 from docopt import docopt
 
 from bots import load_all_bots
+from match import MatchResult, PlayerScore
 from match_maker import TicketSystem, MatchMaker
 from match_runner import run_match
 from paths import WorkingDir
@@ -54,7 +55,9 @@ def main():
 
             match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
             result = run_match(match, bots, ReplayPreference.SAVE)
-            print(result)
+            match.result = result
+            # TODO Update ranks
+            match.save(wd)
 
             rank_sys.save(wd)
             ticket_sys.save(wd)

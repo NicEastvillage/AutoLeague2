@@ -48,7 +48,7 @@ class RankingSystem:
         )
 
 
-# ====== SkillPool -> JSON ======
+# ====== RankingSystem -> JSON ======
 
 known_types = {
     TrueSkill: '__TrueSkill__',
@@ -73,7 +73,7 @@ class RankEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-# ====== JSON -> SkillPool ======
+# ====== JSON -> RankingSystem ======
 
 def as_rankings(json_obj) -> RankingSystem:
     for cls, tag in known_types.items():

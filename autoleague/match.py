@@ -1,14 +1,15 @@
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Mapping, List
+from typing import Iterable, Mapping, List, Dict, Optional
 
+from autoleagueplay.match_result import MatchResult
 from rlbot.matchconfig.conversions import read_match_config_from_file
 from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 from bots import BotID, psyonix_bot_skill
-from paths import PackageFiles
+from paths import PackageFiles, WorkingDir
 
 
 @dataclass
@@ -17,6 +18,7 @@ class MatchDetails:
     blue: List[BotID]
     orange: List[BotID]
     map: str
+    result: Optional[MatchResult] = None
 
     def to_config(self, bots: Mapping[BotID, BotConfigBundle]) -> MatchConfig:
         match_config = read_match_config_from_file(PackageFiles.default_match_config)
@@ -39,42 +41,73 @@ class MatchDetails:
             config.bot_skill = psyonix_bot_skill[bot]
         return config
 
+    def save(self, wd: WorkingDir):
+        self.write(wd.match_history / f"{self.name}.json")
 
+    def write(self, path: Path):
+        with open(path, 'w') as f:
+            json.dump(self, f, cls=MatchDetailsEncoder, sort_keys=True)
+
+    @staticmethod
+    def read(path: Path) -> 'MatchDetails':
+        with open(path) as f:
+            return json.load(f, object_hook=as_match_result)
+
+
+@dataclass
+class PlayerScore:
+    """
+    Object that contains info about a player's points, goals, shots, saves, and assists from a match
+    """
+    points: int = 0
+    goals: int = 0
+    shots: int = 0
+    saves: int = 0
+    assists: int = 0
+    demolitions: int = 0
+    own_goals: int = 0
+
+
+@dataclass
 class MatchResult:
     """
     Object that contains relevant info about a match result
     """
 
-    def __init__(self, blue: str, orange: str, blue_goals: int, orange_goals: int, blue_shots: int, orange_shots: int,
-                 blue_saves: int, orange_saves: int, blue_points: int, orange_points: int):
-        self.blue = blue
-        self.orange = orange
-        self.blue_goals = blue_goals
-        self.orange_goals = orange_goals
-        self.blue_shots = blue_shots
-        self.orange_shots = orange_shots
-        self.blue_saves = blue_saves
-        self.orange_saves = orange_saves
-        self.blue_points = blue_points
-        self.orange_points = orange_points
+    blue_goals: int = 0
+    orange_goals: int = 0
+    player_scores: Dict[BotID, PlayerScore] = field(default_factory=dict)
 
-    def write(self, path: Path):
-        with open(path, 'w') as f:
-            json.dump(self.__dict__, f, indent=4)
 
-    @staticmethod
-    def read(path: Path) -> 'MatchResult':
-        with open(path, 'r') as f:
-            data = json.load(f)
-            return MatchResult(
-                                blue=data['blue'],
-                                orange=data['orange'],
-                                blue_goals=int(data['blue_goals']),
-                                orange_goals=int(data['orange_goals']),
-                                blue_shots=int(data['blue_shots']),
-                                orange_shots=int(data['orange_shots']),
-                                blue_saves=int(data['blue_saves']),
-                                orange_saves=int(data['orange_saves']),
-                                blue_points=int(data['blue_points']),
-                                orange_points=int(data['orange_points'])
-                            )
+# ====== MatchDetails -> JSON ======
+
+known_types = {
+    MatchDetails: "__MatchDetails__",
+    MatchResult: "__MatchResult__",
+    PlayerScore: "__PlayerScore__",
+}
+
+
+class MatchDetailsEncoder(json.JSONEncoder):
+    def default(self, obj):
+        for cls, tag in known_types.items():
+            if not isinstance(obj, cls):
+                continue
+            json_obj = obj.__dict__.copy()
+            json_obj[tag] = True
+            return json_obj
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
+# ====== JSON -> MatchDetails ======
+
+def as_match_result(json_obj) -> MatchDetails:
+    for cls, tag in known_types.items():
+        if not json_obj.get(tag, False):
+            continue
+        obj = cls()
+        del json_obj[tag]
+        obj.__dict__ = json_obj
+        return obj
+    return json_obj

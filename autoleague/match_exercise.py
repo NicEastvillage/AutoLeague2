@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -9,7 +10,8 @@ from rlbottraining.grading.training_tick_packet import TrainingTickPacket
 from rlbottraining.rng import SeededRandomNumberGenerator
 from rlbottraining.training_exercise import TrainingExercise
 
-from match import MatchResult
+from bots import fmt_bot_name
+from match import MatchResult, PlayerScore
 from replays import ReplayMonitor
 
 
@@ -30,34 +32,40 @@ class MatchGrader(Grader):
         self.replay_monitor.ensure_monitoring()
         self.last_game_tick_packet = tick.game_tick_packet
         game_info = tick.game_tick_packet.game_info
-        print(f"Match over: {game_info.is_match_ended}")
         if game_info.is_match_ended:
             self.fetch_match_score(tick.game_tick_packet)
-            if self.replay_monitor.replay_id:
-                self.replay_monitor.stop_monitoring()
-                return Pass()
-            seconds_since_game_end = game_info.seconds_elapsed - self.last_match_time
-            if seconds_since_game_end > 15:
-                self.replay_monitor.stop_monitoring()
-                return FailDueToNoReplay()
+            # Since a recent update to RLBot and due to how rlbottraining calls on_tick, we only get one
+            # packet where game_info.is_math_ended is True. Now we setup a busy loop to wait for replay
+            game_end_time = time.time()
+            seconds_since_game_end = 0
+            while seconds_since_game_end < 30:
+                seconds_since_game_end = time.time() - game_end_time
+                if self.replay_monitor.replay_id:
+                    self.replay_monitor.stop_monitoring()
+                    return Pass()
+            # 30 seconds passed with no replay
+            self.replay_monitor.stop_monitoring()
+            return FailDueToNoReplay()
         else:
             self.last_match_time = game_info.seconds_elapsed
             return None
 
     def fetch_match_score(self, packet: GameTickPacket):
-        blue = packet.game_cars[0]
-        orange = packet.game_cars[1]
         self.match_result = MatchResult(
-            blue=blue.name,
-            orange=orange.name,
             blue_goals=packet.teams[0].score,
             orange_goals=packet.teams[1].score,
-            blue_shots=blue.score_info.shots,
-            orange_shots=orange.score_info.shots,
-            blue_saves=blue.score_info.saves,
-            orange_saves=orange.score_info.saves,
-            blue_points=blue.score_info.score,
-            orange_points=orange.score_info.score
+            player_scores={
+                fmt_bot_name(packet.game_cars[i].name): PlayerScore(
+                    points=packet.game_cars[i].score_info.score,
+                    goals=packet.game_cars[i].score_info.goals,
+                    shots=packet.game_cars[i].score_info.shots,
+                    saves=packet.game_cars[i].score_info.saves,
+                    assists=packet.game_cars[i].score_info.assists,
+                    demolitions=packet.game_cars[i].score_info.demolitions,
+                    own_goals=packet.game_cars[i].score_info.own_goals,
+                )
+                for i in range(packet.num_cars)
+            }
         )
 
 

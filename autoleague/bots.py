@@ -11,9 +11,13 @@ BotID = str
 psyonix_bot_skill: Dict[BotID, float] = dict()
 
 
+def fmt_bot_name(name: str) -> BotID:
+    return name.lower().replace(" ", "_")
+
+
 def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
     bots = {
-        bot_config.name.lower().replace(" ", "_"): bot_config
+        fmt_bot_name(bot_config.name): bot_config
         for bot_config in scan_directory_for_bot_configs(wd.bots)
     }
 
@@ -22,9 +26,9 @@ def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
     psyonix_pro = get_bot_config_bundle(PackageFiles.psyonix_pro)
     psyonix_rookie = get_bot_config_bundle(PackageFiles.psyonix_rookie)
 
-    psyonix_allstar_name = psyonix_allstar.name.lower().replace(" ", "_")
-    psyonix_pro_name = psyonix_pro.name.lower().replace(" ", "_")
-    psyonix_rookie_name = psyonix_rookie.name.lower().replace(" ", "_")
+    psyonix_allstar_name = fmt_bot_name(psyonix_allstar.name)
+    psyonix_pro_name = fmt_bot_name(psyonix_pro.name)
+    psyonix_rookie_name = fmt_bot_name(psyonix_rookie.name)
 
     bots[psyonix_allstar_name] = psyonix_allstar
     bots[psyonix_pro_name] = psyonix_pro
