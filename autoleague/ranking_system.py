@@ -5,6 +5,7 @@ import trueskill
 from trueskill import Rating, TrueSkill
 
 from bots import BotID
+from match import MatchDetails, MatchResult
 from paths import WorkingDir
 
 
@@ -25,6 +26,34 @@ class RankingSystem:
         else:
             self.ratings[bot] = Rating()
             return self.ratings[bot]
+
+    def get_mmr(self, bot: BotID) -> int:
+        """
+        Due to the uncertainty built into TrueSkills ratings, it is not recommended using the mean (mu) as
+        the definitive rank of a player. Instead we use mu - sigma. Additionally, we round to an integer,
+        because integers are nicer to display.
+        """
+        rating = self.get(bot)
+        return round(rating.mu - rating.sigma)
+
+    def update(self, match: MatchDetails, result: MatchResult):
+        """
+        Updates the rankings of the bots participating in the given match with the given match result.
+        Call `save` to save changes persistently.
+        """
+        # Old ratings
+        blue_ratings = list(map(lambda bot: self.get(bot), match.blue))
+        orange_ratings = list(map(lambda bot: self.get(bot), match.orange))
+
+        # Rank each team for TrueSkill calculations. 0 is best (winner)
+        ranks = [0, 1] if result.blue_goals > result.orange_goals else [1, 0]
+        new_blue_ratings, new_orange_ratings = trueskill.rate([blue_ratings, orange_ratings], ranks=ranks)
+
+        # Update bot ratings
+        for i, bot_id in enumerate(match.blue):
+            self.ratings[bot_id] = new_blue_ratings[i]
+        for i, bot_id in enumerate(match.orange):
+            self.ratings[bot_id] = new_orange_ratings[i]
 
     def save(self, wd: WorkingDir):
         with open(wd.rankings, 'w') as f:

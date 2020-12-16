@@ -55,9 +55,13 @@ def main():
 
             match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
             result = run_match(match, bots, ReplayPreference.SAVE)
+            rank_sys.update(match, result)
             match.result = result
-            # TODO Update ranks
             match.save(wd)
+
+            print("== Ranks ==")
+            for bot_id in bots.keys():
+                print(f"{bot_id}: {rank_sys.get_mmr(bot_id)}")
 
             rank_sys.save(wd)
             ticket_sys.save(wd)
