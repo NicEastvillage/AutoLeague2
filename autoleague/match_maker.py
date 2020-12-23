@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from random import shuffle, choice
-from typing import Dict, List, Iterable, Mapping, Tuple
+from typing import Dict, List, Iterable, Mapping, Tuple, Optional
 
 import trueskill
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
@@ -22,14 +22,47 @@ class TicketSystem:
     def __init__(self):
         self.tickets: Dict[BotID, int] = {}
 
+    def ensure(self, bots: Iterable[BotID]):
+        """
+        Ensure that all bots in the given list has tickets in the ticket system.
+        """
+        for bot in bots:
+            if bot not in self.tickets:
+                # Give new bots some tickets right away
+                self.tickets[bot] = NEW_BOT_TICKET_COUNT
+
+    def get_ensured(self, bot: BotID) -> int:
+        """
+        Returns the number of tickets owned by the given bot. The bot is added with the default
+        number of tickets, if they are not in the system yet.
+        """
+        if bot not in self.tickets:
+            self.tickets[bot] = NEW_BOT_TICKET_COUNT
+        return self.tickets[bot]
+
+    def get(self, bot: BotID) -> Optional[int]:
+        """
+        Returns the number of tickets owned by the given bot or None of the bot is not in the system.
+        """
+        return self.tickets.get(bot)
+
+    def set(self, bot: BotID, tickets: int):
+        """
+        Set the number of tickets for the given bot. The update is not persistent until `save` is called.
+        """
+        self.tickets[bot] = tickets
+
+    def total(self) -> int:
+        """
+        Returns the total number of tickets in the ticket system.
+        """
+        return sum(self.tickets.values())
+
     def pick_bots(self, bots: Iterable[BotID]) -> List[BotID]:
         """
         Picks 6 unique bots based on their number of tickets in the ticket system
         """
-        # Give new bots some tickets right away
-        for bot in bots:
-            if bot not in self.tickets:
-                self.tickets[bot] = NEW_BOT_TICKET_COUNT
+        self.ensure(bots)
 
         # Create pool of bot ids, then shuffle it
         pool = [bot for bot in bots for _ in range(self.tickets[bot])]

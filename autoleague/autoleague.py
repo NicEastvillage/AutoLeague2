@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 from bots import load_all_bots
-from match_maker import TicketSystem, MatchMaker
+from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT
 from match_runner import run_match
 from paths import WorkingDir
 from ranking_system import RankingSystem
@@ -23,6 +23,7 @@ def parse_args(args: List[str]):
 Usage:
     autoleague setup wd <working_dir>
     autoleague bot list
+    autoleague ticket list
     autoleague run r3v3
     autoleague help"""
 
@@ -32,6 +33,8 @@ Usage:
         parse_subcommand_setup(args)
     elif args[0] == "bot":
         parse_subcommand_bot(args)
+    elif args[0] == "ticket":
+        parse_subcommand_ticket(args)
     elif args[0] == "run":
         parse_subcommand_run(args)
     else:
@@ -86,6 +89,55 @@ def parse_subcommand_bot(args: List[str]):
             r = "x" if bot in rank_sys.ratings else " "
             t = "x" if bot in ticket_sys.tickets else " "
             print(f"{bot:.<22} {c} {r} {t}")
+    else:
+        print(help_msg)
+
+
+def parse_subcommand_ticket(args: List[str]):
+    assert args[0] == "ticket"
+    help_msg = """Usage:
+    autoleague ticket get <bot_id>
+    autoleague ticket set <bot_id> <tickets>
+    autoleague ticket list"""
+
+    wd = require_working_dir()
+
+    if len(args) == 1 or args[1] == "help":
+        print(help_msg)
+
+    elif args[1] == "get":
+
+        bot = args[2]
+        ticket_sys = TicketSystem.load(wd)
+        tickets = ticket_sys.get(bot)
+        if tickets:
+            print(f"{bot} has {tickets} tickets")
+        else:
+            print(f"{bot} is not in the ticket system (counts as having {NEW_BOT_TICKET_COUNT} tickets)")
+
+    elif args[1] == "set":
+
+        bot = args[2]
+        tickets = int(args[3])
+        ticket_sys = TicketSystem.load(wd)
+        ticket_sys.set(bot, tickets)
+        ticket_sys.save(wd)
+        print(f"Successfully set the number of tickets of {bot} to {tickets}")
+
+    elif args[1] == "list":
+
+        bots = load_all_bots(wd)
+        ticket_sys = TicketSystem.load(wd)
+        ticket_sys.ensure(bots)
+
+        tickets = list(ticket_sys.tickets.items())
+        tickets.sort(reverse=True, key=lambda elem: elem[1])
+        print(f"{'': <22} tickets")
+        for bot_id, tickets in tickets:
+            bar = "#" * tickets
+            print(f"{bot_id:.<22} {tickets:>3} {bar}")
+        print(f"\n{'TOTAL':<22} {ticket_sys.total()}")
+
     else:
         print(help_msg)
 
