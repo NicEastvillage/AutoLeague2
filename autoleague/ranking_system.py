@@ -55,6 +55,16 @@ class RankingSystem:
         for i, bot_id in enumerate(match.orange):
             self.ratings[bot_id] = new_orange_ratings[i]
 
+    def print_ranks_and_mmr(self):
+        """
+        Print bot rankings and mmr
+        """
+        ranks = [(bot_id, self.get_mmr(bot_id)) for bot_id in self.ratings.keys()]
+        ranks.sort(reverse=True, key=lambda elem: elem[1])
+        print(f"rank {'': <22} mmr")
+        for i, (bot_id, rank) in enumerate(ranks):
+            print(f"{i + 1:>4} {bot_id:.<22} {rank:>3}")
+
     def save(self, wd: WorkingDir):
         with open(wd.rankings, 'w') as f:
             json.dump(self, f, cls=RankEncoder, sort_keys=True)

@@ -23,7 +23,10 @@ def parse_args(args: List[str]):
 Usage:
     autoleague setup wd <working_dir>
     autoleague bot list
+    autoleague ticket get <bot_id>
+    autoleague ticket set <bot_id> <tickets>
     autoleague ticket list
+    autoleague rank list
     autoleague run r3v3
     autoleague help"""
 
@@ -35,6 +38,8 @@ Usage:
         parse_subcommand_bot(args)
     elif args[0] == "ticket":
         parse_subcommand_ticket(args)
+    elif args[0] == "rank":
+        parse_subcommand_rank(args)
     elif args[0] == "run":
         parse_subcommand_run(args)
     else:
@@ -142,6 +147,26 @@ def parse_subcommand_ticket(args: List[str]):
         print(help_msg)
 
 
+def parse_subcommand_rank(args: List[str]):
+    assert args[0] == "rank"
+    help_msg = """Usage:
+        autoleague rank list"""
+
+    wd = require_working_dir()
+
+    if len(args) == 1 or args[1] == "help":
+        print(help_msg)
+
+    elif args[1] == "list":
+
+        bots = load_all_bots(wd)
+        rank_sys = RankingSystem.load(wd)
+        rank_sys.print_ranks_and_mmr()
+
+    else:
+        print(help_msg)
+
+
 def parse_subcommand_run(args: List[str]):
     assert args[0] == "run"
     help_msg = """Usage:
@@ -171,17 +196,16 @@ def parse_subcommand_run(args: List[str]):
         ticket_sys.save(wd)
 
         # Print new ranks
-        ranks = [(bot_id, rank_sys.get_mmr(bot_id)) for bot_id in bots.keys()]
-        ranks.sort(reverse=True, key=lambda elem: elem[1])
-        print(f"rank {'': <22} mmr")
-        for i, (bot_id, rank) in enumerate(ranks):
-            print(f"{i+1:>4} {bot_id:.<22} {rank:>3}")
+        rank_sys.print_ranks_and_mmr()
 
     else:
         print(help_msg)
 
 
 def require_working_dir() -> WorkingDir:
+    """
+    Returns the WorkingDir and exits the program if it is not set.
+    """
     settings = PersistentSettings.load()
     if settings.working_dir_raw is None:
         print("No working directory set, use 'autoleague setup <working_dir>'")
