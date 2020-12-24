@@ -26,6 +26,7 @@ Usage:
     autoleague ticket get <bot_id>
     autoleague ticket set <bot_id> <tickets>
     autoleague ticket list
+    autoleague test <bot_id>
     autoleague rank list
     autoleague run r3v3
     autoleague help"""
@@ -42,6 +43,21 @@ Usage:
         parse_subcommand_rank(args)
     elif args[0] == "run":
         parse_subcommand_run(args)
+    elif args[0] == "test":
+
+        # Load
+        wd = require_working_dir()
+        bots = load_all_bots(wd)
+        bot = args[1]
+        if bot not in bots:
+            print(f"Could not find the config file of '{bot}'")
+            return
+
+        # Run
+        match = MatchMaker.make_test_match(bot)
+        run_match(match, bots, ReplayPreference.SAVE)
+        print(f"Test of '{bot}' complete")
+
     else:
         print(help_msg)
 
@@ -159,7 +175,6 @@ def parse_subcommand_rank(args: List[str]):
 
     elif args[1] == "list":
 
-        bots = load_all_bots(wd)
         rank_sys = RankingSystem.load(wd)
         rank_sys.print_ranks_and_mmr()
 

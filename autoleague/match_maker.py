@@ -160,3 +160,8 @@ class MatchMaker:
                 return picked[0:3], picked[3:6]
 
         raise Exception("Failed to find a fair match")
+
+    @staticmethod
+    def make_test_match(bot_id: BotID) -> MatchDetails:
+        team = [bot_id, "psyonix_allstar", "psyonix_allstar"]
+        return MatchDetails(f"test_{bot_id}", team, team, "ChampionsField")
