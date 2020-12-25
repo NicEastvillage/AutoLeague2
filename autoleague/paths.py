@@ -1,19 +1,3 @@
-# -------------- Working Dir Structure --------------
-# rankings.json              # contains bots' ranks
-# bots/
-#     skybot/..
-#     botimus/..
-#     ...
-# match history/
-#     # This directory contains match results of previous matches. One json file for each match.
-#     202101151506_bot1_bot2_bot3_vs_bot4_bot5_bot6.json
-#     202101151516_bot7_bot8_bot9_vs_bot10_bot11_bot12.json
-#     ...
-#
-
-"""
-This module contains file system paths that are used by autoleague.
-"""
 from pathlib import Path
 
 
@@ -21,24 +5,46 @@ class WorkingDir:
     """
     An object to make it convenient and safe to access file system paths within the working directory.
     Structure:
+    # bots/
+    #     # This direction contains all bots
+    #     skybot/..
+    #     botimus/..
+    #     ...
+    # matches/
+    #     # This directory contains match results of previous matches. One json file for each match.
+    #     202101151506_bot1_bot2_bot3_vs_bot4_bot5_bot6.json
+    #     202101151516_bot7_bot8_bot9_vs_bot10_bot11_bot12.json
+    #     ...
+    # rankings/
+    #     # This direction contains the ranks of all bots
+    #     202101151506_rankings.json
+    #     202101151516_rankings.json
+    #     ...
+    # tickets/
+    #     # This direction contains the tickets of all bots
+    #     202101151506_tickets.json
+    #     202101151516_tickets.json
+    #     ...
     """
 
     def __init__(self, working_dir: Path):
         self._working_dir = working_dir.absolute()
-        self.match_history = self._working_dir / f'match_history'
+        self.matches = self._working_dir / f'matches'
         self.bots = working_dir / 'bots'
-        self.rankings = working_dir / 'rankings.json'
-        self.tickets = working_dir / 'tickets.json'
+        self.rankings = working_dir / 'rankings'
+        self.tickets = working_dir / 'tickets'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
-        self.match_history.mkdir(exist_ok=True)
+        self.matches.mkdir(exist_ok=True)
+        self.rankings.mkdir(exist_ok=True)
+        self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
 
 
 class PackageFiles:
     """
-    An object to keep track of static paths that are part of this package
+    An object to keep track of static paths that are part of this package.
     """
     _package_dir = Path(__file__).absolute().parent
     _resource_dir = _package_dir / 'resources'

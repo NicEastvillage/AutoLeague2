@@ -90,17 +90,30 @@ class TicketSystem:
                 # Double their tickets
                 self.tickets[bot] *= 2
 
-    def save(self, wd: WorkingDir):
-        with open(wd.tickets, 'w') as f:
+    def save(self, wd: WorkingDir, time_stamp: str):
+        with open(wd.tickets / f"{time_stamp}_tickets.json", 'w') as f:
             json.dump(self.tickets, f, sort_keys=True)
 
     @staticmethod
     def load(wd: WorkingDir) -> 'TicketSystem':
         ticket_sys = TicketSystem()
-        if wd.tickets.exists():
-            with open(wd.tickets) as f:
+        if any(wd.tickets.iterdir()):
+            # Assume last tickets file is the newest, since they are prefixed with a time stamp
+            with open(list(wd.tickets.iterdir())[-1]) as f:
                 ticket_sys.tickets = json.load(f)
+        # New ticket system
         return ticket_sys
+
+    @staticmethod
+    def undo(wd: WorkingDir):
+        """
+        Remove latest tickets file
+        """
+        if any(wd.tickets.iterdir()):
+            # Assume last tickets file is the newest, since they are prefixed with a time stamp
+            list(wd.tickets.iterdir())[-1].unlink()  # Remove file
+        else:
+            print("No tickets to undo.")
 
 
 class MatchMaker:
@@ -113,8 +126,9 @@ class MatchMaker:
         is guaranteed to finish (since the TicketSystem is updated).
         """
 
+        time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
         blue, orange = MatchMaker.decide_on_players(bots.keys(), rank_sys, ticket_sys)
-        name = MatchMaker.make_name(blue, orange)
+        name = "_".join([time_stamp] + blue + ["vs"] + orange)
         map = choice([
             "ChampionsField",
             "DFHStadium",
@@ -123,16 +137,7 @@ class MatchMaker:
             "UrbanCentral",
             "BeckwithPark",
         ])
-        return MatchDetails(name, blue, orange, map)
-
-    @staticmethod
-    def make_name(blue: List[BotID], orange: List[BotID]):
-        """
-        Produces a string of the form "20201212135519_bot1_bot2_bot3_vs_bot4_bot5_bot6" where the number is
-        the current time.
-        """
-        now = datetime.now()
-        return "_".join([now.strftime("%Y%m%d%H%M%S")] + blue + ["vs"] + orange)
+        return MatchDetails(time_stamp, name, blue, orange, map)
 
     @staticmethod
     def decide_on_players(bot_ids: Iterable[BotID], rank_sys: RankingSystem,

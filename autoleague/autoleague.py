@@ -3,9 +3,11 @@ from pathlib import Path
 from typing import List
 
 from bots import load_all_bots
+from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT
 from match_runner import run_match
 from paths import WorkingDir
+from prompt import prompt_yes_no
 from ranking_system import RankingSystem
 from replays import ReplayPreference
 from settings import PersistentSettings
@@ -29,6 +31,7 @@ Usage:
     autoleague test <bot_id>
     autoleague rank list
     autoleague run r3v3
+    autoleague undo
     autoleague help"""
 
     if len(args) == 0 or args[0] == "help":
@@ -57,6 +60,31 @@ Usage:
         match = MatchMaker.make_test_match(bot)
         run_match(match, bots, ReplayPreference.SAVE)
         print(f"Test of '{bot}' complete")
+
+    elif args[0] == "undo":
+
+        # Undo latest match
+        wd = require_working_dir()
+        latest_match = MatchDetails.latest(wd)
+        if latest_match:
+
+            # Prompt user
+            print(f"Latest match was {latest_match.name}")
+            if prompt_yes_no("Are you sure you want to undo the latest match?"):
+
+                # Undo latest update to all systems
+                RankingSystem.undo(wd)
+                TicketSystem.undo(wd)
+                MatchDetails.undo(wd)
+
+                # New latest match
+                new_latest_match = MatchDetails.latest(wd)
+                if new_latest_match:
+                    print(f"Reverted to {new_latest_match.name}")
+                else:
+                    print("Reverted to beginning of league (no matches left)")
+        else:
+            print("No matches to undo")
 
     else:
         print(help_msg)
@@ -207,8 +235,8 @@ def parse_subcommand_run(args: List[str]):
 
         # Save
         match.save(wd)
-        rank_sys.save(wd)
-        ticket_sys.save(wd)
+        rank_sys.save(wd, match.time_stamp)
+        ticket_sys.save(wd, match.time_stamp)
 
         # Print new ranks
         rank_sys.print_ranks_and_mmr()

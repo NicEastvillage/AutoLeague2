@@ -14,10 +14,11 @@ from paths import PackageFiles, WorkingDir
 
 @dataclass
 class MatchDetails:
-    name: str
-    blue: List[BotID]
-    orange: List[BotID]
-    map: str
+    time_stamp: str = ""
+    name: str = ""
+    blue: List[BotID] = field(default_factory=list)
+    orange: List[BotID] = field(default_factory=list)
+    map: str = ""
     result: Optional[MatchResult] = None
 
     def to_config(self, bots: Mapping[BotID, BotConfigBundle]) -> MatchConfig:
@@ -42,11 +43,33 @@ class MatchDetails:
         return config
 
     def save(self, wd: WorkingDir):
-        self.write(wd.match_history / f"{self.name}.json")
+        self.write(wd.matches / f"{self.name}.json")
 
     def write(self, path: Path):
         with open(path, 'w') as f:
             json.dump(self, f, cls=MatchDetailsEncoder, sort_keys=True)
+
+    @staticmethod
+    def latest(wd: WorkingDir) -> Optional['MatchDetails']:
+        """
+        Returns the match details of the latest match
+        """
+        if any(wd.matches.iterdir()):
+            # Assume last match file is the newest, since they are prefixed with a time stamp
+            return MatchDetails.read(list(wd.matches.iterdir())[-1])
+        else:
+            return None
+
+    @staticmethod
+    def undo(wd: WorkingDir):
+        """
+        Remove latest match
+        """
+        if any(wd.matches.iterdir()):
+            # Assume last match file is the newest, since they are prefixed with a time stamp
+            list(wd.matches.iterdir())[-1].unlink()   # Remove file
+        else:
+            print("No match to undo.")
 
     @staticmethod
     def read(path: Path) -> 'MatchDetails':

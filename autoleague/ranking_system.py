@@ -65,16 +65,29 @@ class RankingSystem:
         for i, (bot_id, rank) in enumerate(ranks):
             print(f"{i + 1:>4} {bot_id:.<22} {rank:>3}")
 
-    def save(self, wd: WorkingDir):
-        with open(wd.rankings, 'w') as f:
+    def save(self, wd: WorkingDir, time_stamp: str):
+        with open(wd.rankings / f"{time_stamp}_rankings.json", 'w') as f:
             json.dump(self, f, cls=RankEncoder, sort_keys=True)
 
     @staticmethod
     def load(wd: WorkingDir) -> 'RankingSystem':
-        if not wd.rankings.exists():
-            return RankingSystem()
-        with open(wd.rankings) as f:
-            return json.load(f, object_hook=as_rankings)
+        if any(wd.rankings.iterdir()):
+            # Assume last rankings file is the newest, since they are prefixed with a time stamp
+            with open(list(wd.rankings.iterdir())[-1]) as f:
+                return json.load(f, object_hook=as_rankings)
+        # New rankings
+        return RankingSystem()
+
+    @staticmethod
+    def undo(wd: WorkingDir):
+        """
+        Remove latest rankings file
+        """
+        if any(wd.rankings.iterdir()):
+            # Assume last rankings file is the newest, since they are prefixed with a time stamp
+            list(wd.rankings.iterdir())[-1].unlink()   # Remove file
+        else:
+            print("No rankings to undo.")
 
     @staticmethod
     def setup():
