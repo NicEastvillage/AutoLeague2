@@ -6,6 +6,7 @@ from bots import load_all_bots
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT
 from match_runner import run_match
+from overlay import OverlayData
 from paths import WorkingDir
 from prompt import prompt_yes_no
 from ranking_system import RankingSystem
@@ -229,6 +230,7 @@ def parse_subcommand_run(args: List[str]):
 
         # Run
         match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
+        OverlayData.make_and_save(match, bots)
         result = run_match(match, bots, ReplayPreference.SAVE)
         rank_sys.update(match, result)
         match.result = result

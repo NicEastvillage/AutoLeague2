@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
@@ -40,3 +41,11 @@ def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
     psyonix_bot_skill[psyonix_rookie_name] = 0.0
 
     return bots
+
+
+def logo(config: BotConfigBundle) -> Path:
+    """
+    Returns the path to the given bot or None if it does not exists.
+    """
+    logo_path = Path(config.config_directory) / "logo.png"
+    return logo_path if logo_path.exists() and logo_path.is_file() else None

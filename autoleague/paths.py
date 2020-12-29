@@ -47,10 +47,14 @@ class PackageFiles:
     An object to keep track of static paths that are part of this package.
     """
     _package_dir = Path(__file__).absolute().parent
-    _resource_dir = _package_dir / 'resources'
-    default_match_config = _resource_dir / 'default_match_config.cfg'
+    _resource_dir = _package_dir / "resources"
+    _overlay_dir = _resource_dir / "overlay"
 
-    psyonix_allstar = _resource_dir / 'psyonix_allstar.cfg'
-    psyonix_pro = _resource_dir / 'psyonix_pro.cfg'
-    psyonix_rookie = _resource_dir / 'psyonix_rookie.cfg'
-    psyonix_appearance = _resource_dir / 'psyonix_appearance.cfg'
+    default_match_config = _resource_dir / "default_match_config.cfg"
+
+    psyonix_allstar = _resource_dir / "psyonix_allstar.cfg"
+    psyonix_pro = _resource_dir / "psyonix_pro.cfg"
+    psyonix_rookie = _resource_dir / "psyonix_rookie.cfg"
+    psyonix_appearance = _resource_dir / "psyonix_appearance.cfg"
+
+    overlay_current_match = _overlay_dir / "current_match.json"
