@@ -3,65 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>title</title>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="overlay.css"/>
 </head>
 <body>
-    <div class="top" style="margin-top: 10px">
-        <div id="header-container">
-            <img src="images/blue bg.png" style="grid-area: blue"/>
-            <img src="images/orange bg.png" style="grid-area: orange"/>
-            <p id="team-name-blue" class="team-name" style="grid-area: blue; padding-left: 24px">TBD</p>
-            <p id="team-name-orange" class="team-name" style="grid-area: orange; padding-right: 24px">TBD</p>
-            <div id="blue-wins" style="grid-area: bluewins; justify-self: right"></div>
-            <div id="orange-wins" style="grid-area: orangewins; justify-self: left"></div>
+<div class="top" style="margin-top: 8px">
+    <div id="header-container">
+        <img src="images/blue banner tall.png" style="grid-area: blue"/>
+        <img src="images/orange banner tall.png" style="grid-area: orange"/>
+        <div style="grid-area: blue; position: relative;">
+            <p id="team-name-blue" class="team-name" style="padding-left: 14px">TBD</p>
+        </div>
+        <div style="grid-area: orange; position: relative;">
+            <p id="team-name-orange" class="team-name" style="padding-right: 14px">TBD</p>
         </div>
     </div>
-    <div class="bottom">
-        <img src="images/sponsors.png"/>
-    </div>
+</div>
 
 <script>
     const blueTeamName = $("#team-name-blue");
     const orangeTeamName = $("#team-name-orange");
-    const blueWinContainer = $("#blue-wins");
-    const orangeWinContainer = $("#orange-wins")
-    const winOnElement = "<img class=\"win-indicator\" src=\"images/win indicator on.png\"/>"
-    const winOffElement = "<img class=\"win-indicator\" src=\"images/win indicator off.png\"/>"
     let previousData = null;
 
     setInterval(function () {
         $.get("current_match.json", function (json) {
             if (json !== previousData) {
-                data = JSON.parse(json);
-                blueTeamName.text(data.blue_team_name);
-                orangeTeamName.text(data.orange_team_name);
+                try {
+                    data = JSON.parse(json);
+                } catch (e) {
+                    // In normal browsers (not OBS), json is already an object and not a string. Not sure why
+                    data = json
+                }
                 previousData = json;
 
-                blueWinContainer.empty()
-                orangeWinContainer.empty()
+                blueTeamName.html((data.blue[0].name + "<br>" + data.blue[1].name + "<br>" + data.blue[2].name).replace(" ", "&nbsp"));
+                orangeTeamName.html((data.orange[0].name + "<br>" + data.orange[1].name + "<br>" + data.orange[2].name).replace(" ", "&nbsp"));
 
-                if (data.series_length > 1) {
-                    let winsRequired = Math.ceil(data.series_length / 2)
-
-                    let blueWinCount = data.series_wins.filter(x => x === 0).length
-                    for (i = 0; i < winsRequired; i++) {
-                        if (i >= winsRequired - blueWinCount) {
-                            blueWinContainer.append(winOnElement)
-                        } else {
-                            blueWinContainer.append(winOffElement)
-                        }
-                    }
-
-                    let orangeWinCount = data.series_wins.filter(x => x === 1).length
-                    for (i = 0; i < winsRequired; i++) {
-                        if (i < orangeWinCount) {
-                            orangeWinContainer.append(winOnElement)
-                        } else {
-                            orangeWinContainer.append(winOffElement)
-                        }
-                    }
-                }
             }
         });
     }, 1000);
