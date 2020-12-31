@@ -2,9 +2,9 @@ import sys
 from pathlib import Path
 from typing import List
 
-from bots import load_all_bots
+from bots import load_all_bots, defmt_bot_name
 from match import MatchDetails
-from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT
+from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT, make_timestamp
 from match_runner import run_match
 from overlay import OverlayData
 from paths import WorkingDir
@@ -138,7 +138,7 @@ def parse_subcommand_bot(args: List[str]):
             c = "x" if bot in bot_configs else " "
             r = "x" if bot in rank_sys.ratings else " "
             t = "x" if bot in ticket_sys.tickets else " "
-            print(f"{bot:.<22} {c} {r} {t}")
+            print(f"{bot + ' ':.<22} {c} {r} {t}")
     else:
         print(help_msg)
 
@@ -171,7 +171,7 @@ def parse_subcommand_ticket(args: List[str]):
         tickets = int(args[3])
         ticket_sys = TicketSystem.load(wd)
         ticket_sys.set(bot, tickets)
-        ticket_sys.save(wd)
+        ticket_sys.save(wd, make_timestamp())
         print(f"Successfully set the number of tickets of {bot} to {tickets}")
 
     elif args[1] == "list":
@@ -185,7 +185,7 @@ def parse_subcommand_ticket(args: List[str]):
         print(f"{'': <22} tickets")
         for bot_id, tickets in tickets:
             bar = "#" * tickets
-            print(f"{bot_id:.<22} {tickets:>3} {bar}")
+            print(f"{defmt_bot_name(bot_id) + ' ':.<22} {tickets:>3} {bar}")
         print(f"\n{'TOTAL':<22} {ticket_sys.total()}")
 
     else:

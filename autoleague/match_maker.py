@@ -4,11 +4,11 @@ from random import shuffle, choice
 from typing import Dict, List, Iterable, Mapping, Tuple, Optional
 
 import trueskill
-from rlbot.parsing.bot_config_bundle import BotConfigBundle
+from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 
-from bots import BotID
+from bots import BotID, fmt_bot_name
 from match import MatchDetails
-from paths import WorkingDir
+from paths import WorkingDir, PackageFiles
 from ranking_system import RankingSystem
 
 # Number of tickets given to new bots
@@ -126,7 +126,7 @@ class MatchMaker:
         is guaranteed to finish (since the TicketSystem is updated).
         """
 
-        time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        time_stamp = make_timestamp()
         blue, orange = MatchMaker.decide_on_players(bots.keys(), rank_sys, ticket_sys)
         name = "_".join([time_stamp] + blue + ["vs"] + orange)
         map = choice([
@@ -168,5 +168,11 @@ class MatchMaker:
 
     @staticmethod
     def make_test_match(bot_id: BotID) -> MatchDetails:
-        team = [bot_id, "psyonix_allstar", "psyonix_allstar"]
-        return MatchDetails(f"test_{bot_id}", team, team, "ChampionsField")
+        allstar_config = get_bot_config_bundle(PackageFiles.psyonix_allstar)
+        allstar_id = fmt_bot_name(allstar_config.name)
+        team = [bot_id, allstar_id, allstar_id]
+        return MatchDetails("", f"test_{bot_id}", team, team, "ChampionsField")
+
+
+def make_timestamp() -> str:
+    return datetime.now().strftime("%Y%m%d%H%M%S")

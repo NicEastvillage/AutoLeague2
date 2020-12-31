@@ -4,7 +4,7 @@ import json
 import trueskill
 from trueskill import Rating, TrueSkill
 
-from bots import BotID
+from bots import BotID, defmt_bot_name
 from match import MatchDetails, MatchResult
 from paths import WorkingDir
 
@@ -63,7 +63,7 @@ class RankingSystem:
         ranks.sort(reverse=True, key=lambda elem: elem[1])
         print(f"rank {'': <22} mmr")
         for i, (bot_id, rank) in enumerate(ranks):
-            print(f"{i + 1:>4} {bot_id:.<22} {rank:>3}")
+            print(f"{i + 1:>4} {defmt_bot_name(bot_id) + ' ':.<22} {rank:>3}")
 
     def save(self, wd: WorkingDir, time_stamp: str):
         with open(wd.rankings / f"{time_stamp}_rankings.json", 'w') as f:

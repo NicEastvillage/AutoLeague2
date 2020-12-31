@@ -13,7 +13,11 @@ psyonix_bot_skill: Dict[BotID, float] = dict()
 
 
 def fmt_bot_name(name: str) -> BotID:
-    return name.lower().replace(" ", "_")
+    return name.replace(" ", "_")
+
+
+def defmt_bot_name(name: BotID) -> str:
+    return name.replace("_", " ")
 
 
 def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
