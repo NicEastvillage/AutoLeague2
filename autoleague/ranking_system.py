@@ -1,4 +1,5 @@
-from typing import Dict
+from pathlib import Path
+from typing import Dict, List, Tuple
 import json
 
 import trueskill
@@ -59,11 +60,19 @@ class RankingSystem:
         """
         Print bot rankings and mmr
         """
-        ranks = [(bot_id, self.get_mmr(bot_id)) for bot_id in self.ratings.keys()]
-        ranks.sort(reverse=True, key=lambda elem: elem[1])
+        ranks = self.as_sorted_list()
         print(f"rank {'': <22} mmr")
         for i, (bot_id, rank) in enumerate(ranks):
             print(f"{i + 1:>4} {defmt_bot_name(bot_id) + ' ':.<22} {rank:>3}")
+
+    def as_sorted_list(self) -> List[Tuple[BotID, int, float]]:
+        """
+        Returns the sorted list of ranks. That is, a list where each element is a tuple of bot id, mmr,
+        and sigma (uncertainty), and the list is sorted by mmr.
+        """
+        ranks = [(bot_id, self.get_mmr(bot_id), self.get(bot_id).sigma) for bot_id in self.ratings.keys()]
+        ranks.sort(reverse=True, key=lambda elem: elem[1])
+        return ranks
 
     def save(self, wd: WorkingDir, time_stamp: str):
         with open(wd.rankings / f"{time_stamp}_rankings.json", 'w') as f:
@@ -71,12 +80,33 @@ class RankingSystem:
 
     @staticmethod
     def load(wd: WorkingDir) -> 'RankingSystem':
+        """
+        Loads the latest ranking system file (or create a new ranking system if no file exists)
+        """
         if any(wd.rankings.iterdir()):
             # Assume last rankings file is the newest, since they are prefixed with a time stamp
             with open(list(wd.rankings.iterdir())[-1]) as f:
                 return json.load(f, object_hook=as_rankings)
         # New rankings
         return RankingSystem()
+
+    @staticmethod
+    def read(path: Path) -> 'RankingSystem':
+        """
+        Read a specific ranking system file
+        """
+        with open(path) as f:
+            return json.load(f, object_hook=as_rankings)
+
+    @staticmethod
+    def latest(wd: WorkingDir, count: int) -> List['RankingSystem']:
+        """
+        Returns the latest N states of the ranking system
+        """
+        if any(wd.rankings.iterdir()):
+            return [RankingSystem.read(path) for path in list(wd.rankings.iterdir())[-count:]]
+        else:
+            return []
 
     @staticmethod
     def undo(wd: WorkingDir):

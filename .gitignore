@@ -114,3 +114,4 @@ credentials.json
 league/
 settings.json
 autoleague/resources/overlay/current_match.json
+autoleague/resources/overlay/summary.json

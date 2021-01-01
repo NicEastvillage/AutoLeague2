@@ -46,19 +46,22 @@ class MatchDetails:
         self.write(wd.matches / f"{self.name}.json")
 
     def write(self, path: Path):
+        """
+        Write match details to a specific path
+        """
         with open(path, 'w') as f:
             json.dump(self, f, cls=MatchDetailsEncoder, sort_keys=True)
 
     @staticmethod
-    def latest(wd: WorkingDir) -> Optional['MatchDetails']:
+    def latest(wd: WorkingDir, count: int) -> List['MatchDetails']:
         """
-        Returns the match details of the latest match
+        Returns the match details of the n latest matches
         """
         if any(wd.matches.iterdir()):
             # Assume last match file is the newest, since they are prefixed with a time stamp
-            return MatchDetails.read(list(wd.matches.iterdir())[-1])
+            return [MatchDetails.read(path) for path in list(wd.matches.iterdir())[-count:]]
         else:
-            return None
+            return []
 
     @staticmethod
     def undo(wd: WorkingDir):
@@ -73,6 +76,9 @@ class MatchDetails:
 
     @staticmethod
     def read(path: Path) -> 'MatchDetails':
+        """
+        Read a specific MatchDetails file
+        """
         with open(path) as f:
             return json.load(f, object_hook=as_match_result)
 

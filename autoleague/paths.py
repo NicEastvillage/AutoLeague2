@@ -58,3 +58,4 @@ class PackageFiles:
     psyonix_appearance = _resource_dir / "psyonix_appearance.cfg"
 
     overlay_current_match = _overlay_dir / "current_match.json"
+    overlay_summary = _overlay_dir / "summary.json"

@@ -12,6 +12,7 @@ from prompt import prompt_yes_no
 from ranking_system import RankingSystem
 from replays import ReplayPreference
 from settings import PersistentSettings
+from summary import make_summary
 
 
 def main():
@@ -33,6 +34,7 @@ Usage:
     autoleague rank list
     autoleague run r3v3
     autoleague undo
+    autoleague summary <n>
     autoleague help"""
 
     if len(args) == 0 or args[0] == "help":
@@ -66,7 +68,7 @@ Usage:
 
         # Undo latest match
         wd = require_working_dir()
-        latest_match = MatchDetails.latest(wd)
+        latest_match = MatchDetails.latest(wd, 1)[0]
         if latest_match:
 
             # Prompt user
@@ -79,13 +81,21 @@ Usage:
                 MatchDetails.undo(wd)
 
                 # New latest match
-                new_latest_match = MatchDetails.latest(wd)
+                new_latest_match = MatchDetails.latest(wd, 1)[0]
                 if new_latest_match:
                     print(f"Reverted to {new_latest_match.name}")
                 else:
                     print("Reverted to beginning of league (no matches left)")
+
         else:
             print("No matches to undo")
+
+    elif args[0] == "summary":
+
+        count = int(args[1])
+        wd = require_working_dir()
+        make_summary(wd, count)
+        print(f"Created summary of the last {count} matches")
 
     else:
         print(help_msg)
