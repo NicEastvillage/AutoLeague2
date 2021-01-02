@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="summary.css"/>
+</head>
+<body>
+
+<div id="ranks-container">
+    <h1>Ranks</h1>
+    <div id="ranks-table">
+
+    </div>
+</div>
+
+<div id="matches-container">
+    <h1>Latest matches</h1>
+    <div id="matches-table">
+
+    </div>
+</div>
+
+<script>
+    const ranksTable = $("#ranks-table");
+    const matchesTable = $("#matches-table");
+    let previousData = null;
+
+    // setInterval(updateAll, 2000);
+    updateAll()
+
+    function updateAll() {
+        $.get("summary.json", function (json) {
+            if (json !== previousData) {
+                try {
+                    data = JSON.parse(json);
+                } catch (e) {
+                    // In normal browsers (not OBS), json is already an object and not a string. Not sure why
+                    data = json;
+                }
+                previousData = data;
+                console.log(data);
+
+                let max_tickets = Math.max(...data.bots_by_rank.map(bot => bot.tickets));
+
+                ranksTable.html(data.bots_by_rank
+                    .map(function (bot) {
+                        let rank_img_src = "images/rank " + (
+                            bot.old_rank == null ? "new" : (
+                                bot.old_rank < bot.cur_rank ? "down" : (
+                                    bot.old_rank > bot.cur_rank ? "up" : "same"
+                                )
+                            )
+                        ) + ".png";
+
+                        let tickets_width = 32 * bot.tickets / max_tickets;
+
+                        return `
+<div class='rank-item'>
+    <div class="rank-number"><p class="center">${bot.cur_rank}</p></div>
+    <div class="rank-movement"><img src="${rank_img_src}"/></div>
+    <div class="rank-bot-name">${bot.bot_id}</div>
+    <div class="rank-mmr"><p class="center">${bot.mmr}</p></div>
+    <div class="rank-tickets" style="width: ${tickets_width}px"></div>
+</div>`
+                    })
+                    .join(""));
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

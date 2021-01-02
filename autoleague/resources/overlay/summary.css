@@ -1,0 +1,65 @@
+body {
+    font-family: "Helvetica", "Verdana", sans-serif;
+    background: white;
+    display: grid;
+    grid-template-columns: 400px auto;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "ranks mathces";
+    justify-content: center;
+}
+
+#ranks-container {
+    grid-area: ranks;
+}
+
+#ranks-table {
+}
+
+.rank-item {
+    display: grid;
+    grid-template-columns: 32px 22px auto 40px 50px 60px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "number movement name mmr wins tickets";
+    align-items: center;
+}
+
+.rank-item p {
+    margin: 3px 0;
+}
+
+.rank-item p.center {
+    text-align: center;
+}
+
+.rank-item .rank-number {
+    grid-area: number;
+}
+
+.rank-item .rank-movement {
+    grid-area: movement;
+}
+
+.rank-item .rank-bot-name {
+    grid-area: name;
+}
+
+.rank-item .rank-mmr {
+    grid-area: mmr;
+}
+
+.rank-item .rank-tickets {
+    grid-area: tickets;
+    background: #888888;
+    min-height: 10px;
+}
+
+#matches-container {
+    grid-area: matches;
+    background: red;
+}
+
+#matches-table {
+    background: #c1846f;
+}

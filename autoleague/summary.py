@@ -1,5 +1,6 @@
 import json
 
+from bots import defmt_bot_name
 from match_maker import TicketSystem
 from paths import WorkingDir, PackageFiles
 from ranking_system import RankingSystem
@@ -27,10 +28,10 @@ def make_summary(wd: WorkingDir, count: int):
                 old_rank = j + 1
                 break
         bots_by_rank.append({
-            "bot_id": bot,
+            "bot_id": defmt_bot_name(bot),
             "mmr": mrr,
             "sigma": sigma,
-            "cur_rank:": cur_rank,
+            "cur_rank": cur_rank,
             "old_rank": old_rank,
             "tickets": tickets.get(bot),
         })
