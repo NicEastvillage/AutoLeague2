@@ -62,7 +62,7 @@ class RankingSystem:
         """
         ranks = self.as_sorted_list()
         print(f"rank {'': <22} mmr")
-        for i, (bot_id, rank) in enumerate(ranks):
+        for i, (bot_id, rank, _) in enumerate(ranks):
             print(f"{i + 1:>4} {defmt_bot_name(bot_id) + ' ':.<22} {rank:>3}")
 
     def as_sorted_list(self) -> List[Tuple[BotID, int, float]]:

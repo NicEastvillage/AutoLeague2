@@ -32,8 +32,8 @@ Usage:
     autoleague ticket list
     autoleague test <bot_id>
     autoleague rank list
-    autoleague run r3v3
-    autoleague undo
+    autoleague match run
+    autoleague match undo
     autoleague summary <n>
     autoleague help"""
 
@@ -47,8 +47,8 @@ Usage:
         parse_subcommand_ticket(args)
     elif args[0] == "rank":
         parse_subcommand_rank(args)
-    elif args[0] == "run":
-        parse_subcommand_run(args)
+    elif args[0] == "match":
+        parse_subcommand_match(args)
     elif args[0] == "test":
 
         # Load
@@ -63,32 +63,6 @@ Usage:
         match = MatchMaker.make_test_match(bot)
         run_match(match, bots, ReplayPreference.SAVE)
         print(f"Test of '{bot}' complete")
-
-    elif args[0] == "undo":
-
-        # Undo latest match
-        wd = require_working_dir()
-        latest_match = MatchDetails.latest(wd, 1)[0]
-        if latest_match:
-
-            # Prompt user
-            print(f"Latest match was {latest_match.name}")
-            if prompt_yes_no("Are you sure you want to undo the latest match?"):
-
-                # Undo latest update to all systems
-                RankingSystem.undo(wd)
-                TicketSystem.undo(wd)
-                MatchDetails.undo(wd)
-
-                # New latest match
-                new_latest_match = MatchDetails.latest(wd, 1)[0]
-                if new_latest_match:
-                    print(f"Reverted to {new_latest_match.name}")
-                else:
-                    print("Reverted to beginning of league (no matches left)")
-
-        else:
-            print("No matches to undo")
 
     elif args[0] == "summary":
 
@@ -221,17 +195,19 @@ def parse_subcommand_rank(args: List[str]):
         print(help_msg)
 
 
-def parse_subcommand_run(args: List[str]):
-    assert args[0] == "run"
+def parse_subcommand_match(args: List[str]):
+    assert args[0] == "match"
     help_msg = """Usage:
-    autoleague run r3v3"""
+    autoleague match run
+    autoleague match undo
+    autoleague match list"""
 
     wd = require_working_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "r3v3":
+    elif args[1] == "run":
 
         # Load
         bots = load_all_bots(wd)
@@ -252,6 +228,43 @@ def parse_subcommand_run(args: List[str]):
 
         # Print new ranks
         rank_sys.print_ranks_and_mmr()
+
+    elif args[1] == "undo":
+
+        # Undo latest match
+        wd = require_working_dir()
+        latest_matches = MatchDetails.latest(wd, 1)
+        if len(latest_matches) == 0:
+            print("No matches to undo")
+        else:
+            latest_match = latest_matches[0]
+
+            # Prompt user
+            print(f"Latest match was {latest_match.name}")
+            if prompt_yes_no("Are you sure you want to undo the latest match?"):
+
+                # Undo latest update to all systems
+                RankingSystem.undo(wd)
+                TicketSystem.undo(wd)
+                MatchDetails.undo(wd)
+
+                # New latest match
+                new_latest_match = MatchDetails.latest(wd, 1)[0]
+                if new_latest_match:
+                    print(f"Reverted to {new_latest_match.name}")
+                else:
+                    print("Reverted to beginning of league (no matches left)")
+
+    elif args[1] == "list":
+
+        # Show list of all matches played
+        latest_matches = MatchDetails.latest(wd, 999999)
+        if len(latest_matches) == 0:
+            print("No matches have been played yet.")
+        else:
+            print("Match history:")
+            for match in latest_matches:
+                print(f"{match.time_stamp}: {', '.join(match.blue) + ' ':.<46} {match.result.blue_goals} VS {match.result.orange_goals} {' ' + ', '.join(match.orange):.>46}")
 
     else:
         print(help_msg)
