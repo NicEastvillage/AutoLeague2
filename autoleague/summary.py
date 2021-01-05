@@ -1,6 +1,7 @@
 import json
 
 from bots import defmt_bot_name
+from match import MatchDetails
 from match_maker import TicketSystem
 from paths import WorkingDir, PackageFiles
 from ranking_system import RankingSystem
@@ -13,6 +14,8 @@ def make_summary(wd: WorkingDir, count: int):
     summary = {}
 
     tickets = TicketSystem.load(wd)
+
+    # ========= Ranks =========
 
     n_rankings = RankingSystem.latest(wd, count)
     old_rankings = n_rankings[0].as_sorted_list()
@@ -37,6 +40,23 @@ def make_summary(wd: WorkingDir, count: int):
         })
 
     summary["bots_by_rank"] = bots_by_rank
+
+    # ========== Matches ==========
+
+    latest_matches = MatchDetails.latest(wd, count)
+
+    matches = []
+    for match in latest_matches:
+        matches.append({
+            "blue_names": [defmt_bot_name(bot_id) for bot_id in match.blue],
+            "orange_names": [defmt_bot_name(bot_id) for bot_id in match.orange],
+            "blue_goals": match.result.blue_goals,
+            "orange_goals": match.result.orange_goals,
+        })
+
+    summary["matches"] = matches
+
+    # =========== Write =============
 
     with open(PackageFiles.overlay_summary, 'w') as f:
         json.dump(summary, f, indent=4)

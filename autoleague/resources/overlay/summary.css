@@ -1,16 +1,38 @@
 body {
     font-family: "Helvetica", "Verdana", sans-serif;
-    background: white;
+    background: black;
+}
+
+h1 {
+    margin: 4px;
+}
+
+p.center {
+    text-align: center;
+}
+
+.odd {
+    background: #ffffff;
+}
+
+.even {
+    background: #f2f2f2;
+}
+
+#body-container {
+    margin-top: 100px;
     display: grid;
-    grid-template-columns: 400px auto;
+    grid-template-columns: auto 400px 100px auto auto;
     grid-template-rows: auto;
     grid-template-areas:
-            "ranks mathces";
+            ". ranks . matches .";
     justify-content: center;
 }
 
 #ranks-container {
     grid-area: ranks;
+    background: white;
+    padding: 8px;
 }
 
 #ranks-table {
@@ -27,10 +49,6 @@ body {
 
 .rank-item p {
     margin: 3px 0;
-}
-
-.rank-item p.center {
-    text-align: center;
 }
 
 .rank-item .rank-number {
@@ -57,9 +75,43 @@ body {
 
 #matches-container {
     grid-area: matches;
-    background: red;
+    padding: 8px;
+    background: #ffffff;
 }
 
 #matches-table {
-    background: #c1846f;
+
+}
+
+.match-item {
+    display: grid;
+    grid-template-columns: 390px 16px 60px 16px 390px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "blue-names blue-crown mid orange-crown orange-names";
+    align-items: center;
+}
+
+.match-name .blue {
+    grid-area: blue-names;
+}
+
+.match-name .orange {
+    grid-area: orange-names;
+}
+
+.crown {
+    margin-top: 4px;
+}
+
+.crown .blue {
+    grid-area: blue-crown;
+}
+
+.crown .orange {
+    grid-area: orange-crown;
+}
+
+.hide {
+    display: none;
 }
