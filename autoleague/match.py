@@ -1,15 +1,39 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Mapping, List, Dict, Optional
+from typing import Mapping, List, Dict, Optional
 
-from autoleagueplay.match_result import MatchResult
 from rlbot.matchconfig.conversions import read_match_config_from_file
 from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 from bots import BotID, psyonix_bot_skill
 from paths import PackageFiles, WorkingDir
+
+
+@dataclass
+class PlayerScore:
+    """
+    Object that contains info about a player's points, goals, shots, saves, and assists from a match
+    """
+    points: int = 0
+    goals: int = 0
+    shots: int = 0
+    saves: int = 0
+    assists: int = 0
+    demolitions: int = 0
+    own_goals: int = 0
+
+
+@dataclass
+class MatchResult:
+    """
+    Object that contains relevant info about a match result
+    """
+
+    blue_goals: int = 0
+    orange_goals: int = 0
+    player_scores: Dict[BotID, PlayerScore] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,31 +105,6 @@ class MatchDetails:
         """
         with open(path) as f:
             return json.load(f, object_hook=as_match_result)
-
-
-@dataclass
-class PlayerScore:
-    """
-    Object that contains info about a player's points, goals, shots, saves, and assists from a match
-    """
-    points: int = 0
-    goals: int = 0
-    shots: int = 0
-    saves: int = 0
-    assists: int = 0
-    demolitions: int = 0
-    own_goals: int = 0
-
-
-@dataclass
-class MatchResult:
-    """
-    Object that contains relevant info about a match result
-    """
-
-    blue_goals: int = 0
-    orange_goals: int = 0
-    player_scores: Dict[BotID, PlayerScore] = field(default_factory=dict)
 
 
 # ====== MatchDetails -> JSON ======

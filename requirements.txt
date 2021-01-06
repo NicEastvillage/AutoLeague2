@@ -1,0 +1,7 @@
+dataclasses
+pathlib
+rlbot
+rlbottraining
+trueskill
+requests
+watchdog
