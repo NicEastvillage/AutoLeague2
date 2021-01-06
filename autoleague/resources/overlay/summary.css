@@ -38,6 +38,22 @@ p.center {
 #ranks-table {
 }
 
+.rank-table-header {
+    display: grid;
+    grid-template-columns: 54px auto 40px 50px 60px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "number name mmr wins tickets";
+    border: 1px none #bbbbbb;
+    border-bottom-style: solid;
+}
+
+.rank-table-header p {
+    font-weight: bold;
+    font-size: 0.8em;
+    margin: 3px 0;
+}
+
 .rank-item {
     display: grid;
     grid-template-columns: 32px 22px auto 40px 50px 60px;
@@ -63,12 +79,23 @@ p.center {
     grid-area: name;
 }
 
+.rank-item .rank-wins {
+    grid-area: wins;
+    justify-content:center;
+    display:flex;
+}
+
+.rank-win-indicator {
+    padding-right: 2px;
+}
+
 .rank-item .rank-mmr {
     grid-area: mmr;
 }
 
 .rank-item .rank-tickets {
     grid-area: tickets;
+    margin-left: 10px;
     background: #888888;
     min-height: 10px;
 }

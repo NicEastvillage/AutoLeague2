@@ -11,7 +11,14 @@
 <body>
 <div id="body-container">
     <div id="ranks-container">
-        <h1>Ranks</h1>
+        <h1>Ratings</h1>
+        <div class="rank-table-header">
+            <p>Rank</p>
+            <p>Name</p>
+            <p class="center">MMR</p>
+            <p class="center">Wins</p>
+            <p class="center">Tickets</p>
+        </div>
         <div id="ranks-table">
 
         </div>
@@ -51,6 +58,9 @@
                 // Generate rank table
                 ranksTable.html(data.bots_by_rank
                     .map(function (bot) {
+                        let odd_class = odd ? "odd" : "even";
+                        odd = !odd;
+
                         // Decide rank movement indicator
                         let rank_img_src = "images/rank " + (
                             bot.old_rank == null ? "new" : (
@@ -60,10 +70,14 @@
                             )
                         ) + ".png";
 
-                        let tickets_width = 32 * bot.tickets / max_tickets;
+                        // Win indicators
+                        let win_indicators = bot.wins
+                            .map(win => win ? "images/win.png" : "images/loss.png")
+                            .map(img => `<img class="rank-win-indicator" src=${img} />`)
+                            .join("")
 
-                        let odd_class = odd ? "odd" : "even";
-                        odd = !odd;
+                        // Ticket bar width
+                        let tickets_width = 32 * bot.tickets / max_tickets;
 
                         return `
 <div class="rank-item ${odd_class}">
@@ -71,6 +85,7 @@
     <div class="rank-movement"><img src="${rank_img_src}"/></div>
     <div class="rank-bot-name">${bot.bot_id}</div>
     <div class="rank-mmr"><p class="center">${bot.mmr}</p></div>
+    <div class="rank-wins">${win_indicators}</div>
     <div class="rank-tickets" style="width: ${tickets_width}px"></div>
 </div>`
                     })

@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from bots import defmt_bot_name
 from match import MatchDetails
@@ -14,6 +15,26 @@ def make_summary(wd: WorkingDir, count: int):
     summary = {}
 
     tickets = TicketSystem.load(wd)
+
+    # ========== Matches ==========
+
+    latest_matches = MatchDetails.latest(wd, count)
+
+    matches = []
+    bot_wins = defaultdict(list)   # Maps bots to list of booleans, where true=win and false=loss
+    for match in latest_matches:
+        matches.append({
+            "blue_names": [defmt_bot_name(bot_id) for bot_id in match.blue],
+            "orange_names": [defmt_bot_name(bot_id) for bot_id in match.orange],
+            "blue_goals": match.result.blue_goals,
+            "orange_goals": match.result.orange_goals,
+        })
+        for bot in match.blue:
+            bot_wins[bot].append(match.result.blue_goals > match.result.orange_goals)
+        for bot in match.orange:
+            bot_wins[bot].append(match.result.blue_goals < match.result.orange_goals)
+
+    summary["matches"] = matches
 
     # ========= Ranks =========
 
@@ -37,24 +58,10 @@ def make_summary(wd: WorkingDir, count: int):
             "cur_rank": cur_rank,
             "old_rank": old_rank,
             "tickets": tickets.get(bot),
+            "wins": bot_wins[bot],
         })
 
     summary["bots_by_rank"] = bots_by_rank
-
-    # ========== Matches ==========
-
-    latest_matches = MatchDetails.latest(wd, count)
-
-    matches = []
-    for match in latest_matches:
-        matches.append({
-            "blue_names": [defmt_bot_name(bot_id) for bot_id in match.blue],
-            "orange_names": [defmt_bot_name(bot_id) for bot_id in match.orange],
-            "blue_goals": match.result.blue_goals,
-            "orange_goals": match.result.orange_goals,
-        })
-
-    summary["matches"] = matches
 
     # =========== Write =============
 
