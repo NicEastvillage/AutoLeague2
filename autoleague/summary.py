@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 
 from bots import defmt_bot_name
+from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
 from paths import LeagueDir, PackageFiles
@@ -67,3 +68,7 @@ def make_summary(ld: LeagueDir, count: int):
 
     with open(PackageFiles.overlay_summary, 'w') as f:
         json.dump(summary, f, indent=4)
+
+    league_settings = LeagueSettings.load(ld)
+    league_settings.last_summary = count
+    league_settings.save(ld)

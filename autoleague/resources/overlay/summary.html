@@ -36,8 +36,8 @@
     const matchesTable = $("#matches-table");
     let previousData = null;
 
-    // setInterval(updateAll, 2000);
-    updateAll()
+    updateAll();
+    setInterval(updateAll, 2000);
 
     function updateAll() {
         $.get("summary.json", function (json) {

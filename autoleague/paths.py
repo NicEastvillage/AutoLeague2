@@ -29,6 +29,7 @@ class LeagueDir:
 
     def __init__(self, league_dir: Path):
         self._league_dir = league_dir.absolute()
+        self.league_settings = self._league_dir / 'league_settings.json'
         self.matches = self._league_dir / f'matches'
         self.bots = self._league_dir / 'bots'
         self.rankings = self._league_dir / 'rankings'

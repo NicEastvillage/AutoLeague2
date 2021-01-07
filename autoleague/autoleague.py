@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List
 
 from bots import load_all_bots, defmt_bot_name
+from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT, make_timestamp
 from match_runner import run_match
@@ -88,9 +89,12 @@ def parse_subcommand_setup(args: List[str]):
         settings = PersistentSettings.load()
         league_path = Path(args[2])
         league_path.mkdir(exist_ok=True, parents=True)
-        LeagueDir(league_path)  # Creates relevant directories and files
+        ld = LeagueDir(league_path)  # Creates relevant directories and files
         settings.league_dir_raw = str(league_path)
         settings.save()
+
+        LeagueSettings().save(ld)
+
         print(f"Working directory successfully set to '{league_path}'")
 
     else:
@@ -228,6 +232,11 @@ def parse_subcommand_match(args: List[str]):
 
         # Print new ranks
         rank_sys.print_ranks_and_mmr()
+
+        # Make summary
+        league_settings = LeagueSettings.load(ld)
+        make_summary(ld, league_settings.last_summary + 1)
+        print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
 
     elif args[1] == "undo":
 
