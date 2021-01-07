@@ -37,7 +37,7 @@
     let previousData = null;
 
     updateAll();
-    setInterval(updateAll, 2000);
+    // setInterval(updateAll, 2000);
 
     function updateAll() {
         $.get("summary.json", function (json) {
@@ -101,6 +101,7 @@
 
                         return `
 <div class="match-item ${odd_class}">
+    <div class="match-number"><p class="right">${match.index + 1})</p></div>
     <div class="match-names blue"><p class="center">${match.blue_names.join(", ")}</p></div>
     <div class="crown blue"><img class="${blue_crown_class}" src="images/match win blue.png" /></div>
     <div class="match-mid"><p class="center">${match.blue_goals} VS ${match.orange_goals}</p></div>
