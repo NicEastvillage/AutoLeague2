@@ -4,21 +4,21 @@ from collections import defaultdict
 from bots import defmt_bot_name
 from match import MatchDetails
 from match_maker import TicketSystem
-from paths import WorkingDir, PackageFiles
+from paths import LeagueDir, PackageFiles
 from ranking_system import RankingSystem
 
 
-def make_summary(wd: WorkingDir, count: int):
+def make_summary(ld: LeagueDir, count: int):
     """
     Make a summary of the N latest matches and the resulting ranks and tickets.
     """
     summary = {}
 
-    tickets = TicketSystem.load(wd)
+    tickets = TicketSystem.load(ld)
 
     # ========== Matches ==========
 
-    latest_matches = MatchDetails.latest(wd, count)
+    latest_matches = MatchDetails.latest(ld, count)
 
     matches = []
     bot_wins = defaultdict(list)   # Maps bots to list of booleans, where true=win and false=loss
@@ -38,7 +38,7 @@ def make_summary(wd: WorkingDir, count: int):
 
     # ========= Ranks =========
 
-    n_rankings = RankingSystem.latest(wd, count)
+    n_rankings = RankingSystem.latest(ld, count)
     old_rankings = n_rankings[0].as_sorted_list()
     cur_rankings = n_rankings[-1].as_sorted_list()
 

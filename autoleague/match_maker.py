@@ -8,7 +8,7 @@ from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bund
 
 from bots import BotID, fmt_bot_name
 from match import MatchDetails
-from paths import WorkingDir, PackageFiles
+from paths import LeagueDir, PackageFiles
 from ranking_system import RankingSystem
 
 # Number of tickets given to new bots
@@ -90,28 +90,28 @@ class TicketSystem:
                 # Double their tickets
                 self.tickets[bot] *= 2
 
-    def save(self, wd: WorkingDir, time_stamp: str):
-        with open(wd.tickets / f"{time_stamp}_tickets.json", 'w') as f:
+    def save(self, ld: LeagueDir, time_stamp: str):
+        with open(ld.tickets / f"{time_stamp}_tickets.json", 'w') as f:
             json.dump(self.tickets, f, sort_keys=True)
 
     @staticmethod
-    def load(wd: WorkingDir) -> 'TicketSystem':
+    def load(ld: LeagueDir) -> 'TicketSystem':
         ticket_sys = TicketSystem()
-        if any(wd.tickets.iterdir()):
+        if any(ld.tickets.iterdir()):
             # Assume last tickets file is the newest, since they are prefixed with a time stamp
-            with open(list(wd.tickets.iterdir())[-1]) as f:
+            with open(list(ld.tickets.iterdir())[-1]) as f:
                 ticket_sys.tickets = json.load(f)
         # New ticket system
         return ticket_sys
 
     @staticmethod
-    def undo(wd: WorkingDir):
+    def undo(ld: LeagueDir):
         """
         Remove latest tickets file
         """
-        if any(wd.tickets.iterdir()):
+        if any(ld.tickets.iterdir()):
             # Assume last tickets file is the newest, since they are prefixed with a time stamp
-            list(wd.tickets.iterdir())[-1].unlink()  # Remove file
+            list(ld.tickets.iterdir())[-1].unlink()  # Remove file
         else:
             print("No tickets to undo.")
 

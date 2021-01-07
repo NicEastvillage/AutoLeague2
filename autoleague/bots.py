@@ -4,7 +4,7 @@ from typing import Dict, Mapping
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 
-from paths import PackageFiles, WorkingDir
+from paths import PackageFiles, LeagueDir
 
 BotID = str
 
@@ -20,10 +20,10 @@ def defmt_bot_name(name: BotID) -> str:
     return name.replace("_", " ")
 
 
-def load_all_bots(wd: WorkingDir) -> Mapping[BotID, BotConfigBundle]:
+def load_all_bots(ld: LeagueDir) -> Mapping[BotID, BotConfigBundle]:
     bots = {
         fmt_bot_name(bot_config.name): bot_config
-        for bot_config in scan_directory_for_bot_configs(wd.bots)
+        for bot_config in scan_directory_for_bot_configs(ld.bots)
     }
 
     # Psyonix bots

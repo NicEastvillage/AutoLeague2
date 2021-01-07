@@ -7,7 +7,7 @@ from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT, make_timestamp
 from match_runner import run_match
 from overlay import OverlayData
-from paths import WorkingDir
+from paths import LeagueDir
 from prompt import prompt_yes_no
 from ranking_system import RankingSystem
 from replays import ReplayPreference
@@ -25,7 +25,7 @@ def parse_args(args: List[str]):
     help_msg = """AutoLeague is a tool for easily running RLBot leagues.
 
 Usage:
-    autoleague setup wd <working_dir>
+    autoleague setup league <league_dir>
     autoleague bot list
     autoleague ticket get <bot_id>
     autoleague ticket set <bot_id> <tickets>
@@ -52,8 +52,8 @@ Usage:
     elif args[0] == "test":
 
         # Load
-        wd = require_working_dir()
-        bots = load_all_bots(wd)
+        ld = require_league_dir()
+        bots = load_all_bots(ld)
         bot = args[1]
         if bot not in bots:
             print(f"Could not find the config file of '{bot}'")
@@ -67,8 +67,8 @@ Usage:
     elif args[0] == "summary":
 
         count = int(args[1])
-        wd = require_working_dir()
-        make_summary(wd, count)
+        ld = require_league_dir()
+        make_summary(ld, count)
         print(f"Created summary of the last {count} matches")
 
     else:
@@ -78,20 +78,20 @@ Usage:
 def parse_subcommand_setup(args: List[str]):
     assert args[0] == "setup"
     help_msg = """Usage:
-    autoleague setup wd <working_dir>"""
+    autoleague setup league <league_dir>"""
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "wd":
+    elif args[1] == "league":
 
         settings = PersistentSettings.load()
-        wd_path = Path(args[2])
-        wd_path.mkdir(exist_ok=True, parents=True)
-        WorkingDir(wd_path)  # Creates relevant directories and files
-        settings.working_dir_raw = str(wd_path)
+        league_path = Path(args[2])
+        league_path.mkdir(exist_ok=True, parents=True)
+        LeagueDir(league_path)  # Creates relevant directories and files
+        settings.league_dir_raw = str(league_path)
         settings.save()
-        print(f"Working directory successfully set to '{wd_path}'")
+        print(f"Working directory successfully set to '{league_path}'")
 
     else:
         print(help_msg)
@@ -106,11 +106,11 @@ def parse_subcommand_bot(args: List[str]):
         print(help_msg)
 
     elif len(args) > 1 and args[1] == "list":
-        wd = require_working_dir()
+        ld = require_league_dir()
 
-        bot_configs = load_all_bots(wd)
-        rank_sys = RankingSystem.load(wd)
-        ticket_sys = TicketSystem.load(wd)
+        bot_configs = load_all_bots(ld)
+        rank_sys = RankingSystem.load(ld)
+        ticket_sys = TicketSystem.load(ld)
 
         bot_ids = list(
             set(bot_configs.keys())
@@ -134,7 +134,7 @@ def parse_subcommand_ticket(args: List[str]):
     autoleague ticket set <bot_id> <tickets>
     autoleague ticket list"""
 
-    wd = require_working_dir()
+    ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
@@ -142,7 +142,7 @@ def parse_subcommand_ticket(args: List[str]):
     elif args[1] == "get":
 
         bot = args[2]
-        ticket_sys = TicketSystem.load(wd)
+        ticket_sys = TicketSystem.load(ld)
         tickets = ticket_sys.get(bot)
         if tickets:
             print(f"{bot} has {tickets} tickets")
@@ -153,15 +153,15 @@ def parse_subcommand_ticket(args: List[str]):
 
         bot = args[2]
         tickets = int(args[3])
-        ticket_sys = TicketSystem.load(wd)
+        ticket_sys = TicketSystem.load(ld)
         ticket_sys.set(bot, tickets)
-        ticket_sys.save(wd, make_timestamp())
+        ticket_sys.save(ld, make_timestamp())
         print(f"Successfully set the number of tickets of {bot} to {tickets}")
 
     elif args[1] == "list":
 
-        bots = load_all_bots(wd)
-        ticket_sys = TicketSystem.load(wd)
+        bots = load_all_bots(ld)
+        ticket_sys = TicketSystem.load(ld)
         ticket_sys.ensure(bots)
 
         tickets = list(ticket_sys.tickets.items())
@@ -181,14 +181,14 @@ def parse_subcommand_rank(args: List[str]):
     help_msg = """Usage:
         autoleague rank list"""
 
-    wd = require_working_dir()
+    ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
     elif args[1] == "list":
 
-        rank_sys = RankingSystem.load(wd)
+        rank_sys = RankingSystem.load(ld)
         rank_sys.print_ranks_and_mmr()
 
     else:
@@ -202,7 +202,7 @@ def parse_subcommand_match(args: List[str]):
     autoleague match undo
     autoleague match list"""
 
-    wd = require_working_dir()
+    ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
@@ -210,9 +210,9 @@ def parse_subcommand_match(args: List[str]):
     elif args[1] == "run":
 
         # Load
-        bots = load_all_bots(wd)
-        rank_sys = RankingSystem.load(wd)
-        ticket_sys = TicketSystem.load(wd)
+        bots = load_all_bots(ld)
+        rank_sys = RankingSystem.load(ld)
+        ticket_sys = TicketSystem.load(ld)
 
         # Run
         match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
@@ -222,9 +222,9 @@ def parse_subcommand_match(args: List[str]):
         match.result = result
 
         # Save
-        match.save(wd)
-        rank_sys.save(wd, match.time_stamp)
-        ticket_sys.save(wd, match.time_stamp)
+        match.save(ld)
+        rank_sys.save(ld, match.time_stamp)
+        ticket_sys.save(ld, match.time_stamp)
 
         # Print new ranks
         rank_sys.print_ranks_and_mmr()
@@ -232,8 +232,8 @@ def parse_subcommand_match(args: List[str]):
     elif args[1] == "undo":
 
         # Undo latest match
-        wd = require_working_dir()
-        latest_matches = MatchDetails.latest(wd, 1)
+        ld = require_league_dir()
+        latest_matches = MatchDetails.latest(ld, 1)
         if len(latest_matches) == 0:
             print("No matches to undo")
         else:
@@ -244,12 +244,12 @@ def parse_subcommand_match(args: List[str]):
             if prompt_yes_no("Are you sure you want to undo the latest match?"):
 
                 # Undo latest update to all systems
-                RankingSystem.undo(wd)
-                TicketSystem.undo(wd)
-                MatchDetails.undo(wd)
+                RankingSystem.undo(ld)
+                TicketSystem.undo(ld)
+                MatchDetails.undo(ld)
 
                 # New latest match
-                new_latest_match = MatchDetails.latest(wd, 1)[0]
+                new_latest_match = MatchDetails.latest(ld, 1)[0]
                 if new_latest_match:
                     print(f"Reverted to {new_latest_match.name}")
                 else:
@@ -258,7 +258,7 @@ def parse_subcommand_match(args: List[str]):
     elif args[1] == "list":
 
         # Show list of all matches played
-        latest_matches = MatchDetails.latest(wd, 999999)
+        latest_matches = MatchDetails.latest(ld, 999999)
         if len(latest_matches) == 0:
             print("No matches have been played yet.")
         else:
@@ -270,16 +270,16 @@ def parse_subcommand_match(args: List[str]):
         print(help_msg)
 
 
-def require_working_dir() -> WorkingDir:
+def require_league_dir() -> LeagueDir:
     """
     Returns the WorkingDir and exits the program if it is not set.
     """
     settings = PersistentSettings.load()
-    if settings.working_dir_raw is None:
-        print("No working directory set, use 'autoleague setup <working_dir>'")
+    if settings.league_dir_raw is None:
+        print("No league directory set, use 'autoleague setup league <league_dir>'")
         sys.exit(0)
 
-    return WorkingDir(Path(settings.working_dir_raw))
+    return LeagueDir(Path(settings.league_dir_raw))
 
 
 if __name__ == '__main__':

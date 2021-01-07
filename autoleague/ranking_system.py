@@ -7,7 +7,7 @@ from trueskill import Rating, TrueSkill
 
 from bots import BotID, defmt_bot_name
 from match import MatchDetails, MatchResult
-from paths import WorkingDir
+from paths import LeagueDir
 
 
 class RankingSystem:
@@ -74,18 +74,18 @@ class RankingSystem:
         ranks.sort(reverse=True, key=lambda elem: elem[1])
         return ranks
 
-    def save(self, wd: WorkingDir, time_stamp: str):
-        with open(wd.rankings / f"{time_stamp}_rankings.json", 'w') as f:
+    def save(self, ld: LeagueDir, time_stamp: str):
+        with open(ld.rankings / f"{time_stamp}_rankings.json", 'w') as f:
             json.dump(self, f, cls=RankEncoder, sort_keys=True)
 
     @staticmethod
-    def load(wd: WorkingDir) -> 'RankingSystem':
+    def load(ld: LeagueDir) -> 'RankingSystem':
         """
         Loads the latest ranking system file (or create a new ranking system if no file exists)
         """
-        if any(wd.rankings.iterdir()):
+        if any(ld.rankings.iterdir()):
             # Assume last rankings file is the newest, since they are prefixed with a time stamp
-            with open(list(wd.rankings.iterdir())[-1]) as f:
+            with open(list(ld.rankings.iterdir())[-1]) as f:
                 return json.load(f, object_hook=as_rankings)
         # New rankings
         return RankingSystem()
@@ -99,23 +99,23 @@ class RankingSystem:
             return json.load(f, object_hook=as_rankings)
 
     @staticmethod
-    def latest(wd: WorkingDir, count: int) -> List['RankingSystem']:
+    def latest(ld: LeagueDir, count: int) -> List['RankingSystem']:
         """
         Returns the latest N states of the ranking system
         """
-        if any(wd.rankings.iterdir()):
-            return [RankingSystem.read(path) for path in list(wd.rankings.iterdir())[-count:]]
+        if any(ld.rankings.iterdir()):
+            return [RankingSystem.read(path) for path in list(ld.rankings.iterdir())[-count:]]
         else:
             return []
 
     @staticmethod
-    def undo(wd: WorkingDir):
+    def undo(ld: LeagueDir):
         """
         Remove latest rankings file
         """
-        if any(wd.rankings.iterdir()):
+        if any(ld.rankings.iterdir()):
             # Assume last rankings file is the newest, since they are prefixed with a time stamp
-            list(wd.rankings.iterdir())[-1].unlink()   # Remove file
+            list(ld.rankings.iterdir())[-1].unlink()   # Remove file
         else:
             print("No rankings to undo.")
 

@@ -7,7 +7,7 @@ class PersistentSettings:
     This class is used to store information that should persist between usage.
     """
     def __init__(self):
-        self.working_dir_raw = None
+        self.league_dir_raw = None
 
     def save(self):
         path = Path(__file__).absolute().parent / 'settings.json'

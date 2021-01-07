@@ -8,7 +8,7 @@ from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 from bots import BotID, psyonix_bot_skill
-from paths import PackageFiles, WorkingDir
+from paths import PackageFiles, LeagueDir
 
 
 @dataclass
@@ -66,8 +66,8 @@ class MatchDetails:
             config.bot_skill = psyonix_bot_skill[bot]
         return config
 
-    def save(self, wd: WorkingDir):
-        self.write(wd.matches / f"{self.name}.json")
+    def save(self, ld: LeagueDir):
+        self.write(ld.matches / f"{self.name}.json")
 
     def write(self, path: Path):
         """
@@ -77,24 +77,24 @@ class MatchDetails:
             json.dump(self, f, cls=MatchDetailsEncoder, sort_keys=True)
 
     @staticmethod
-    def latest(wd: WorkingDir, count: int) -> List['MatchDetails']:
+    def latest(ld: LeagueDir, count: int) -> List['MatchDetails']:
         """
         Returns the match details of the n latest matches
         """
-        if any(wd.matches.iterdir()):
+        if any(ld.matches.iterdir()):
             # Assume last match file is the newest, since they are prefixed with a time stamp
-            return [MatchDetails.read(path) for path in list(wd.matches.iterdir())[-count:]]
+            return [MatchDetails.read(path) for path in list(ld.matches.iterdir())[-count:]]
         else:
             return []
 
     @staticmethod
-    def undo(wd: WorkingDir):
+    def undo(ld: LeagueDir):
         """
         Remove latest match
         """
-        if any(wd.matches.iterdir()):
+        if any(ld.matches.iterdir()):
             # Assume last match file is the newest, since they are prefixed with a time stamp
-            list(wd.matches.iterdir())[-1].unlink()   # Remove file
+            list(ld.matches.iterdir())[-1].unlink()   # Remove file
         else:
             print("No match to undo.")
 

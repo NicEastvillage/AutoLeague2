@@ -1,9 +1,9 @@
 from pathlib import Path
 
 
-class WorkingDir:
+class LeagueDir:
     """
-    An object to make it convenient and safe to access file system paths within the working directory.
+    An object to make it convenient and safe to access file system paths within the league directory.
     Structure:
     # bots/
     #     # This direction contains all bots
@@ -27,12 +27,12 @@ class WorkingDir:
     #     ...
     """
 
-    def __init__(self, working_dir: Path):
-        self._working_dir = working_dir.absolute()
-        self.matches = self._working_dir / f'matches'
-        self.bots = working_dir / 'bots'
-        self.rankings = working_dir / 'rankings'
-        self.tickets = working_dir / 'tickets'
+    def __init__(self, league_dir: Path):
+        self._league_dir = league_dir.absolute()
+        self.matches = self._league_dir / f'matches'
+        self.bots = self._league_dir / 'bots'
+        self.rankings = self._league_dir / 'rankings'
+        self.tickets = self._league_dir / 'tickets'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
