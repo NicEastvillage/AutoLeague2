@@ -26,17 +26,17 @@ def parse_args(args: List[str]):
     help_msg = """AutoLeague is a tool for easily running RLBot leagues.
 
 Usage:
-    autoleague setup league <league_dir>
-    autoleague bot list
-    autoleague ticket get <bot_id>
-    autoleague ticket set <bot_id> <tickets>
-    autoleague ticket list
-    autoleague test <bot_id>
-    autoleague rank list
-    autoleague match run
-    autoleague match undo
-    autoleague summary <n>
-    autoleague help"""
+    autoleague setup league <league_dir>        Setup a league in <league_dir>
+    autoleague bot list                         Print list of all known bots
+    autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
+    autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
+    autoleague ticket list                      Print list of all bot's number of tickets
+    autoleague test <bot_id>                    Run test match using a specific bot
+    autoleague rank list                        Print list of the current leaderboard
+    autoleague match run                        Run a standard 3v3 soccer match
+    autoleague match undo                       Undo the last match
+    autoleague summary <n>                      Create a summary of the last <n> matches
+    autoleague help                             Print this message"""
 
     if len(args) == 0 or args[0] == "help":
         print(help_msg)
