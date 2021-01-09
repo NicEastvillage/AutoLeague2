@@ -1,0 +1,71 @@
+body {
+    font-family: "Helvetica", "Verdana", sans-serif;
+}
+
+h1 {
+    margin: 4px;
+}
+
+p.center {
+    text-align: center;
+}
+
+p.right {
+    text-align: right;
+}
+
+.odd {
+    background: #ffffff;
+}
+
+.even {
+    background: #f2f2f2;
+}
+
+#matches-container {
+    width: 900px;
+    padding: 8px;
+    background: #ffffff;
+}
+
+#matches-table {
+
+}
+
+.match-item {
+    display: grid;
+    grid-template-columns: 30px 390px 16px 60px 16px 390px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "number blue-names blue-crown mid orange-crown orange-names";
+    align-items: center;
+}
+
+.match-number {
+    grid-area: number;
+    margin-right: 2px;
+}
+
+.match-name .blue {
+    grid-area: blue-names;
+}
+
+.match-name .orange {
+    grid-area: orange-names;
+}
+
+.crown {
+    margin-top: 4px;
+}
+
+.crown .blue {
+    grid-area: blue-crown;
+}
+
+.crown .orange {
+    grid-area: orange-crown;
+}
+
+.hide {
+    display: none;
+}

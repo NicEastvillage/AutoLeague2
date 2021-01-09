@@ -1,0 +1,94 @@
+body {
+    font-family: "Helvetica", "Verdana", sans-serif;
+}
+
+h1 {
+    margin: 4px;
+}
+
+p.center {
+    text-align: center;
+}
+
+p.right {
+    text-align: right;
+}
+
+.odd {
+    background: #ffffff;
+}
+
+.even {
+    background: #f2f2f2;
+}
+
+#ranks-container {
+    width: 420px;
+    background: white;
+    padding: 8px;
+}
+
+#ranks-table {
+}
+
+.rank-table-header {
+    display: grid;
+    grid-template-columns: 62px auto 44px 56px 66px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "number name mmr wins tickets";
+    border: 1px none #bbbbbb;
+    border-bottom-style: solid;
+}
+
+.rank-table-header p {
+    font-weight: bold;
+    font-size: 0.8em;
+    margin: 3px 0;
+}
+
+.rank-item {
+    display: grid;
+    grid-template-columns: 36px 26px auto 44px 56px 66px;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "number movement name mmr wins tickets";
+    align-items: center;
+}
+
+.rank-item p {
+    margin: 5px 0;
+}
+
+.rank-item .rank-number {
+    grid-area: number;
+}
+
+.rank-item .rank-movement {
+    grid-area: movement;
+}
+
+.rank-item .rank-bot-name {
+    grid-area: name;
+}
+
+.rank-item .rank-wins {
+    grid-area: wins;
+    justify-content:center;
+    display:flex;
+}
+
+.rank-win-indicator {
+    padding-right: 2px;
+}
+
+.rank-item .rank-mmr {
+    grid-area: mmr;
+}
+
+.rank-item .rank-tickets {
+    grid-area: tickets;
+    margin-left: 10px;
+    background: #888888;
+    min-height: 10px;
+}
