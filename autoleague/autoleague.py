@@ -28,13 +28,14 @@ def parse_args(args: List[str]):
 Usage:
     autoleague setup league <league_dir>        Setup a league in <league_dir>
     autoleague bot list                         Print list of all known bots
+    autoleague bot test <bot_id>                Run test match using a specific bot
     autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
-    autoleague ticket list                      Print list of all bot's number of tickets
-    autoleague test <bot_id>                    Run test match using a specific bot
+    autoleague ticket list                      Print list of number of tickets for all bots
     autoleague rank list                        Print list of the current leaderboard
     autoleague match run                        Run a standard 3v3 soccer match
     autoleague match undo                       Undo the last match
+    autoleague match list [n]                   Show the latest matches
     autoleague summary <n>                      Create a summary of the last <n> matches
     autoleague help                             Print this message"""
 
@@ -50,21 +51,6 @@ Usage:
         parse_subcommand_rank(args)
     elif args[0] == "match":
         parse_subcommand_match(args)
-    elif args[0] == "test":
-
-        # Load
-        ld = require_league_dir()
-        bots = load_all_bots(ld)
-        bot = args[1]
-        if bot not in bots:
-            print(f"Could not find the config file of '{bot}'")
-            return
-
-        # Run
-        match = MatchMaker.make_test_match(bot)
-        run_match(match, bots, ReplayPreference.SAVE)
-        print(f"Test of '{bot}' complete")
-
     elif args[0] == "summary":
 
         count = int(args[1])
@@ -79,12 +65,12 @@ Usage:
 def parse_subcommand_setup(args: List[str]):
     assert args[0] == "setup"
     help_msg = """Usage:
-    autoleague setup league <league_dir>"""
+    autoleague setup league <league_dir>         Setup a league in <league_dir>"""
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "league":
+    elif args[1] == "league" and len(args) == 2:
 
         settings = PersistentSettings.load()
         league_path = Path(args[2])
@@ -104,12 +90,13 @@ def parse_subcommand_setup(args: List[str]):
 def parse_subcommand_bot(args: List[str]):
     assert args[0] == "bot"
     help_msg = """Usage:
-    autoleague bot list"""
+    autoleague bot list                       Print list of all known bots
+    autoleague bot test <bot_id>              Run test match using a specific bot"""
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif len(args) > 1 and args[1] == "list":
+    elif args[1] == "list" and len(args) == 2:
         ld = require_league_dir()
 
         bot_configs = load_all_bots(ld)
@@ -127,6 +114,22 @@ def parse_subcommand_bot(args: List[str]):
             r = "x" if bot in rank_sys.ratings else " "
             t = "x" if bot in ticket_sys.tickets else " "
             print(f"{bot + ' ':.<22} {c} {r} {t}")
+
+    elif args[1] == "test" and len(args) == 3:
+
+        # Load
+        ld = require_league_dir()
+        bots = load_all_bots(ld)
+        bot = args[2]
+        if bot not in bots:
+            print(f"Could not find the config file of '{bot}'")
+            return
+
+        # Run
+        match = MatchMaker.make_test_match(bot)
+        run_match(match, bots, ReplayPreference.SAVE)
+        print(f"Test of '{bot}' complete")
+
     else:
         print(help_msg)
 
@@ -134,16 +137,16 @@ def parse_subcommand_bot(args: List[str]):
 def parse_subcommand_ticket(args: List[str]):
     assert args[0] == "ticket"
     help_msg = """Usage:
-    autoleague ticket get <bot_id>
-    autoleague ticket set <bot_id> <tickets>
-    autoleague ticket list"""
+    autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
+    autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
+    autoleague ticket list                      Print list of number of tickets for all bots"""
 
     ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "get":
+    elif args[1] == "get" and len(args) == 3:
 
         bot = args[2]
         ticket_sys = TicketSystem.load(ld)
@@ -153,7 +156,7 @@ def parse_subcommand_ticket(args: List[str]):
         else:
             print(f"{bot} is not in the ticket system (counts as having {NEW_BOT_TICKET_COUNT} tickets)")
 
-    elif args[1] == "set":
+    elif args[1] == "set" and len(args) == 4:
 
         bot = args[2]
         tickets = int(args[3])
@@ -162,7 +165,7 @@ def parse_subcommand_ticket(args: List[str]):
         ticket_sys.save(ld, make_timestamp())
         print(f"Successfully set the number of tickets of {bot} to {tickets}")
 
-    elif args[1] == "list":
+    elif args[1] == "list" and len(args) == 2:
 
         bots = load_all_bots(ld)
         ticket_sys = TicketSystem.load(ld)
@@ -183,14 +186,14 @@ def parse_subcommand_ticket(args: List[str]):
 def parse_subcommand_rank(args: List[str]):
     assert args[0] == "rank"
     help_msg = """Usage:
-        autoleague rank list"""
+        autoleague rank list                Print list of the current leaderboard"""
 
     ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "list":
+    elif args[1] == "list" and len(args) == 2:
 
         rank_sys = RankingSystem.load(ld)
         rank_sys.print_ranks_and_mmr()
@@ -202,16 +205,16 @@ def parse_subcommand_rank(args: List[str]):
 def parse_subcommand_match(args: List[str]):
     assert args[0] == "match"
     help_msg = """Usage:
-    autoleague match run
-    autoleague match undo
-    autoleague match list"""
+    autoleague match run                        Run a standard 3v3 soccer match
+    autoleague match undo                       Undo the last match
+    autoleague match list [n]                   Show the latest matches"""
 
     ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "run":
+    elif args[1] == "run" and len(args) == 2:
 
         # Load
         bots = load_all_bots(ld)
@@ -238,7 +241,7 @@ def parse_subcommand_match(args: List[str]):
         make_summary(ld, league_settings.last_summary + 1)
         print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
 
-    elif args[1] == "undo":
+    elif args[1] == "undo" and len(args) == 2:
 
         # Undo latest match
         ld = require_league_dir()
@@ -264,14 +267,18 @@ def parse_subcommand_match(args: List[str]):
                 else:
                     print("Reverted to beginning of league (no matches left)")
 
-    elif args[1] == "list":
+    elif args[1] == "list" and len(args) <= 3:
 
-        # Show list of all matches played
-        latest_matches = MatchDetails.latest(ld, 999999)
+        count = 999999
+        if len(args) == 3:
+            count = int(args[2])
+
+        # Show list of latest n matches played
+        latest_matches = MatchDetails.latest(ld, count)
         if len(latest_matches) == 0:
             print("No matches have been played yet.")
         else:
-            print("Match history:")
+            print(f"Match history (latest {len(latest_matches)} matches):")
             for match in latest_matches:
                 print(f"{match.time_stamp}: {', '.join(match.blue) + ' ':.<46} {match.result.blue_goals} VS {match.result.orange_goals} {' ' + ', '.join(match.orange):.>46}")
 

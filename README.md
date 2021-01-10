@@ -21,13 +21,14 @@ AutoLeague2 is a continuation of RLBot's [AutoLeaguePlay](https://github.com/RLB
 ```
 setup league <league_dir>           Setup a league in <league_dir>
 bot list                            Print list of all known bots
+bot test <bot_id>                   Run test match using a specific bot
 ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
 ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
-ticket list                         Print list of all bot's number of tickets
-test <bot_id>                       Run test match using a specific bot
+ticket list                         Print list of number of tickets for all bots
 rank list                           Print list of the current leaderboard
 match run                           Run a standard 3v3 soccer match
 match undo                          Undo the last match
+match list [n]                      Show the latest matches
 summary <n>                         Create a summary of the last <n> matches
 help                                Print this message
 ```
