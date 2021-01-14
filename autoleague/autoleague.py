@@ -5,7 +5,7 @@ from typing import List
 from bots import load_all_bots, defmt_bot_name
 from leaguesettings import LeagueSettings
 from match import MatchDetails
-from match_maker import TicketSystem, MatchMaker, NEW_BOT_TICKET_COUNT, make_timestamp
+from match_maker import TicketSystem, MatchMaker, make_timestamp
 from match_runner import run_match
 from overlay import OverlayData
 from paths import LeagueDir
@@ -156,7 +156,7 @@ def parse_subcommand_ticket(args: List[str]):
         if tickets:
             print(f"{bot} has {tickets} tickets")
         else:
-            print(f"{bot} is not in the ticket system (counts as having {NEW_BOT_TICKET_COUNT} tickets)")
+            print(f"{bot} is not in the ticket system (counts as having {ticket_sys.new_bot_ticket_count} tickets)")
 
     elif args[1] == "set" and len(args) == 4:
 

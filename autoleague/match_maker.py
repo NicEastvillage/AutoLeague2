@@ -12,8 +12,8 @@ from match import MatchDetails
 from paths import LeagueDir, PackageFiles
 from ranking_system import RankingSystem
 
-# Required TrueSkill match quality. Can't be higher than 0.44
-REQ_MATCH_QUALITY = 0.3
+# Minimum required TrueSkill match quality. Can't be higher than 0.44
+MIN_REQ_FAIRNESS = 0.3
 
 
 class TicketSystem:
@@ -146,10 +146,11 @@ class MatchMaker:
         Find two balanced teams. The TicketSystem and the RankingSystem to find
         a fair match up between some bots that haven't played for a while.
         """
+        limit = 200
 
-        limit = 100
-        while limit > 0:
-            limit -= 1
+        tries_left = limit
+        while tries_left > 0:
+            tries_left -= 1
 
             # Pick some bots that haven't played for a while
             picked = ticket_sys.pick_bots(bot_ids)
@@ -160,7 +161,9 @@ class MatchMaker:
             orange = tuple(ratings[3:6])
 
             # Is this a fair match?
-            if trueskill.quality([blue, orange]) >= REQ_MATCH_QUALITY:
+            required_fairness = min(tries_left / limit, MIN_REQ_FAIRNESS)
+            if trueskill.quality([blue, orange]) >= required_fairness:
+                print(f"Match: {picked[0:3]} vs {picked[3:6]}\nMatch quality: {trueskill.quality([blue, orange])}")
                 ticket_sys.choose(picked, bot_ids)
                 return picked[0:3], picked[3:6]
 
