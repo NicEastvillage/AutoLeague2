@@ -7,12 +7,10 @@ import trueskill
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 
 from bots import BotID, fmt_bot_name
+from leaguesettings import LeagueSettings
 from match import MatchDetails
 from paths import LeagueDir, PackageFiles
 from ranking_system import RankingSystem
-
-# Number of tickets given to new bots
-NEW_BOT_TICKET_COUNT = 4
 
 # Required TrueSkill match quality. Can't be higher than 0.44
 REQ_MATCH_QUALITY = 0.3
@@ -21,6 +19,7 @@ REQ_MATCH_QUALITY = 0.3
 class TicketSystem:
     def __init__(self):
         self.tickets: Dict[BotID, int] = {}
+        self.new_bot_ticket_count = 4
 
     def ensure(self, bots: Iterable[BotID]):
         """
@@ -29,7 +28,7 @@ class TicketSystem:
         for bot in bots:
             if bot not in self.tickets:
                 # Give new bots some tickets right away
-                self.tickets[bot] = NEW_BOT_TICKET_COUNT
+                self.tickets[bot] = self.new_bot_ticket_count
 
     def get_ensured(self, bot: BotID) -> int:
         """
@@ -37,7 +36,7 @@ class TicketSystem:
         number of tickets, if they are not in the system yet.
         """
         if bot not in self.tickets:
-            self.tickets[bot] = NEW_BOT_TICKET_COUNT
+            self.tickets[bot] = self.new_bot_ticket_count
         return self.tickets[bot]
 
     def get(self, bot: BotID) -> Optional[int]:
@@ -101,7 +100,8 @@ class TicketSystem:
             # Assume last tickets file is the newest, since they are prefixed with a time stamp
             with open(list(ld.tickets.iterdir())[-1]) as f:
                 ticket_sys.tickets = json.load(f)
-        # New ticket system
+
+        ticket_sys.new_bot_ticket_count = LeagueSettings.load(ld).new_bot_ticket_count
         return ticket_sys
 
     @staticmethod

@@ -25,6 +25,7 @@ bot test <bot_id>                   Run test match using a specific bot
 ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
 ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
 ticket list                         Print list of number of tickets for all bots
+ticket newBotTickets <tickets>      Set the number of tickets given to new bots
 rank list                           Print list of the current leaderboard
 match run                           Run a standard 3v3 soccer match
 match undo                          Undo the last match

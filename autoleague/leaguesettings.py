@@ -14,6 +14,9 @@ class LeagueSettings:
         # Can be set using `summary make <count>`.
         self.last_summary = 0
 
+        # Number of tickets given to new bots
+        self.new_bot_ticket_count = 4
+
     def save(self, ld: LeagueDir):
         with open(ld.league_settings, 'w') as f:
             json.dump(self.__dict__, f, sort_keys=True, indent=4)

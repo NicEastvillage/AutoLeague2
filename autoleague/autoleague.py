@@ -32,6 +32,7 @@ Usage:
     autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
     autoleague ticket list                      Print list of number of tickets for all bots
+    autoleague ticket newBotTickets <tickets>   Set the number of tickets given to new bots
     autoleague rank list                        Print list of the current leaderboard
     autoleague match run                        Run a standard 3v3 soccer match
     autoleague match undo                       Undo the last match
@@ -139,7 +140,8 @@ def parse_subcommand_ticket(args: List[str]):
     help_msg = """Usage:
     autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
-    autoleague ticket list                      Print list of number of tickets for all bots"""
+    autoleague ticket list                      Print list of number of tickets for all bots
+    autoleague ticket newBotTickets <tickets>   Set the number of tickets given to new bots"""
 
     ld = require_league_dir()
 
@@ -178,6 +180,14 @@ def parse_subcommand_ticket(args: List[str]):
             bar = "#" * tickets
             print(f"{defmt_bot_name(bot_id) + ' ':.<22} {tickets:>3} {bar}")
         print(f"\n{'TOTAL':<22} {ticket_sys.total()}")
+
+    elif args[1] == "newBotTickets" and len(args) == 3:
+
+        tickets = int(args[2])
+        # The number of tickets given to new bots are stored in LeagueSettings
+        league_settings = LeagueSettings.load(ld)
+        league_settings.new_bot_ticket_count = tickets
+        league_settings.save(ld)
 
     else:
         print(help_msg)
