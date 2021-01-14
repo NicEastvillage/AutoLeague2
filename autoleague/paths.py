@@ -25,15 +25,21 @@ class LeagueDir:
     #     202101151506_tickets.json
     #     202101151516_tickets.json
     #     ...
+    # replays/
+    #     # This directory contains replays
+    #     98NY24350NV120NVC34N8V120.replay
+    #     JHDAJQJ11M1MGFQZXRJGNWE23.replay
+    #     ...
     """
 
     def __init__(self, league_dir: Path):
         self._league_dir = league_dir.absolute()
-        self.league_settings = self._league_dir / 'league_settings.json'
-        self.matches = self._league_dir / f'matches'
-        self.bots = self._league_dir / 'bots'
-        self.rankings = self._league_dir / 'rankings'
-        self.tickets = self._league_dir / 'tickets'
+        self.league_settings = self._league_dir / "league_settings.json"
+        self.matches = self._league_dir / f"matches"
+        self.bots = self._league_dir / "bots"
+        self.rankings = self._league_dir / "rankings"
+        self.tickets = self._league_dir / "tickets"
+        self.replays = self._league_dir / "replays"
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
@@ -41,6 +47,7 @@ class LeagueDir:
         self.rankings.mkdir(exist_ok=True)
         self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
+        self.replays.mkdir(exist_ok=True)
 
 
 class PackageFiles:

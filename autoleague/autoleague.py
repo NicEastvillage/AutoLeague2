@@ -128,7 +128,7 @@ def parse_subcommand_bot(args: List[str]):
 
         # Run
         match = MatchMaker.make_test_match(bot)
-        run_match(match, bots, ReplayPreference.SAVE)
+        run_match(ld, match, bots, ReplayPreference.NONE)
         print(f"Test of '{bot}' complete")
 
     else:
@@ -234,9 +234,10 @@ def parse_subcommand_match(args: List[str]):
         # Run
         match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
         OverlayData.make_and_save(match, bots)
-        result = run_match(match, bots, ReplayPreference.SAVE)
+        result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
         rank_sys.update(match, result)
         match.result = result
+        match.replay_id = replay.replay_id
 
         # Save
         match.save(ld)

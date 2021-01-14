@@ -49,7 +49,7 @@ class RankingSystem:
         new_blue_ratings = blue_ratings
         new_orange_ratings = orange_ratings
         # Award a TrueSkull win for every 3 goal lead (at least 1)
-        for _ in range(1 + abs(result.blue_goals - result.orange_goals) // 3):
+        for _ in range(1 + abs(result.blue_goals - result.orange_goals) // 4):
             # Rank each team for TrueSkill calculations. 0 is best (winner)
             ranks = [0, 1] if result.blue_goals > result.orange_goals else [1, 0]
             new_blue_ratings, new_orange_ratings = trueskill.rate([new_blue_ratings, new_orange_ratings], ranks=ranks)

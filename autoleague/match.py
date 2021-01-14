@@ -44,6 +44,7 @@ class MatchDetails:
     orange: List[BotID] = field(default_factory=list)
     map: str = ""
     result: Optional[MatchResult] = None
+    replay_id: Optional[str] = None
 
     def to_config(self, bots: Mapping[BotID, BotConfigBundle]) -> MatchConfig:
         match_config = read_match_config_from_file(PackageFiles.default_match_config)

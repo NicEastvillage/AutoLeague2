@@ -10,14 +10,21 @@ from watchdog.observers import Observer
 
 
 class ReplayPreference(Enum):
-    SAVE = 'save'  # save to the default replays directory
-    CALCULATED_GG = 'calculated_gg'  # save locally and upload to https://calculated.gg/
+    NONE = 'none'  # Ignore replays
+    SAVE = 'save'  # Save in replays directory
+    CALCULATED_GG = 'calculated_gg'  # Save in replays directory and also upload to https://calculated.gg/
 
 
 def upload_to_calculated_gg(replay_path: Path):
     with open(replay_path, 'rb') as f:
         response = requests.post('https://calculated.gg/api/upload', files={'replays': f})
         print(f'upload response to {replay_path.name}: {response}')
+
+
+@dataclass
+class ReplayData:
+    replay_path: Path = None
+    replay_id: str = None
 
 
 def parse_replay_id(replay_path: Path) -> str:
@@ -31,13 +38,21 @@ class ReplayMonitor(Metric):
 
     replay_preference: ReplayPreference
 
+    replay_path: Path = None
     replay_id: str = None
     observer: Observer = None
 
     def to_json(self) -> Dict[str, Any]:
         return {
             'replay_id': self.replay_id,
+            'replay_path': self.replay_path,
         }
+
+    def replay_data(self) -> ReplayData:
+        return ReplayData(
+            replay_id=self.replay_id,
+            replay_path=self.replay_path,
+        )
 
     def ensure_monitoring(self):
         if self.observer is not None:
@@ -52,6 +67,7 @@ class ReplayMonitor(Metric):
                 if replay_monitor.replay_preference == ReplayPreference.CALCULATED_GG:
                     upload_to_calculated_gg(replay_path)
                 replay_monitor.replay_id = parse_replay_id(replay_path)
+                replay_monitor.replay_path = replay_path
 
             def on_created(self, event):
                 pass
