@@ -1,5 +1,6 @@
 body {
     font-family: "Helvetica", "Verdana", sans-serif;
+    color: #C8CCD0;
 }
 
 h1 {
@@ -15,17 +16,17 @@ p.right {
 }
 
 .odd {
-    background: #ffffff;
+    background: #2D334D;
 }
 
 .even {
-    background: #f2f2f2;
+    background: #353C5A;
 }
 
 #matches-container {
     width: 900px;
     padding: 8px;
-    background: #ffffff;
+    background: #2D334D;
 }
 
 #matches-table {

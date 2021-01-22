@@ -1,5 +1,6 @@
 body {
     font-family: "Helvetica", "Verdana", sans-serif;
+    color: #C8CCD0
 }
 
 h1 {
@@ -15,16 +16,16 @@ p.right {
 }
 
 .odd {
-    background: #ffffff;
+    background: #2D334D;
 }
 
 .even {
-    background: #f2f2f2;
+    background: #353C5A;
 }
 
 #ranks-container {
     width: 420px;
-    background: white;
+    background: #2D334D;
     padding: 8px;
 }
 
@@ -37,7 +38,7 @@ p.right {
     grid-template-rows: auto;
     grid-template-areas:
             "number name mmr wins tickets";
-    border: 1px none #bbbbbb;
+    border: 1px none #C8CCD0;
     border-bottom-style: solid;
 }
 
@@ -89,6 +90,6 @@ p.right {
 .rank-item .rank-tickets {
     grid-area: tickets;
     margin-left: 10px;
-    background: #888888;
+    background: #FFF05A;
     min-height: 10px;
 }
