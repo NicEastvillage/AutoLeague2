@@ -24,7 +24,7 @@ p.right {
 }
 
 #ranks-container {
-    width: 420px;
+    width: 460px;
     background: #2D334D;
     padding: 8px;
 }
@@ -34,7 +34,7 @@ p.right {
 
 .rank-table-header {
     display: grid;
-    grid-template-columns: 62px auto 44px 56px 66px;
+    grid-template-columns: 62px auto 76px 56px 66px;
     grid-template-rows: auto;
     grid-template-areas:
             "number name mmr wins tickets";
@@ -50,10 +50,10 @@ p.right {
 
 .rank-item {
     display: grid;
-    grid-template-columns: 36px 26px auto 44px 56px 66px;
+    grid-template-columns: 36px 26px auto 38px 38px 56px 66px;
     grid-template-rows: auto;
     grid-template-areas:
-            "number movement name mmr wins tickets";
+            "number movement name mmr mmr-incr wins tickets";
     align-items: center;
 }
 
@@ -75,7 +75,7 @@ p.right {
 
 .rank-item .rank-wins {
     grid-area: wins;
-    justify-content:center;
+    justify-content: center;
     display:flex;
 }
 
@@ -85,6 +85,12 @@ p.right {
 
 .rank-item .rank-mmr {
     grid-area: mmr;
+    margin-right: 2px;
+}
+
+.rank-item .rank-mmr-incr {
+    grid-area: mmr-incr;
+    color: #7a7a80;
 }
 
 .rank-item .rank-tickets {

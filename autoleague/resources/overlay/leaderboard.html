@@ -60,6 +60,10 @@
                             )
                         ) + ".png";
 
+                        let mmr_incr = bot.old_mmr == null ? "" : (
+                            (bot.mmr - bot.old_mmr >= 0 ? "(+" : "(") + (bot.mmr - bot.old_mmr) + ")"
+                        );
+
                         // Win indicators
                         let win_indicators = bot.wins
                             .map(win => win ? "images/win.png" : "images/loss.png")
@@ -75,6 +79,7 @@
     <div class="rank-movement"><img src="${rank_img_src}"/></div>
     <div class="rank-bot-name">${bot.bot_id}</div>
     <div class="rank-mmr"><p class="center">${bot.mmr}</p></div>
+    <div class="rank-mmr-incr"><p class="center">${mmr_incr}</p></div>
     <div class="rank-wins">${win_indicators}</div>
     <div class="rank-tickets" style="width: ${tickets_width}px"></div>
 </div>`

@@ -68,13 +68,16 @@ def make_summary(ld: LeagueDir, count: int):
         for i, (bot, mrr, sigma) in enumerate(cur_rankings):
             cur_rank = i + 1
             old_rank = None
-            for j, (other_bot, _, _) in enumerate(old_rankings):
+            old_mmr = None
+            for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
                 if bot == other_bot:
                     old_rank = j + 1
+                    old_mmr = other_mrr
                     break
             bots_by_rank.append({
                 "bot_id": defmt_bot_name(bot),
                 "mmr": mrr,
+                "old_mmr": old_mmr,
                 "sigma": sigma,
                 "cur_rank": cur_rank,
                 "old_rank": old_rank,
