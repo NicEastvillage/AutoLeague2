@@ -9,6 +9,7 @@ from rlbottraining.exercise_runner import run_playlist, RenderPolicy
 from bots import BotID
 from match import MatchDetails, MatchResult
 from match_exercise import MatchExercise, MatchGrader
+from overlay import make_overlay
 from paths import LeagueDir
 from replays import ReplayPreference, ReplayMonitor, ReplayData
 
@@ -20,6 +21,9 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
     """
 
     with setup_manager_context() as setup_manager:
+
+        # Expose data to overlay
+        make_overlay(match_details, bots)
 
         # Prepare the match exercise
         print(f"Starting match: {match_details.blue} vs {match_details.orange}. Waiting for match to finish...")

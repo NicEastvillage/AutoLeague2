@@ -7,13 +7,12 @@ from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, make_timestamp
 from match_runner import run_match
-from overlay import OverlayData
+from overlay import make_summary
 from paths import LeagueDir
 from prompt import prompt_yes_no
 from ranking_system import RankingSystem
 from replays import ReplayPreference
 from settings import PersistentSettings
-from summary import make_summary
 
 
 def main():
@@ -233,7 +232,6 @@ def parse_subcommand_match(args: List[str]):
 
         # Run
         match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
-        OverlayData.make_and_save(match, bots)
         result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
         rank_sys.update(match, result)
         match.result = result
