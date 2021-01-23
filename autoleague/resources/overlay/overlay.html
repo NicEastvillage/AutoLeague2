@@ -21,11 +21,16 @@
         </div>
     </div>
 </div>
+<div id="tipcard">
+    <div id="tip-title"></div>
+    <div id="tip-text"></div>
+</div>
 
 <script>
     const blueTeamName = $("#team-name-blue");
     const orangeTeamName = $("#team-name-orange");
     let previousData = null;
+    let tipCards;
 
     setInterval(function () {
         $.get("current_match.json", function (json) {
@@ -41,9 +46,46 @@
                 blueTeamName.html((data.blue[0].name + "<br>" + data.blue[1].name + "<br>" + data.blue[2].name).replace(" ", "&nbsp"));
                 orangeTeamName.html((data.orange[0].name + "<br>" + data.orange[1].name + "<br>" + data.orange[2].name).replace(" ", "&nbsp"));
 
+                // Find all possible tip cards
+                tipCards = [];
+				for (let bots of [data.blue, data.orange]) {
+                    for (let bot of bots) {
+                        if (bot.developer != null && bot.developer == "The RLBot community")
+                            // The developer has not added details about their bot
+                            continue
+                        if (bot.developer != null && bot.language != null)
+                            tipCards.push({
+                                title: `${bot.name.trim()}`,
+                                text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`
+                            });
+                        if (bot.description != null && bot.description.trim().length)
+                            tipCards.push({
+                                title: `${bot.name.trim()}`,
+                                text: bot.description.trim(),
+                            });
+                        if (bot.fun_fact != null && bot.fun_fact.trim().length)
+                            tipCards.push({
+                                title: `Fun fact about ${bot.name.trim()}`,
+                                text: bot.fun_fact.trim(),
+                            });
+                    }
+                }
             }
         });
     }, 1000);
+
+    const tipCardEl = document.getElementById("tipcard");
+    const tipTitleEl = document.getElementById("tip-title");
+    const tipTextEl = document.getElementById("tip-text");
+    setInterval(function () {
+        if (!tipCards || tipCards.length == 0)
+            return;
+        const tipCard = tipCards[Math.floor(Math.random() * tipCards.length)];
+        tipTitleEl.innerText = tipCard.title;
+        tipTextEl.innerText = tipCard.text;
+        tipCardEl.setAttribute("visible", "");
+        setTimeout(_ => tipCardEl.removeAttribute("visible"), 14*1000);
+    }, 68*1000);
 </script>
 
 </body>

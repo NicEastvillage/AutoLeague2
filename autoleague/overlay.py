@@ -17,12 +17,17 @@ def make_overlay(match: MatchDetails, bots: Mapping[BotID, BotConfigBundle]):
     Make a `current_match.json` file which contains the details about the current
     match and its participants.
     """
+
     def bot_data(config: BotConfigBundle):
         return {
             "name": config.name,
             "config_path": str(config.config_path),
             "logo_path": str(logo(config)) if logo(config) else None,
-            # TODO description, fun fact, language, developer
+            "developer": config.base_agent_config.get("Details", "developer"),
+            "description": config.base_agent_config.get("Details", "description"),
+            "fun_fact": config.base_agent_config.get("Details", "fun_fact"),
+            "github": config.base_agent_config.get("Details", "github"),
+            "language": config.base_agent_config.get("Details", "language"),
         }
 
     overlay = {
@@ -46,7 +51,7 @@ def make_summary(ld: LeagueDir, count: int):
     # ========== Matches ==========
 
     matches = []
-    bot_wins = defaultdict(list)   # Maps bots to list of booleans, where true=win and false=loss
+    bot_wins = defaultdict(list)  # Maps bots to list of booleans, where true=win and false=loss
 
     if count > 0:
         latest_matches = MatchDetails.latest(ld, count)
