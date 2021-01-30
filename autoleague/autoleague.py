@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from typing import List
 
-from bots import load_all_bots, defmt_bot_name
+from bots import load_all_bots, defmt_bot_name, print_details
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, make_timestamp
@@ -28,6 +28,7 @@ Usage:
     autoleague setup league <league_dir>        Setup a league in <league_dir>
     autoleague bot list                         Print list of all known bots
     autoleague bot test <bot_id>                Run test match using a specific bot
+    autoleague bot details <bot_id>             Print details about the given bot
     autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
     autoleague ticket list                      Print list of number of tickets for all bots
@@ -91,13 +92,15 @@ def parse_subcommand_bot(args: List[str]):
     assert args[0] == "bot"
     help_msg = """Usage:
     autoleague bot list                       Print list of all known bots
-    autoleague bot test <bot_id>              Run test match using a specific bot"""
+    autoleague bot test <bot_id>              Run test match using a specific bot
+    autoleague bot details <bot_id>           Print details about the given bot"""
+
+    ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
     elif args[1] == "list" and len(args) == 2:
-        ld = require_league_dir()
 
         bot_configs = load_all_bots(ld)
         rank_sys = RankingSystem.load(ld)
@@ -109,7 +112,7 @@ def parse_subcommand_bot(args: List[str]):
                 .union(set(ticket_sys.tickets.keys())))
 
         print(f"{'': <22} c r t")
-        for bot in bot_ids:
+        for bot in sorted(bot_ids):
             c = "x" if bot in bot_configs else " "
             r = "x" if bot in rank_sys.ratings else " "
             t = "x" if bot in ticket_sys.tickets else " "
@@ -118,7 +121,6 @@ def parse_subcommand_bot(args: List[str]):
     elif args[1] == "test" and len(args) == 3:
 
         # Load
-        ld = require_league_dir()
         bots = load_all_bots(ld)
         bot = args[2]
         if bot not in bots:
@@ -129,6 +131,17 @@ def parse_subcommand_bot(args: List[str]):
         match = MatchMaker.make_test_match(bot)
         run_match(ld, match, bots, ReplayPreference.NONE)
         print(f"Test of '{bot}' complete")
+
+    elif args[1] == "details" and len(args) == 3:
+
+        bots = load_all_bots(ld)
+        bot = args[2]
+
+        if bot not in bots:
+            print(f"Could not find the config file of '{bot}'")
+            return
+
+        print_details(bots[bot])
 
     else:
         print(help_msg)

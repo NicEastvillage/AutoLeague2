@@ -51,5 +51,29 @@ def logo(config: BotConfigBundle) -> Path:
     """
     Returns the path to the given bot or None if it does not exists.
     """
-    logo_path = Path(config.config_directory) / "logo.png"
+    logo_path = Path(config.config_directory) / (config.base_agent_config.get("Locations", "logo_file") or "logo.png")
     return logo_path if logo_path.exists() and logo_path.is_file() else None
+
+
+def print_details(config: BotConfigBundle):
+    """
+    Print all details about a bot
+    """
+
+    name = config.name
+    developer = config.base_agent_config.get("Details", "developer")
+    description = config.base_agent_config.get("Details", "description")
+    fun_fact = config.base_agent_config.get("Details", "fun_fact")
+    github = config.base_agent_config.get("Details", "github")
+    language = config.base_agent_config.get("Details", "language")
+    config_path = str(config.config_path)
+    logo_path = str(logo(config)) if logo(config) else None
+
+    print(f"Bot name:     {name}")
+    print(f"Developer:    {developer}")
+    print(f"Description:  {description}")
+    print(f"Fun fact:     {fun_fact}")
+    print(f"Github:       {github}")
+    print(f"Language:     {language}")
+    print(f"Config path:  {config_path}")
+    print(f"Logo path:    {logo_path}")
