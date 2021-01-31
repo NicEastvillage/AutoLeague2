@@ -38,7 +38,7 @@ Usage:
     autoleague match run                        Run a standard 3v3 soccer match
     autoleague match undo                       Undo the last match
     autoleague match list [n]                   Show the latest matches
-    autoleague summary <n>                      Create a summary of the last <n> matches
+    autoleague summary [n]                      Create a summary of the last [n] matches
     autoleague help                             Print this message"""
 
     if len(args) == 0 or args[0] == "help":
@@ -53,9 +53,9 @@ Usage:
         parse_subcommand_rank(args)
     elif args[0] == "match":
         parse_subcommand_match(args)
-    elif args[0] == "summary":
+    elif args[0] == "summary" and (1 <= len(args) <= 2):
 
-        count = int(args[1])
+        count = int(args[1]) if len(args) == 2 else 0
         ld = require_league_dir()
         make_summary(ld, count)
         print(f"Created summary of the last {count} matches")
@@ -224,7 +224,10 @@ def parse_subcommand_rank(args: List[str]):
 
     elif args[1] == "list" and len(args) == 2:
 
+        bots = load_all_bots(ld)
+
         rank_sys = RankingSystem.load(ld)
+        rank_sys.ensure_all(list(bots.keys()))
         rank_sys.print_ranks_and_mmr()
 
     else:
@@ -290,9 +293,9 @@ def parse_subcommand_match(args: List[str]):
                 MatchDetails.undo(ld)
 
                 # New latest match
-                new_latest_match = MatchDetails.latest(ld, 1)[0]
+                new_latest_match = MatchDetails.latest(ld, 1)
                 if new_latest_match:
-                    print(f"Reverted to {new_latest_match.name}")
+                    print(f"Reverted to {new_latest_match[0].name}")
                 else:
                     print("Reverted to beginning of league (no matches left)")
 

@@ -4,7 +4,7 @@ from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, logo, defmt_bot_name
+from bots import BotID, logo, defmt_bot_name, load_all_bots
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
@@ -72,11 +72,12 @@ def make_summary(ld: LeagueDir, count: int):
 
     # ========= Ranks/Ratings =========
 
+    bots = load_all_bots(ld)
     bots_by_rank = []
 
     if count <= 0:
         # When count == 0 we just show the current rankings
-        cur_rankings = RankingSystem.latest(ld, 1)[0].as_sorted_list()
+        cur_rankings = RankingSystem.latest(ld, 1)[0].ensure_all(list(bots.keys())).as_sorted_list()
         for i, (bot, mrr, sigma) in enumerate(cur_rankings):
             cur_rank = i + 1
             bots_by_rank.append({
@@ -93,12 +94,12 @@ def make_summary(ld: LeagueDir, count: int):
         # Determine current rank and their to N matches ago
         n_rankings = RankingSystem.latest(ld, count)
         old_rankings = n_rankings[0].as_sorted_list()
-        cur_rankings = n_rankings[-1].as_sorted_list()
+        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
         for i, (bot, mrr, sigma) in enumerate(cur_rankings):
             cur_rank = i + 1
             old_rank = None
-            old_mmr = None
+            old_mmr = 33
             for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
                 if bot == other_bot:
                     old_rank = j + 1

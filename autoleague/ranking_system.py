@@ -28,6 +28,15 @@ class RankingSystem:
             self.ratings[bot] = Rating()
             return self.ratings[bot]
 
+    def ensure_all(self, bots: List[BotID]) -> 'RankingSystem':
+        """
+        Ensures that all bots have a rating
+        """
+        for bot in bots:
+            self.get(bot)
+
+        return self
+
     def get_mmr(self, bot: BotID) -> int:
         """
         Due to the uncertainty built into TrueSkills ratings, it is not recommended using the mean (mu) as
@@ -108,9 +117,9 @@ class RankingSystem:
         Returns the latest N states of the ranking system
         """
         if any(ld.rankings.iterdir()):
-            return [RankingSystem.read(path) for path in list(ld.rankings.iterdir())[-count:]]
+            return [RankingSystem()] + [RankingSystem.read(path) for path in list(ld.rankings.iterdir())[-count:]]
         else:
-            return []
+            return [RankingSystem()]
 
     @staticmethod
     def undo(ld: LeagueDir):

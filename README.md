@@ -32,6 +32,6 @@ rank list                           Print list of the current leaderboard
 match run                           Run a standard 3v3 soccer match
 match undo                          Undo the last match
 match list [n]                      Show the latest matches
-summary <n>                         Create a summary of the last <n> matches
+summary [n]                         Create a summary of the last [n] matches
 help                                Print this message
 ```
