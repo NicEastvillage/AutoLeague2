@@ -22,6 +22,8 @@ AutoLeague2 is a continuation of RLBot's [AutoLeaguePlay](https://github.com/RLB
 setup league <league_dir>           Setup a league in <league_dir>
 bot list                            Print list of all known bots
 bot test <bot_id>                   Run test match using a specific bot
+bot details <bot_id>                Print details about the given bot
+bot unzip                           Unzip all bots in the bot directory
 ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
 ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
 ticket list                         Print list of number of tickets for all bots

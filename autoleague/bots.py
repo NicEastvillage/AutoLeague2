@@ -1,5 +1,7 @@
+import os
 from pathlib import Path
 from typing import Dict, Mapping
+from zipfile import ZipFile
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
@@ -77,3 +79,20 @@ def print_details(config: BotConfigBundle):
     print(f"Language:     {language}")
     print(f"Config path:  {config_path}")
     print(f"Logo path:    {logo_path}")
+
+
+def unzip_all_bots(ld: LeagueDir):
+    """
+    Unzip all zip files in the bot directory
+    """
+    for root, dirs, files in os.walk(ld.bots, topdown=True):
+        dirs[:] = [d for d in dirs]
+        for file in files:
+            if ".zip" in file:
+                path = os.path.join(root, file)
+                with ZipFile(path, "r") as zipObj:
+                    # Extract all the contents of zip file in current directory
+                    print(f"Extracting {path}")
+                    folder_name = os.path.splitext(os.path.basename(path))[0]
+                    target_dir = os.path.join(root, folder_name)
+                    zipObj.extractall(path=target_dir)
