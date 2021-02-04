@@ -83,45 +83,34 @@ def make_summary(ld: LeagueDir, count: int):
     bots_by_rank = []
 
     if count <= 0:
-        # When count == 0 we just show the current rankings
+        # Old rankings and current rankings is the same, but make sure all bots have a rank currently
+        old_rankings = RankingSystem.load(ld).as_sorted_list()
         cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
-        for i, (bot, mrr, sigma) in enumerate(cur_rankings):
-            cur_rank = i + 1
-            bots_by_rank.append({
-                "bot_id": defmt_bot_name(bot),
-                "mmr": mrr,
-                "sigma": sigma,
-                "cur_rank": cur_rank,
-                "old_rank": cur_rank,
-                "tickets": tickets.get(bot),
-                "wins": [],
-            })
-
     else:
         # Determine current rank and their to N matches ago
         n_rankings = RankingSystem.latest(ld, count)
         old_rankings = n_rankings[0].as_sorted_list()
         cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
-        for i, (bot, mrr, sigma) in enumerate(cur_rankings):
-            cur_rank = i + 1
-            old_rank = None
-            old_mmr = 33
-            for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
-                if bot == other_bot:
-                    old_rank = j + 1
-                    old_mmr = other_mrr
-                    break
-            bots_by_rank.append({
-                "bot_id": defmt_bot_name(bot),
-                "mmr": mrr,
-                "old_mmr": old_mmr,
-                "sigma": sigma,
-                "cur_rank": cur_rank,
-                "old_rank": old_rank,
-                "tickets": tickets.get(bot),
-                "wins": bot_wins[bot],
-            })
+    for i, (bot, mrr, sigma) in enumerate(cur_rankings):
+        cur_rank = i + 1
+        old_rank = None
+        old_mmr = 33
+        for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
+            if bot == other_bot:
+                old_rank = j + 1
+                old_mmr = other_mrr
+                break
+        bots_by_rank.append({
+            "bot_id": defmt_bot_name(bot),
+            "mmr": mrr,
+            "old_mmr": old_mmr,
+            "sigma": sigma,
+            "cur_rank": cur_rank,
+            "old_rank": old_rank,
+            "tickets": tickets.get(bot),
+            "wins": bot_wins[bot],
+        })
 
     summary["bots_by_rank"] = bots_by_rank
 
