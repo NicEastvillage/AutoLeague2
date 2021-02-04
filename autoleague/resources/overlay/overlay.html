@@ -43,8 +43,11 @@
                 }
                 previousData = json;
 
-                blueTeamName.html((data.blue[0].name + "<br>" + data.blue[1].name + "<br>" + data.blue[2].name).replace(" ", "&nbsp"));
-                orangeTeamName.html((data.orange[0].name + "<br>" + data.orange[1].name + "<br>" + data.orange[2].name).replace(" ", "&nbsp"));
+                let blueNames = data.blue.map(bot => `${bot.name} [${bot.mmr}]`)
+                let orangeNames = data.orange.map(bot => `${bot.name} [${bot.mmr}]`)
+
+                blueTeamName.html(blueNames.join("<br>").replace(" ", "&nbsp"));
+                orangeTeamName.html(orangeNames.join("<br>").replace(" ", "&nbsp"));
 
                 // Find all possible tip cards
                 tipCards = [];

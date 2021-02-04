@@ -23,7 +23,7 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
     with setup_manager_context() as setup_manager:
 
         # Expose data to overlay
-        make_overlay(match_details, bots)
+        make_overlay(ld, match_details, bots)
 
         # Prepare the match exercise
         print(f"Starting match: {match_details.blue} vs {match_details.orange}. Waiting for match to finish...")

@@ -4,7 +4,7 @@ from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, logo, defmt_bot_name, load_all_bots
+from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
@@ -12,13 +12,18 @@ from paths import PackageFiles, LeagueDir
 from ranking_system import RankingSystem
 
 
-def make_overlay(match: MatchDetails, bots: Mapping[BotID, BotConfigBundle]):
+def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotConfigBundle]):
     """
     Make a `current_match.json` file which contains the details about the current
     match and its participants.
     """
 
-    def bot_data(config: BotConfigBundle):
+    rankings = RankingSystem.load(ld).ensure_all(list(bots.keys()))
+    rank_list = rankings.as_sorted_list()
+
+    def bot_data(bot_id):
+        config = bots[bot_id]
+        rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
         return {
             "name": config.name,
             "config_path": str(config.config_path),
@@ -28,11 +33,13 @@ def make_overlay(match: MatchDetails, bots: Mapping[BotID, BotConfigBundle]):
             "fun_fact": config.base_agent_config.get("Details", "fun_fact"),
             "github": config.base_agent_config.get("Details", "github"),
             "language": config.base_agent_config.get("Details", "language"),
+            "rank": rank,
+            "mmr": mmr,
         }
 
     overlay = {
-        "blue": [bot_data(bots[bot_id]) for bot_id in match.blue],
-        "orange": [bot_data(bots[bot_id]) for bot_id in match.orange]
+        "blue": [bot_data(bot_id) for bot_id in match.blue],
+        "orange": [bot_data(bot_id) for bot_id in match.orange]
     }
 
     with open(PackageFiles.overlay_current_match, 'w') as f:
@@ -77,7 +84,7 @@ def make_summary(ld: LeagueDir, count: int):
 
     if count <= 0:
         # When count == 0 we just show the current rankings
-        cur_rankings = RankingSystem.latest(ld, 1)[0].ensure_all(list(bots.keys())).as_sorted_list()
+        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
         for i, (bot, mrr, sigma) in enumerate(cur_rankings):
             cur_rank = i + 1
             bots_by_rank.append({

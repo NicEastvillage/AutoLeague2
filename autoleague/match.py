@@ -82,11 +82,8 @@ class MatchDetails:
         """
         Returns the match details of the n latest matches
         """
-        if any(ld.matches.iterdir()):
-            # Assume last match file is the newest, since they are prefixed with a time stamp
-            return [MatchDetails.read(path) for path in list(ld.matches.iterdir())[-count:]]
-        else:
-            return []
+        # Assume last match file is the newest, since they are prefixed with a time stamp
+        return [MatchDetails.read(path) for path in list(ld.matches.iterdir())[-count:]]
 
     @staticmethod
     def undo(ld: LeagueDir):

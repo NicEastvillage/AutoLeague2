@@ -116,10 +116,12 @@ class RankingSystem:
         """
         Returns the latest N states of the ranking system
         """
-        if any(ld.rankings.iterdir()):
-            return [RankingSystem()] + [RankingSystem.read(path) for path in list(ld.rankings.iterdir())[-count:]]
+        rankings = [RankingSystem.read(path) for path in list(ld.rankings.iterdir())[-count:]]
+        if len(rankings) < count:
+            # Prepend empty rankings if more were requested
+            return [RankingSystem()] + rankings
         else:
-            return [RankingSystem()]
+            return rankings
 
     @staticmethod
     def undo(ld: LeagueDir):
