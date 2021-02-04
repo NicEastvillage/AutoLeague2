@@ -95,7 +95,7 @@ def make_summary(ld: LeagueDir, count: int):
     for i, (bot, mrr, sigma) in enumerate(cur_rankings):
         cur_rank = i + 1
         old_rank = None
-        old_mmr = 33
+        old_mmr = None
         for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
             if bot == other_bot:
                 old_rank = j + 1
@@ -108,7 +108,7 @@ def make_summary(ld: LeagueDir, count: int):
             "sigma": sigma,
             "cur_rank": cur_rank,
             "old_rank": old_rank,
-            "tickets": tickets.get(bot),
+            "tickets": tickets.get(bot) or tickets.new_bot_ticket_count,
             "wins": bot_wins[bot],
         })
 
