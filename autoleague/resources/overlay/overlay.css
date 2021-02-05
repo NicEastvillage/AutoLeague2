@@ -7,7 +7,7 @@
 
 #header-container {
     display: grid;
-    grid-template-columns: auto 354px auto;
+    grid-template-columns: auto 346px auto;
     grid-template-rows: auto;
     grid-template-areas:
             "blue . orange";
@@ -32,7 +32,7 @@
     font-size: 22px;
     font-weight: bold;
     font-family: "Helvetica", "Verdana", sans-serif;
-    color: white;
+    color: #e6e9ec;
     margin: 0;
     text-align: center;
     position: absolute;
