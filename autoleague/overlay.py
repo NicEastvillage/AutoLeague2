@@ -88,7 +88,7 @@ def make_summary(ld: LeagueDir, count: int):
         cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
     else:
         # Determine current rank and their to N matches ago
-        n_rankings = RankingSystem.latest(ld, count)
+        n_rankings = RankingSystem.latest(ld, count + 1)
         old_rankings = n_rankings[0].as_sorted_list()
         cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
