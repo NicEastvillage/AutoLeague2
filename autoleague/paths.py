@@ -40,6 +40,7 @@ class LeagueDir:
         self.rankings = self._league_dir / "rankings"
         self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
+        self.bot_summary = self._league_dir / "bot_summary.json"
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):

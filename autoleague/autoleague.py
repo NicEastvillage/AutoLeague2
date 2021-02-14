@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from typing import List
 
+from bot_summary import create_bot_summary
 from bots import load_all_bots, defmt_bot_name, print_details, unzip_all_bots
 from leaguesettings import LeagueSettings
 from match import MatchDetails
@@ -30,6 +31,7 @@ Usage:
     autoleague bot test <bot_id>                Run test match using a specific bot
     autoleague bot details <bot_id>             Print details about the given bot
     autoleague bot unzip                        Unzip all bots in the bot directory
+    autoleague bot summary                      Create json file with bot descriptions
     autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
     autoleague ticket list                      Print list of number of tickets for all bots
@@ -95,7 +97,8 @@ def parse_subcommand_bot(args: List[str]):
     autoleague bot list                       Print list of all known bots
     autoleague bot test <bot_id>              Run test match using a specific bot
     autoleague bot details <bot_id>           Print details about the given bot
-    autoleague bot unzip                      Unzip all bots in the bot directory"""
+    autoleague bot unzip                      Unzip all bots in the bot directory
+    autoleague bot summary                    Create json file with bot descriptions"""
 
     ld = require_league_dir()
 
@@ -149,6 +152,11 @@ def parse_subcommand_bot(args: List[str]):
 
         print("Unzipping all bots:")
         unzip_all_bots(ld)
+
+    elif args[1] == "summary" and len(args) == 2:
+
+        create_bot_summary(ld)
+        print("Bot summary created")
 
     else:
         print(help_msg)

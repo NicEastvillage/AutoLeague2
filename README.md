@@ -24,6 +24,7 @@ bot list                            Print list of all known bots
 bot test <bot_id>                   Run test match using a specific bot
 bot details <bot_id>                Print details about the given bot
 bot unzip                           Unzip all bots in the bot directory
+bot summary                         Create json file with bot descriptions
 ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
 ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
 ticket list                         Print list of number of tickets for all bots
