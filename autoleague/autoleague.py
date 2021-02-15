@@ -74,7 +74,7 @@ def parse_subcommand_setup(args: List[str]):
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "league" and len(args) == 2:
+    elif args[1] == "league" and len(args) == 3:
 
         settings = PersistentSettings.load()
         league_path = Path(args[2])
