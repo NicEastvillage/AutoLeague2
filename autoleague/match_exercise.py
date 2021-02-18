@@ -61,8 +61,13 @@ class MatchGrader(Grader):
 
         blue_goals = sum(packet.game_cars[i].score_info.goals for i in range(packet.num_cars) if packet.game_cars[i].team == 0)
         orange_goals = sum(packet.game_cars[i].score_info.goals for i in range(packet.num_cars) if packet.game_cars[i].team == 1)
+
+        print(f"DEBUG Scores from packet: {packet.teams[0].score}-{packet.teams[1].score}. Alternative summed scores: {blue_goals}-{orange_goals}")
+
         blue_goals = packet.teams[0].score if blue_goals > 0 else blue_goals
         orange_goals = packet.teams[1].score if orange_goals > 0 else orange_goals
+
+        print(f"DEBUG Fixed scores: {blue_goals}-{orange_goals}")
 
         self.match_result = MatchResult(
             blue_goals=blue_goals,
