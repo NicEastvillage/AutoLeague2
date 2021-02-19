@@ -51,27 +51,9 @@ class MatchGrader(Grader):
             return None
 
     def fetch_match_score(self, packet: GameTickPacket):
-        # There's a bug in the framework here so we have to be careful.
-        # packet.teams[i].score can be wrong if the team did not score any goals. It will be the score of the previous
-        # match. We can instead sum the goals of the players, but this will miss goals where none from a team touched
-        # the ball. E.g. "BLUE scored"
-        # So instead we check if summed score is not 0. If so, packet.teams[i].score must have been reset correctly,
-        # and we can use that without problems. If summed score is 0, we can't know anything for sure...
-        # But let's assume no match solely has non-touch goals. Then summed score is correct.
-
-        blue_goals = sum(packet.game_cars[i].score_info.goals for i in range(packet.num_cars) if packet.game_cars[i].team == 0)
-        orange_goals = sum(packet.game_cars[i].score_info.goals for i in range(packet.num_cars) if packet.game_cars[i].team == 1)
-
-        print(f"DEBUG Scores from packet: {packet.teams[0].score}-{packet.teams[1].score}. Alternative summed scores: {blue_goals}-{orange_goals}")
-
-        blue_goals = packet.teams[0].score if blue_goals > 0 else blue_goals
-        orange_goals = packet.teams[1].score if orange_goals > 0 else orange_goals
-
-        print(f"DEBUG Fixed scores: {blue_goals}-{orange_goals}")
-
         self.match_result = MatchResult(
-            blue_goals=blue_goals,
-            orange_goals=orange_goals,
+            blue_goals=packet.teams[0].score,
+            orange_goals=packet.teams[1].score,
             player_scores={
                 fmt_bot_name(packet.game_cars[i].name): PlayerScore(
                     points=packet.game_cars[i].score_info.score,
