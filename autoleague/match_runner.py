@@ -14,7 +14,6 @@ from match_exercise import MatchExercise, MatchGrader
 from overlay import make_overlay
 from paths import LeagueDir
 from replays import ReplayPreference, ReplayMonitor, ReplayData
-from popup import confirm_match_result
 
 
 def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, BotConfigBundle],
@@ -66,5 +65,5 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
                         except:
                             pass
 
-                match_result = confirm_match_result(exercise_result.exercise.grader.match_result)
+                match_result = exercise_result.exercise.grader.match_result
                 return match_result, replay_data
