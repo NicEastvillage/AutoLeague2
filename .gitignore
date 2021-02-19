@@ -105,6 +105,8 @@ venv.bak/
 
 # IDE
 .idea
+*.iml
+.vscode
 
 # Credentials and tokens
 sheets-api-token.pickle

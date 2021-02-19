@@ -3,8 +3,10 @@ from typing import Mapping, Tuple, Optional
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 from rlbot.setup_manager import setup_manager_context
-from rlbot.training.training import Fail
-from rlbottraining.exercise_runner import run_playlist, RenderPolicy
+from rlbot.training.training import Fail, run_exercises
+from rlbottraining.exercise_runner import run_playlist, RenderPolicy, use_or_create, apply_render_policy
+from rlbottraining.history.exercise_result import ExerciseResult
+from rlbottraining.training_exercise_adapter import TrainingExerciseAdapter
 
 from bots import BotID
 from match import MatchDetails, MatchResult
@@ -41,23 +43,28 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
         setup_manager.early_start_seconds = 10
 
         # For loop, but should only run exactly once
-        for exercise_result in run_playlist([match], setup_manager=setup_manager,
-                                            render_policy=RenderPolicy.DEFAULT):
+        with use_or_create(setup_manager, setup_manager_context) as setup_manager:
+            wrapped_exercises = [TrainingExerciseAdapter(match)]
 
-            replay_data = None
+            for rlbot_result in run_exercises(setup_manager, wrapped_exercises, 4, reload_agent=False):
+                exercise_result = ExerciseResult(
+                    grade=rlbot_result.grade,
+                    exercise=rlbot_result.exercise.exercise,  # unwrap the TrainingExerciseAdapter.
+                    reproduction_info=None
+                )
 
-            # Warn if no replay was found
-            replay_data = exercise_result.exercise.grader.replay_monitor.replay_data()
-            if isinstance(exercise_result.grade, Fail) and replay_data.replay_id is None:
-                print(f"WARNING: No replay was found for the match '{match_details.name}'.")
-            else:
-                if replay_preference != ReplayPreference.NONE and replay_data.replay_path is not None:
-                    try:
-                        dst = ld.replays / f"{replay_data.replay_id}.replay"
-                        shutil.copy(replay_data.replay_path, dst)
-                        print("Replay successfully copied to replays directory")
-                    except:
-                        pass
+                # Warn if no replay was found
+                replay_data = exercise_result.exercise.grader.replay_monitor.replay_data()
+                if isinstance(exercise_result.grade, Fail) and replay_data.replay_id is None:
+                    print(f"WARNING: No replay was found for the match '{match_details.name}'.")
+                else:
+                    if replay_preference != ReplayPreference.NONE and replay_data.replay_path is not None:
+                        try:
+                            dst = ld.replays / f"{replay_data.replay_id}.replay"
+                            shutil.copy(replay_data.replay_path, dst)
+                            print("Replay successfully copied to replays directory")
+                        except:
+                            pass
 
-            match_result = confirm_match_result(exercise_result.exercise.grader.match_result)
-            return match_result, replay_data
+                match_result = confirm_match_result(exercise_result.exercise.grader.match_result)
+                return match_result, replay_data
