@@ -216,6 +216,8 @@ def parse_subcommand_ticket(args: List[str]):
         league_settings.new_bot_ticket_count = tickets
         league_settings.save(ld)
 
+        print(f"Updated number of tickets given to new bots to {tickets}")
+
     else:
         print(help_msg)
 
