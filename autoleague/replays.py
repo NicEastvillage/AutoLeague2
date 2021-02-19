@@ -87,6 +87,11 @@ class ReplayMonitor(Metric):
 
 
 def get_replay_dir() -> Path:
-    replay_dir = Path.home() / 'documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos'
-    assert replay_dir.exists()
-    return replay_dir
+    possibilities = [
+        Path.home() / 'documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos',
+        Path.home() / 'OneDrive' / 'documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos'
+    ]
+    for path in possibilities:
+        if path.exists():
+            return path
+    raise FileExistsError("Could not find replay directory!")
