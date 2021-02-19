@@ -146,7 +146,7 @@ class MatchMaker:
         Find two balanced teams. The TicketSystem and the RankingSystem to find
         a fair match up between some bots that haven't played for a while.
         """
-        limit = 200
+        limit = 400
 
         tries_left = limit
         while tries_left > 0:
