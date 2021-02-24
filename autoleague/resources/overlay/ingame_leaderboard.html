@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="common.css"/>
+    <link rel="stylesheet" href="ingame_leaderboard.css"/>
+</head>
+<body>
+<div id="leaderboard"></div>
+<script>
+    $(function(){
+      $("#leaderboard").load("leaderboard.html");
+    });
+
+    let summaryData = null;
+    let matchData = null
+
+    updateAll();
+    setInterval(updateAll, 2000);
+
+    function updateAll() {
+        fetchJsonData("summary.json", summaryData, data => summaryData = data);
+        fetchJsonData("current_match.json", matchData, data => matchData = data);
+
+        if (summaryData != null)
+            updateLeaderboard(summaryData, matchData);
+    }
+
+    function fetchJsonData(file, old, func) {
+        $.get(file, function (json) {
+            if (json !== old) {
+                let result;
+                try {
+                    result = JSON.parse(json);
+                } catch (e) {
+                    // When opened as a local file (not in OBS), json is already an object and not a string.
+                    result = json;
+                }
+                func(result)
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,16 +1,23 @@
 const ranksTable = $("#ranks-table");
 
-function updateLeaderboard(data) {
+function updateLeaderboard(summary, current_match) {
 
     // Variables used to format the leaderboard
-    let max_tickets = Math.max(...data.bots_by_rank.map(bot => bot.tickets));
+    let max_tickets = Math.max(...summary.bots_by_rank.map(bot => bot.tickets));
     let odd = true;
 
+    // Find the names of bots playing in the current match
+    let blue_players = current_match == null ? [] : current_match.blue.map(details => details.name)
+    let orange_players = current_match == null ? [] : current_match.orange.map(details => details.name)
+
     // Generate leaderboard table
-    ranksTable.html(data.bots_by_rank
+    ranksTable.html(summary.bots_by_rank
         .map(function (bot) {
-            let odd_class = odd ? "odd" : "even";
+            let background_class = odd ? "odd" : "even";
             odd = !odd;
+
+            background_class = blue_players.includes(bot.bot_id) ? "playing-for-blue" : (
+                orange_players.includes(bot.bot_id) ? "playing-for-orange" : background_class);
 
             // Decide rank movement indicator
             let rank_img_src = "images/rank " + (
@@ -27,8 +34,8 @@ function updateLeaderboard(data) {
 
             let mmrColor = bot.old_mmr == null ? "#FFF05A" : (
                 (bot.mmr - bot.old_mmr >= 0 ?
-                        lerpColor("#7a7a80", "#00f000", Math.min(1.0, (bot.mmr - bot.old_mmr) / 20.0)) :
-                        lerpColor("#7a7a80", "#f00000", Math.min(1.0, (bot.mmr - bot.old_mmr) / -20.0)))
+                    lerpColor("#7a7a80", "#00f000", Math.min(1.0, (bot.mmr - bot.old_mmr) / 20.0)) :
+                    lerpColor("#7a7a80", "#f00000", Math.min(1.0, (bot.mmr - bot.old_mmr) / -20.0)))
             )
 
             // Win indicators
@@ -41,7 +48,7 @@ function updateLeaderboard(data) {
             let tickets_width = 32 * bot.tickets / max_tickets;
 
             return `
-<div class="rank-item ${odd_class}">
+<div class="rank-item ${background_class}">
     <div class="rank-number"><p class="center">${bot.cur_rank}</p></div>
     <div class="rank-movement"><img src="${rank_img_src}"/></div>
     <div class="rank-bot-name">${bot.bot_id}</div>
@@ -50,8 +57,8 @@ function updateLeaderboard(data) {
     <div class="rank-wins">${win_indicators}</div>
     <div class="rank-tickets" style="width: ${tickets_width}px"></div>
 </div>`
-                })
-                .join(""));
+        })
+        .join(""));
 }
 
 function lerpColor(a, b, amount) {
