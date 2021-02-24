@@ -1,36 +1,3 @@
-body {
-    font-family: "Helvetica", "Verdana", sans-serif;
-    color: #C8CCD0
-}
-
-h1 {
-    margin: 4px;
-}
-
-p.center {
-    text-align: center;
-}
-
-p.right {
-    text-align: right;
-}
-
-.odd {
-    background: #2D334D;
-}
-
-.even {
-    background: #353C5A;
-}
-
-#ranks-container {
-    width: 460px;
-    background: #2D334D;
-    padding: 8px;
-}
-
-#ranks-table {
-}
 
 .rank-table-header {
     display: grid;

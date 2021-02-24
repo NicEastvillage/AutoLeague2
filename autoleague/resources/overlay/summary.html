@@ -6,138 +6,41 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="common.css"/>
     <link rel="stylesheet" href="summary.css"/>
 </head>
 <body>
 <div id="body-container">
-    <div id="ranks-container">
-        <h1>Ratings</h1>
-        <div class="rank-table-header">
-            <p>Rank</p>
-            <p>Name</p>
-            <p class="center">MMR</p>
-            <p class="center">Wins</p>
-            <p class="center">Tickets</p>
-        </div>
-        <div id="ranks-table">
-
-        </div>
-    </div>
-
-    <div id="matches-container">
-        <h1>Latest matches</h1>
-        <div id="matches-table">
-
-        </div>
-    </div>
+    <div id="ranks-container"></div>
+    <div id="matches-container"></div>
 </div>
 <script>
-    const ranksTable = $("#ranks-table");
-    const matchesTable = $("#matches-table");
-    let previousData = null;
+    $(function(){
+      $("#ranks-container").load("leaderboard.html");
+      $("#matches-container").load("match_history.html");
+    });
+
+    let summaryData = null;
 
     updateAll();
     setInterval(updateAll, 2000);
 
     function updateAll() {
         $.get("summary.json", function (json) {
-            if (json !== previousData) {
+            if (json !== summaryData) {
                 try {
                     data = JSON.parse(json);
                 } catch (e) {
                     // When opened as a local file (not in OBS), json is already an object and not a string.
                     data = json;
                 }
-                previousData = data;
-                console.log(data);
+                summaryData = data;
 
-                // Variables used to format the rank and matches tables
-                let max_tickets = Math.max(...data.bots_by_rank.map(bot => bot.tickets));
-                var odd = true;
-
-                // Generate rank table
-                ranksTable.html(data.bots_by_rank
-                    .map(function (bot) {
-                        let odd_class = odd ? "odd" : "even";
-                        odd = !odd;
-
-                        // Decide rank movement indicator
-                        let rank_img_src = "images/rank " + (
-                            bot.old_rank == null ? "new" : (
-                                bot.old_rank < bot.cur_rank ? "down" : (
-                                    bot.old_rank > bot.cur_rank ? "up" : "same"
-                                )
-                            )
-                        ) + ".png";
-
-                        let mmrIncr = bot.old_mmr == null ? "(+)" : (
-                            (bot.mmr - bot.old_mmr >= 0 ? "(+" : "(") + (bot.mmr - bot.old_mmr) + ")"
-                        );
-
-                        let mmrColor = bot.old_mmr == null ? "#FFF05A" : (
-                            (bot.mmr - bot.old_mmr >= 0 ?
-                                    lerpColor("#7a7a80", "#00f000", Math.min(1.0, (bot.mmr - bot.old_mmr) / 20.0)) :
-                                    lerpColor("#7a7a80", "#f00000", Math.min(1.0, (bot.mmr - bot.old_mmr) / -20.0)))
-                        )
-
-
-                        // Win indicators
-                        let win_indicators = bot.wins
-                            .map(win => win ? "images/win.png" : "images/loss.png")
-                            .map(img => `<img class="rank-win-indicator" src=${img} />`)
-                            .join("")
-
-                        // Ticket bar width
-                        let tickets_width = 32 * bot.tickets / max_tickets;
-
-                        return `
-<div class="rank-item ${odd_class}">
-    <div class="rank-number"><p class="center">${bot.cur_rank}</p></div>
-    <div class="rank-movement"><img src="${rank_img_src}"/></div>
-    <div class="rank-bot-name">${bot.bot_id}</div>
-    <div class="rank-mmr"><p class="center">${bot.mmr}</p></div>
-    <div class="rank-mmr-incr"><p class="center" style="color: ${mmrColor}">${mmrIncr}</p></div>
-    <div class="rank-wins">${win_indicators}</div>
-    <div class="rank-tickets" style="width: ${tickets_width}px"></div>
-</div>`
-                    })
-                    .join(""));
-
-                matchesTable.html(data.matches
-                    .map(function (match) {
-                        let odd_class = odd ? "odd" : "even";
-                        odd = !odd;
-
-                        let blue_crown_class = match.blue_goals < match.orange_goals ? "hide" : ""
-                        let orange_crown_class = match.blue_goals > match.orange_goals ? "hide" : ""
-
-                        return `
-<div class="match-item ${odd_class}">
-    <div class="match-number"><p class="right">${match.index + 1})</p></div>
-    <div class="match-names blue"><p class="center">${match.blue_names.join(", ")}</p></div>
-    <div class="crown blue"><img class="${blue_crown_class}" src="images/match win blue.png" /></div>
-    <div class="match-mid"><p class="center">${match.blue_goals} VS ${match.orange_goals}</p></div>
-    <div class="crown orange"><img class="${orange_crown_class}" src="images/match win orange.png"/></div>
-    <div class="match-names orange"><p class="center">${match.orange_names.join(", ")}</p></div>
-</div>`
-                    }))
+                updateLeaderboard(data)
+                updateMatchHistory(data)
             }
         });
     }
-
-    function lerpColor(a, b, amount) {
-
-        let ah = parseInt(a.replace(/#/g, ''), 16),
-            ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
-            bh = parseInt(b.replace(/#/g, ''), 16),
-            br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
-            rr = ar + amount * (br - ar),
-            rg = ag + amount * (bg - ag),
-            rb = ab + amount * (bb - ab);
-
-        return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
-    }
 </script>
-
 </body>
 </html>
