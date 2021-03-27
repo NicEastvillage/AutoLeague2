@@ -22,6 +22,7 @@
     grid-template-areas:
             "number movement name mmr mmr-incr wins tickets";
     align-items: center;
+    font-size: 0.95em;
 }
 
 .rank-item p {

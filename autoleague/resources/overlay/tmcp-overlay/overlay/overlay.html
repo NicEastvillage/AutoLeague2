@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMCP Overlay</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="card" style="float: left; min-width: 300px;" v-if="info.actions && info.active">
+            <table>
+                <tr>
+                    <th>Bot</th>
+                    <th>Action</th>
+                </tr>
+                <tr v-for="entry in info.actions">
+                    <td style="min-width: 100px;">
+                        <b :class="entry.team === 0 ? 'blue' : 'orange'">{{ entry.name }}</b>
+                    </td>
+                    <td style="min-width: 120px;">
+                        {{ icon(entry.action.type) }} {{ entry.action.type }}
+                    </td>
+                    <td v-if="entry.action.type === 'DEMO' && entry.action.index >= 0">
+                        <span :class="entry.team === 1 ? 'blue' : 'orange'">{{ playerName(entry.action.index) }}</span>
+                    </td>
+                    <td v-if="entry.action.time && entry.action.time > 0" :class="{'faded': entry.action.time - info.time < 0}">
+                        {{ format(entry.action.time - info.time) }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+<script src="main.js"></script>
+</html>
