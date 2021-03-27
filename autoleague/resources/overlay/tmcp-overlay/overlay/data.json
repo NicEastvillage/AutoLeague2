@@ -1,13 +1,37 @@
 {
-    "actions": {},
-    "time": 259.6166687011719,
-    "active": true,
+    "actions": {
+        "1": {
+            "action": {
+                "type": "BALL",
+                "time": 462.357666015625,
+                "direction": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            "name": "Otter",
+            "team": 0,
+            "time": 459.6583251953125
+        },
+        "4": {
+            "action": {
+                "type": "READY",
+                "time": -1.0
+            },
+            "name": "PotatOS But Better",
+            "team": 1,
+            "time": 459.6583251953125
+        }
+    },
+    "time": 459.6583251953125,
+    "active": false,
     "names": [
-        "Manticore",
+        "YangBot",
+        "Otter",
         "Psyonix Allstar",
-        "Psyonix Allstar (2)",
-        "Manticore (2)",
-        "Psyonix Allstar (3)",
-        "Psyonix Allstar (4)"
+        "Gibbus",
+        "PotatOS But Better",
+        "Self-driving car"
     ]
 }

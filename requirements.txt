@@ -5,3 +5,4 @@ rlbottraining
 trueskill
 requests
 watchdog
+numpy

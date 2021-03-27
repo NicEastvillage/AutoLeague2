@@ -3,6 +3,7 @@ from datetime import datetime
 from random import shuffle, choice
 from typing import Dict, List, Iterable, Mapping, Tuple, Optional
 
+import numpy
 import trueskill
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 
@@ -18,8 +19,9 @@ MIN_REQ_FAIRNESS = 0.3
 
 class TicketSystem:
     def __init__(self):
-        self.tickets: Dict[BotID, int] = {}
-        self.new_bot_ticket_count = 4
+        self.tickets: Dict[BotID, float] = {}
+        self.new_bot_ticket_count = 4.0
+        self.ticket_increase_rate = 2.0
 
     def ensure(self, bots: Iterable[BotID]):
         """
@@ -30,7 +32,7 @@ class TicketSystem:
                 # Give new bots some tickets right away
                 self.tickets[bot] = self.new_bot_ticket_count
 
-    def get_ensured(self, bot: BotID) -> int:
+    def get_ensured(self, bot: BotID) -> float:
         """
         Returns the number of tickets owned by the given bot. The bot is added with the default
         number of tickets, if they are not in the system yet.
@@ -39,19 +41,19 @@ class TicketSystem:
             self.tickets[bot] = self.new_bot_ticket_count
         return self.tickets[bot]
 
-    def get(self, bot: BotID) -> Optional[int]:
+    def get(self, bot: BotID) -> Optional[float]:
         """
         Returns the number of tickets owned by the given bot or None of the bot is not in the system.
         """
         return self.tickets.get(bot)
 
-    def set(self, bot: BotID, tickets: int):
+    def set(self, bot: BotID, tickets: float):
         """
         Set the number of tickets for the given bot. The update is not persistent until `save` is called.
         """
         self.tickets[bot] = tickets
 
-    def total(self) -> int:
+    def total(self) -> float:
         """
         Returns the total number of tickets in the ticket system.
         """
@@ -63,17 +65,11 @@ class TicketSystem:
         """
         self.ensure(bots)
 
-        # Create pool of bot ids, then shuffle it
-        pool = [bot for bot in bots for _ in range(self.tickets[bot])]
-        shuffle(pool)
-
-        # Iterate through the shuffled pool and first 6 unique bots
-        picked = []
-        for bot in pool:
-            if bot not in picked:
-                picked.append(bot)
-                if len(picked) == 6:
-                    break
+        # We don't use self.total() since it can be the case, that not all bots appear in `bots`
+        bot_tickets = [self.get_ensured(bot_id) for bot_id in bots]
+        total = sum(bot_tickets)
+        prop = [tickets / total for tickets in bot_tickets]
+        picked = list(numpy.random.choice(list(bots), 6, p=prop, replace=False))
 
         return picked
 
@@ -84,10 +80,10 @@ class TicketSystem:
         for bot in all_bots:
             if bot in chosen_bots:
                 # Reset their tickets
-                self.tickets[bot] = 1
+                self.tickets[bot] = 1.0
             else:
-                # Double their tickets
-                self.tickets[bot] *= 2
+                # Increase their tickets
+                self.tickets[bot] *= self.ticket_increase_rate
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.tickets / f"{time_stamp}_tickets.json", 'w') as f:
@@ -101,7 +97,9 @@ class TicketSystem:
             with open(list(ld.tickets.iterdir())[-1]) as f:
                 ticket_sys.tickets = json.load(f)
 
-        ticket_sys.new_bot_ticket_count = LeagueSettings.load(ld).new_bot_ticket_count
+        settings = LeagueSettings.load(ld)
+        ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
+        ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
         return ticket_sys
 
     @staticmethod

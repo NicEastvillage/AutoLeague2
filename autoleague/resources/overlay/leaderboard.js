@@ -45,7 +45,7 @@ function updateLeaderboard(summary, current_match) {
                 .join("")
 
             // Ticket bar width
-            let tickets_width = 32 * bot.tickets / max_tickets;
+            let tickets_width = Math.max(32 * bot.tickets / max_tickets, 1);
 
             return `
 <div class="rank-item ${background_class}">

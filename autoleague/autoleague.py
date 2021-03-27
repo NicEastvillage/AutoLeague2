@@ -26,22 +26,23 @@ def parse_args(args: List[str]):
     help_msg = """AutoLeague is a tool for easily running RLBot leagues.
 
 Usage:
-    autoleague setup league <league_dir>        Setup a league in <league_dir>
-    autoleague bot list                         Print list of all known bots
-    autoleague bot test <bot_id>                Run test match using a specific bot
-    autoleague bot details <bot_id>             Print details about the given bot
-    autoleague bot unzip                        Unzip all bots in the bot directory
-    autoleague bot summary                      Create json file with bot descriptions
-    autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
-    autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
-    autoleague ticket list                      Print list of number of tickets for all bots
-    autoleague ticket newBotTickets <tickets>   Set the number of tickets given to new bots
-    autoleague rank list                        Print list of the current leaderboard
-    autoleague match run                        Run a standard 3v3 soccer match
-    autoleague match undo                       Undo the last match
-    autoleague match list [n]                   Show the latest matches
-    autoleague summary [n]                      Create a summary of the last [n] matches
-    autoleague help                             Print this message"""
+    autoleague setup league <league_dir>           Setup a league in <league_dir>
+    autoleague bot list                            Print list of all known bots
+    autoleague bot test <bot_id>                   Run test match using a specific bot
+    autoleague bot details <bot_id>                Print details about the given bot
+    autoleague bot unzip                           Unzip all bots in the bot directory
+    autoleague bot summary                         Create json file with bot descriptions
+    autoleague ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
+    autoleague ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
+    autoleague ticket list                         Print list of number of tickets for all bots
+    autoleague ticket newBotTickets <tickets>      Set the number of tickets given to new bots
+    autoleague ticket ticketIncreaseRate <rate>    Set the rate at which tickets increase
+    autoleague rank list                           Print list of the current leaderboard
+    autoleague match run                           Run a standard 3v3 soccer match
+    autoleague match undo                          Undo the last match
+    autoleague match list [n]                      Show the latest matches
+    autoleague summary [n]                         Create a summary of the last [n] matches
+    autoleague help                                Print this message"""
 
     if len(args) == 0 or args[0] == "help":
         print(help_msg)
@@ -165,10 +166,11 @@ def parse_subcommand_bot(args: List[str]):
 def parse_subcommand_ticket(args: List[str]):
     assert args[0] == "ticket"
     help_msg = """Usage:
-    autoleague ticket get <bot_id>              Get the number of tickets owned by <bot_id>
-    autoleague ticket set <bot_id> <tickets>    Set the number of tickets owned by <bot_id>
-    autoleague ticket list                      Print list of number of tickets for all bots
-    autoleague ticket newBotTickets <tickets>   Set the number of tickets given to new bots"""
+    autoleague ticket get <bot_id>                Get the number of tickets owned by <bot_id>
+    autoleague ticket set <bot_id> <tickets>      Set the number of tickets owned by <bot_id>
+    autoleague ticket list                        Print list of number of tickets for all bots
+    autoleague ticket newBotTickets <tickets>     Set the number of tickets given to new bots
+    autoleague ticket ticketIncreaseRate <rate>   Set the rate at which tickets increase"""
 
     ld = require_league_dir()
 
@@ -210,13 +212,29 @@ def parse_subcommand_ticket(args: List[str]):
 
     elif args[1] == "newBotTickets" and len(args) == 3:
 
-        tickets = int(args[2])
-        # The number of tickets given to new bots are stored in LeagueSettings
-        league_settings = LeagueSettings.load(ld)
-        league_settings.new_bot_ticket_count = tickets
-        league_settings.save(ld)
+        tickets = float(args[2])
+        if tickets < 1:
+            print("The number of tickets given to new bots must be 1.0 or greater")
+        else:
+            # The number-of-tickets-given-to-new-bots setting is stored in LeagueSettings
+            league_settings = LeagueSettings.load(ld)
+            league_settings.new_bot_ticket_count = tickets
+            league_settings.save(ld)
 
-        print(f"Updated number of tickets given to new bots to {tickets}")
+            print(f"Updated number of tickets given to new bots to {tickets}")
+
+    elif args[1] == "ticketIncreaseRate" and len(args) == 3:
+
+        rate = float(args[2])
+        if rate < 1.0:
+            print(f"The ticket increase rate must be 1.0 or greater")
+        else:
+            # The ticket-increase-rate setting is stored in LeagueSettings
+            league_settings = LeagueSettings.load(ld)
+            league_settings.ticket_increase_rate = rate
+            league_settings.save(ld)
+
+            print(f"Updated ticket increase rate to {rate}")
 
     else:
         print(help_msg)
