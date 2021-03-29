@@ -3,35 +3,51 @@
         "1": {
             "action": {
                 "type": "BALL",
-                "time": 462.357666015625,
+                "time": 640.24755859375,
                 "direction": [
-                    0.0,
-                    0.0,
+                    0.7946795063870941,
+                    0.6070292267497214,
                     0.0
                 ]
             },
-            "name": "Otter",
+            "name": "Wyrm",
             "team": 0,
-            "time": 459.6583251953125
+            "time": 652.7333374023438,
+            "outdated": false
         },
-        "4": {
+        "3": {
+            "action": {
+                "type": "BALL",
+                "time": 640.314453125,
+                "direction": [
+                    0.4938981513913528,
+                    -0.47046588630783004,
+                    0.3178903796843152
+                ]
+            },
+            "name": "ABot",
+            "team": 1,
+            "time": 639.316650390625,
+            "outdated": false
+        },
+        "2": {
             "action": {
                 "type": "READY",
                 "time": -1.0
             },
-            "name": "PotatOS But Better",
-            "team": 1,
-            "time": 459.6583251953125
+            "name": "Otter",
+            "team": 0,
+            "time": 640.7750244140625,
+            "outdated": false
         }
     },
-    "time": 459.6583251953125,
     "active": false,
     "names": [
-        "YangBot",
+        "Stick",
+        "Wyrm",
         "Otter",
-        "Psyonix Allstar",
-        "Gibbus",
-        "PotatOS But Better",
-        "Self-driving car"
+        "ABot",
+        "V0id",
+        "Air Bud"
     ]
 }

@@ -28,6 +28,9 @@ body {
 .success {
     color: rgb(38, 207, 38);
 }
+.fail {
+    color: rgb(212, 32, 32);
+}
 
 .faded {
     opacity: 0.5;

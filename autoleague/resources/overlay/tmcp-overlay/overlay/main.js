@@ -1,6 +1,6 @@
-let POLL_INTERVAL = 100;
-let JSON_PATH = 'data.json';
-let ICONS = {
+const POLL_INTERVAL = 200;
+const JSON_PATH = 'data.json';
+const ICONS = {
     "BALL": "⚽",
     "BOOST": "⛽",
     "DEMO": "💣",
@@ -9,7 +9,7 @@ let ICONS = {
 }
 
 
-let app = new Vue({
+const app = new Vue({
     el: '#app',
     data: {
         info: {}
