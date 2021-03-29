@@ -3,7 +3,7 @@ const ranksTable = $("#ranks-table");
 function updateLeaderboard(summary, current_match) {
 
     // Variables used to format the leaderboard
-    let max_tickets = Math.max(...summary.bots_by_rank.map(bot => bot.tickets));
+    let max_tickets = Math.log(Math.max(...summary.bots_by_rank.map(bot => bot.tickets)));
     let odd = true;
 
     // Find the names of bots playing in the current match
@@ -45,7 +45,7 @@ function updateLeaderboard(summary, current_match) {
                 .join("")
 
             // Ticket bar width
-            let tickets_width = Math.max(32 * bot.tickets / max_tickets, 1);
+            let tickets_width = Math.max(40.0 * Math.log(bot.tickets) / max_tickets, 1);
 
             return `
 <div class="rank-item ${background_class}">
