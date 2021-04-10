@@ -39,16 +39,19 @@ class TMCPOverlay(BaseScript):
             new_messages: List[dict] = self.tmcp_handler.recv()
 
             for message in new_messages:
-                bot_index = message["index"]
-                action = message["action"]
+                try:
+                    bot_index = message["index"]
+                    action = message["action"]
 
-                self.action_cache[bot_index] = {
-                    "action": action,
-                    "name": packet.game_cars[bot_index].name,
-                    "team": packet.game_cars[bot_index].team,
-                    "time": packet.game_info.seconds_elapsed,
-                    "outdated": message["tmcp_version"] != TMCP_VERSION,
-                }
+                    self.action_cache[bot_index] = {
+                        "action": action,
+                        "name": packet.game_cars[bot_index].name,
+                        "team": packet.game_cars[bot_index].team,
+                        "time": packet.game_info.seconds_elapsed,
+                        "outdated": message["tmcp_version"] != TMCP_VERSION,
+                    }
+                except Exception:
+                    pass
 
             if new_messages or self.__last_active != packet.game_info.is_round_active:
                 self.__last_active = packet.game_info.is_round_active
