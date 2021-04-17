@@ -86,6 +86,13 @@ class MatchDetails:
         return [MatchDetails.read(path) for path in list(ld.matches.iterdir())[-count:]]
 
     @staticmethod
+    def all(ld: LeagueDir) -> List['MatchDetails']:
+        """
+        Returns a list of all matches played, chronological order
+        """
+        return [MatchDetails.read(path) for path in list(ld.matches.iterdir())]
+
+    @staticmethod
     def undo(ld: LeagueDir):
         """
         Remove latest match

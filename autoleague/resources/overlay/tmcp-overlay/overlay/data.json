@@ -1,53 +1,33 @@
 {
     "actions": {
-        "1": {
+        "0": {
             "action": {
-                "type": "BALL",
-                "time": 640.24755859375,
-                "direction": [
-                    0.7946795063870941,
-                    0.6070292267497214,
-                    0.0
-                ]
+                "type": "BOOST",
+                "target": 3
             },
-            "name": "Wyrm",
+            "name": "VirxEB",
             "team": 0,
-            "time": 652.7333374023438,
+            "time": 110.43333435058594,
             "outdated": false
         },
         "3": {
             "action": {
-                "type": "BALL",
-                "time": 640.314453125,
-                "direction": [
-                    0.4938981513913528,
-                    -0.47046588630783004,
-                    0.3178903796843152
-                ]
-            },
-            "name": "ABot",
-            "team": 1,
-            "time": 639.316650390625,
-            "outdated": false
-        },
-        "2": {
-            "action": {
                 "type": "READY",
-                "time": -1.0
+                "time": 118.44166564941406
             },
-            "name": "Otter",
-            "team": 0,
-            "time": 640.7750244140625,
+            "name": "VirxEB (2)",
+            "team": 1,
+            "time": 111.44999694824219,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "Stick",
-        "Wyrm",
-        "Otter",
-        "ABot",
-        "V0id",
-        "Air Bud"
+        "VirxEB",
+        "Psyonix Allstar",
+        "Psyonix Allstar (2)",
+        "VirxEB (2)",
+        "Psyonix Allstar (3)",
+        "Psyonix Allstar (4)"
     ]
 }

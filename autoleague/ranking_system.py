@@ -46,6 +46,12 @@ class RankingSystem:
         rating = self.get(bot)
         return round(rating.mu - rating.sigma)
 
+    def get_mmr_all(self) -> Dict[BotID, int]:
+        """
+        Returns a dict mapping bot id's to their mmr
+        """
+        return {bot_id: self.get_mmr(bot_id) for bot_id in self.ratings.keys()}
+
     def update(self, match: MatchDetails, result: MatchResult):
         """
         Updates the rankings of the bots participating in the given match with the given match result.
@@ -122,6 +128,13 @@ class RankingSystem:
             return [RankingSystem()] + rankings
         else:
             return rankings
+
+    @staticmethod
+    def all(ld: LeagueDir):
+        """
+        Returns all previous states of the ranking system in chronological order
+        """
+        return [RankingSystem()] + [RankingSystem.read(path) for path in list(ld.rankings.iterdir())]
 
     @staticmethod
     def undo(ld: LeagueDir):
