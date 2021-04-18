@@ -30,6 +30,12 @@ class LeagueDir:
     #     98NY24350NV120NVC34N8V120.replay
     #     JHDAJQJ11M1MGFQZXRJGNWE23.replay
     #     ...
+    # stats/
+    #     # CSV files with stats
+    #     match.csv
+    #     mmr.csv
+    #     tickets.csv
+    #     ...
     """
 
     def __init__(self, league_dir: Path):
@@ -41,6 +47,7 @@ class LeagueDir:
         self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
         self.bot_summary = self._league_dir / "bot_summary.json"
+        self.stats = self._league_dir / "stats"
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
@@ -49,6 +56,7 @@ class LeagueDir:
         self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
         self.replays.mkdir(exist_ok=True)
+        self.stats.mkdir(exist_ok=True)
 
 
 class PackageFiles:

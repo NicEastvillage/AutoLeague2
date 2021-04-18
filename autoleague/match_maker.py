@@ -5,6 +5,7 @@ from typing import Dict, List, Iterable, Mapping, Tuple, Optional
 
 import numpy
 import trueskill
+from pathlib import Path
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 
 from bots import BotID, fmt_bot_name
@@ -101,6 +102,22 @@ class TicketSystem:
         ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
         ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
         return ticket_sys
+
+    @staticmethod
+    def read(path: Path, settings: LeagueSettings) -> 'TicketSystem':
+        ticket_sys = TicketSystem()
+        with open(path) as f:
+            ticket_sys.tickets = json.load(f)
+            ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
+            ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
+            return ticket_sys
+
+    @staticmethod
+    def all(ld: LeagueDir, settings: LeagueSettings):
+        first = TicketSystem()
+        first.new_bot_ticket_count = settings.new_bot_ticket_count
+        first.ticket_increase_rate = settings.ticket_increase_rate
+        return [first] + [TicketSystem.read(path, settings) for path in list(ld.tickets.iterdir())]
 
     @staticmethod
     def undo(ld: LeagueDir):

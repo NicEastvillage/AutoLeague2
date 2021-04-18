@@ -1,33 +1,23 @@
 {
     "actions": {
-        "0": {
-            "action": {
-                "type": "BOOST",
-                "target": 3
-            },
-            "name": "VirxEB",
-            "team": 0,
-            "time": 110.43333435058594,
-            "outdated": false
-        },
         "3": {
             "action": {
                 "type": "READY",
-                "time": 118.44166564941406
+                "time": -1.0
             },
-            "name": "VirxEB (2)",
+            "name": "Otter",
             "team": 1,
-            "time": 111.44999694824219,
+            "time": 364.3416748046875,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "VirxEB",
-        "Psyonix Allstar",
-        "Psyonix Allstar (2)",
-        "VirxEB (2)",
-        "Psyonix Allstar (3)",
-        "Psyonix Allstar (4)"
+        "Zlobg",
+        "Beast from the East",
+        "BotTaco",
+        "Otter",
+        "Gibbus",
+        "Psyonix Rookie"
     ]
 }
