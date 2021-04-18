@@ -148,7 +148,6 @@ class MatchMaker:
             "ChampionsField",
             "DFHStadium",
             "NeoTokyo",
-            "ChampionsField",
             "UrbanCentral",
             "BeckwithPark",
         ])

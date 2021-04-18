@@ -73,9 +73,9 @@ with open(ld.stats / "match.csv", 'w', newline="") as csvfile_match:
             "demolitions",
             "own_goals",
         ])
-        for time, match in zip(times, matches):
+        for match in matches:
             writer_match.writerow([
-                time,
+                match.time_stamp,
                 match.blue[0],
                 match.blue[1],
                 match.blue[2],
@@ -89,7 +89,7 @@ with open(ld.stats / "match.csv", 'w', newline="") as csvfile_match:
             ])
             for bot, stats in match.result.player_scores.items():
                 writer_bot_stats.writerow([
-                    time,
+                    match.time_stamp,
                     bot,
                     stats.points,
                     stats.goals,
