@@ -1,23 +1,63 @@
 {
     "actions": {
-        "3": {
+        "0": {
             "action": {
                 "type": "READY",
                 "time": -1.0
             },
-            "name": "Otter",
+            "name": "BestCrazyBot",
+            "team": 0,
+            "time": 443.4916687011719,
+            "outdated": false
+        },
+        "5": {
+            "action": {
+                "type": "READY",
+                "time": 441.391357421875
+            },
+            "name": "Molten",
             "team": 1,
-            "time": 364.3416748046875,
+            "time": 443.4916687011719,
+            "outdated": false
+        },
+        "1": {
+            "action": {
+                "type": "BALL",
+                "time": 447.6906433105469,
+                "direction": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            "name": "Otter",
+            "team": 0,
+            "time": 443.4916687011719,
+            "outdated": false
+        },
+        "3": {
+            "action": {
+                "type": "BALL",
+                "time": 439.9581604003906,
+                "direction": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            "name": "PotatOS But Better",
+            "team": 1,
+            "time": 440.5,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "Zlobg",
-        "Beast from the East",
-        "BotTaco",
+        "BestCrazyBot",
         "Otter",
-        "Gibbus",
-        "Psyonix Rookie"
+        "YangBot",
+        "PotatOS But Better",
+        "Psyonix Rookie",
+        "Molten"
     ]
 }
