@@ -4,7 +4,7 @@ from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name
+from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name, load_all_unretired_bots
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
@@ -79,7 +79,7 @@ def make_summary(ld: LeagueDir, count: int):
 
     # ========= Ranks/Ratings =========
 
-    bots = load_all_bots(ld)
+    bots = load_all_unretired_bots(ld)
     bots_by_rank = []
 
     if count <= 0:
@@ -93,6 +93,8 @@ def make_summary(ld: LeagueDir, count: int):
         cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
     for i, (bot, mrr, sigma) in enumerate(cur_rankings):
+        if bot not in bots.keys():
+            continue   # Skip retired bots
         cur_rank = i + 1
         old_rank = None
         old_mmr = None

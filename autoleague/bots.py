@@ -1,6 +1,7 @@
+import json
 import os
 from pathlib import Path
-from typing import Dict, Mapping
+from typing import Dict, Mapping, List, Set
 from zipfile import ZipFile
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
@@ -20,6 +21,13 @@ def fmt_bot_name(name: str) -> BotID:
 
 def defmt_bot_name(name: BotID) -> str:
     return name.replace("_", " ")
+
+
+def load_all_unretired_bots(ld: LeagueDir) -> Mapping[BotID, BotConfigBundle]:
+    bots = load_all_bots(ld)
+    retired = load_retired_bots(ld)
+    bots = {bot_id: config for bot_id, config in bots.items() if bot_id not in retired}
+    return bots
 
 
 def load_all_bots(ld: LeagueDir) -> Mapping[BotID, BotConfigBundle]:
@@ -96,3 +104,18 @@ def unzip_all_bots(ld: LeagueDir):
                     folder_name = os.path.splitext(os.path.basename(path))[0]
                     target_dir = os.path.join(root, folder_name)
                     zipObj.extractall(path=target_dir)
+
+
+def load_retired_bots(ld: LeagueDir) -> Set[BotID]:
+    """
+    Loads the list of retired bots
+    """
+    if not ld.retirement.exists():
+        return set()
+    with open(ld.retirement, 'r') as retirement_file:
+        return set(json.load(retirement_file))
+
+
+def save_retired_bots(ld: LeagueDir, retired: Set[BotID]):
+    with open(ld.retirement, 'w') as retirement_file:
+        json.dump(list(retired), retirement_file)

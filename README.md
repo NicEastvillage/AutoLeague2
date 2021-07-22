@@ -35,5 +35,9 @@ match run                           Run a standard 3v3 soccer match
 match undo                          Undo the last match
 match list [n]                      Show the latest matches
 summary [n]                         Create a summary of the last [n] matches
+retirement list                     Print all bots in retirement
+retirement retire <bot>             Retire a bot, removing it from play and the leaderboard
+retirement unretire <bot>           Unretire a bot
+retirement retireall                Retire all bots
 help                                Print this message
 ```
