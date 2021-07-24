@@ -38,6 +38,14 @@ function updateLeaderboard(summary, current_match) {
                     lerpColor("#7a7a80", "#f00000", Math.min(1.0, (bot.mmr - bot.old_mmr) / -20.0)))
             )
 
+            let division = [
+                "division-transistor",
+                "division-circuit",
+                "division-processor",
+                "division-overclocked",
+                "division-quantum",
+            ][Math.min(Math.max(0, Math.floor(bot.mmr / 20.0)), 4)]
+
             // Win indicators
             let win_indicators = bot.wins
                 .map(win => win ? "images/win.png" : "images/loss.png")
@@ -49,6 +57,7 @@ function updateLeaderboard(summary, current_match) {
 
             return `
 <div class="rank-item ${background_class}">
+    <div class="rank-division ${division}"></div>
     <div class="rank-number"><p class="center">${bot.cur_rank}</p></div>
     <div class="rank-movement"><img src="${rank_img_src}"/></div>
     <div class="rank-bot-name">${bot.bot_id}</div>
