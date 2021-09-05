@@ -28,17 +28,17 @@ def parse_args(args: List[str]):
 
 Usage:
     autoleague setup league <league_dir>           Setup a league in <league_dir>
-    autoleague bot list                            Print list of all known bots
+    autoleague bot list [showRetired]              Print list of all known bots
     autoleague bot test <bot_id>                   Run test match using a specific bot
     autoleague bot details <bot_id>                Print details about the given bot
     autoleague bot unzip                           Unzip all bots in the bot directory
     autoleague bot summary                         Create json file with bot descriptions
     autoleague ticket get <bot_id>                 Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>       Set the number of tickets owned by <bot_id>
-    autoleague ticket list                         Print list of number of tickets for all bots
+    autoleague ticket list [showRetired]           Print list of number of tickets for all bots
     autoleague ticket newBotTickets <tickets>      Set the number of tickets given to new bots
     autoleague ticket ticketIncreaseRate <rate>    Set the rate at which tickets increase
-    autoleague rank list                           Print list of the current leaderboard
+    autoleague rank list [showRetired]             Print list of the current leaderboard
     autoleague match run                           Run a standard 3v3 soccer match
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
@@ -102,7 +102,7 @@ def parse_subcommand_setup(args: List[str]):
 def parse_subcommand_bot(args: List[str]):
     assert args[0] == "bot"
     help_msg = """Usage:
-    autoleague bot list                       Print list of all known bots
+    autoleague bot list [showRetired]         Print list of all known bots
     autoleague bot test <bot_id>              Run test match using a specific bot
     autoleague bot details <bot_id>           Print details about the given bot
     autoleague bot unzip                      Unzip all bots in the bot directory
@@ -113,7 +113,9 @@ def parse_subcommand_bot(args: List[str]):
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "list" and len(args) == 2:
+    elif args[1] == "list" and (len(args) == 2 or len(args) == 3):
+
+        show_retired = len(args) == 3 and bool(args[2])
 
         bot_configs = load_all_bots(ld)
         rank_sys = RankingSystem.load(ld)
@@ -126,13 +128,14 @@ def parse_subcommand_bot(args: List[str]):
                 .union(set(ticket_sys.tickets.keys()))
                 .union(retired))
 
-        print(f"{'': <22} c r t h")
+        print(f"{'': <22} conf rank tick reti")
         for bot in sorted(bot_ids):
-            c = "x" if bot in bot_configs else " "
-            r = "x" if bot in rank_sys.ratings else " "
-            t = "x" if bot in ticket_sys.tickets else " "
-            h = "x" if bot in retired else " "
-            print(f"{bot + ' ':.<22} {c} {r} {t} {h}")
+            if show_retired or bot not in retired:
+                c = "x" if bot in bot_configs else " "
+                r = "x" if bot in rank_sys.ratings else " "
+                t = "x" if bot in ticket_sys.tickets else " "
+                h = "x" if bot in retired else " "
+                print(f"{bot + ' ':.<22} {c: >4} {r: >4} {t: >4} {h: >4}")
 
     elif args[1] == "test" and len(args) == 3:
 
@@ -178,7 +181,7 @@ def parse_subcommand_ticket(args: List[str]):
     help_msg = """Usage:
     autoleague ticket get <bot_id>                Get the number of tickets owned by <bot_id>
     autoleague ticket set <bot_id> <tickets>      Set the number of tickets owned by <bot_id>
-    autoleague ticket list                        Print list of number of tickets for all bots
+    autoleague ticket list [showRetired]          Print list of number of tickets for all bots
     autoleague ticket newBotTickets <tickets>     Set the number of tickets given to new bots
     autoleague ticket ticketIncreaseRate <rate>   Set the rate at which tickets increase"""
 
@@ -206,7 +209,10 @@ def parse_subcommand_ticket(args: List[str]):
         ticket_sys.save(ld, make_timestamp())
         print(f"Successfully set the number of tickets of {bot} to {tickets}")
 
-    elif args[1] == "list" and len(args) == 2:
+    elif args[1] == "list" and (len(args) == 2 or len(args) == 3):
+
+        show_retired = len(args) == 3 and bool(args[2])
+        retired = show_retired or load_retired_bots(ld)
 
         bots = load_all_bots(ld)
         ticket_sys = TicketSystem.load(ld)
@@ -214,11 +220,14 @@ def parse_subcommand_ticket(args: List[str]):
 
         tickets = list(ticket_sys.tickets.items())
         tickets.sort(reverse=True, key=lambda elem: elem[1])
+        total = 0
         print(f"{'': <22} tickets")
         for bot_id, tickets in tickets:
-            bar = "#" * tickets
-            print(f"{defmt_bot_name(bot_id) + ' ':.<22} {tickets:>3} {bar}")
-        print(f"\n{'TOTAL':<22} {ticket_sys.total()}")
+            if show_retired or bot_id not in retired:
+                total += int(tickets)
+                bar = "#" * int(tickets)
+                print(f"{defmt_bot_name(bot_id) + ' ':.<22} {int(tickets):>3} {bar}")
+        print(f"\n{'TOTAL':<22} {total}")
 
     elif args[1] == "newBotTickets" and len(args) == 3:
 
@@ -253,20 +262,23 @@ def parse_subcommand_ticket(args: List[str]):
 def parse_subcommand_rank(args: List[str]):
     assert args[0] == "rank"
     help_msg = """Usage:
-        autoleague rank list                Print list of the current leaderboard"""
+        autoleague rank list [showRetired]  Print list of the current leaderboard"""
 
     ld = require_league_dir()
 
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "list" and len(args) == 2:
+    elif args[1] == "list" and (len(args) == 2 or len(args) == 3):
+
+        show_retired = len(args) == 3 and bool(args[2])
+        exclude = [] if show_retired else load_retired_bots(ld)
 
         bots = load_all_bots(ld)
 
         rank_sys = RankingSystem.load(ld)
         rank_sys.ensure_all(list(bots.keys()))
-        rank_sys.print_ranks_and_mmr()
+        rank_sys.print_ranks_and_mmr(exclude)
 
     else:
         print(help_msg)

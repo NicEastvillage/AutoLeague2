@@ -4,7 +4,7 @@ from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name, load_all_unretired_bots
+from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name, load_all_unretired_bots, load_retired_bots
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
@@ -18,8 +18,9 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
     match and its participants.
     """
 
+    retired = load_retired_bots(ld)
     rankings = RankingSystem.load(ld).ensure_all(list(bots.keys()))
-    rank_list = rankings.as_sorted_list()
+    rank_list = rankings.as_sorted_list(exclude=retired)
 
     def bot_data(bot_id):
         config = bots[bot_id]
@@ -80,21 +81,20 @@ def make_summary(ld: LeagueDir, count: int):
     # ========= Ranks/Ratings =========
 
     bots = load_all_unretired_bots(ld)
+    retired = load_retired_bots(ld)
     bots_by_rank = []
 
     if count <= 0:
         # Old rankings and current rankings is the same, but make sure all bots have a rank currently
-        old_rankings = RankingSystem.load(ld).as_sorted_list()
-        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
+        old_rankings = RankingSystem.load(ld).as_sorted_list(exclude=retired)
+        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list(exclude=retired)
     else:
         # Determine current rank and their to N matches ago
         n_rankings = RankingSystem.latest(ld, count + 1)
-        old_rankings = n_rankings[0].as_sorted_list()
-        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
+        old_rankings = n_rankings[0].as_sorted_list(exclude=retired)
+        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list(exclude=retired)
 
     for i, (bot, mrr, sigma) in enumerate(cur_rankings):
-        if bot not in bots.keys():
-            continue   # Skip retired bots
         cur_rank = i + 1
         old_rank = None
         old_mmr = None

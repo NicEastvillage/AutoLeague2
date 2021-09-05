@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 import json
 
 import trueskill
@@ -75,21 +75,21 @@ class RankingSystem:
         for i, bot_id in enumerate(match.orange):
             self.ratings[bot_id] = new_orange_ratings[i]
 
-    def print_ranks_and_mmr(self):
+    def print_ranks_and_mmr(self, exclude: Set[BotID] = {}):
         """
         Print bot rankings and mmr
         """
-        ranks = self.as_sorted_list()
+        ranks = self.as_sorted_list(exclude)
         print(f"rank {'': <22} mmr")
         for i, (bot_id, rank, _) in enumerate(ranks):
             print(f"{i + 1:>4} {defmt_bot_name(bot_id) + ' ':.<22} {rank:>3}")
 
-    def as_sorted_list(self) -> List[Tuple[BotID, int, float]]:
+    def as_sorted_list(self, exclude: Set[BotID] = {}) -> List[Tuple[BotID, int, float]]:
         """
         Returns the sorted list of ranks. That is, a list where each element is a tuple of bot id, mmr,
         and sigma (uncertainty), and the list is sorted by mmr.
         """
-        ranks = [(bot_id, self.get_mmr(bot_id), self.get(bot_id).sigma) for bot_id in self.ratings.keys()]
+        ranks = [(bot_id, self.get_mmr(bot_id), self.get(bot_id).sigma) for bot_id in self.ratings.keys() if bot_id not in exclude]
         ranks.sort(reverse=True, key=lambda elem: elem[1])
         return ranks
 
