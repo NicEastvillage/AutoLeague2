@@ -1,63 +1,37 @@
 {
     "actions": {
-        "0": {
+        "2": {
             "action": {
-                "type": "READY",
-                "time": -1.0
+                "type": "BALL",
+                "time": 463.2416687011719,
+                "direction": [
+                    0.2603183755805926,
+                    -0.9655228341862668,
+                    0.0
+                ]
             },
-            "name": "BestCrazyBot",
+            "name": "Rapha",
             "team": 0,
-            "time": 443.4916687011719,
+            "time": 457.2416687011719,
             "outdated": false
         },
         "5": {
             "action": {
-                "type": "READY",
-                "time": 441.391357421875
+                "type": "DEFEND"
             },
-            "name": "Molten",
+            "name": "St. Peter",
             "team": 1,
-            "time": 443.4916687011719,
-            "outdated": false
-        },
-        "1": {
-            "action": {
-                "type": "BALL",
-                "time": 447.6906433105469,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "Otter",
-            "team": 0,
-            "time": 443.4916687011719,
-            "outdated": false
-        },
-        "3": {
-            "action": {
-                "type": "BALL",
-                "time": 439.9581604003906,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "PotatOS But Better",
-            "team": 1,
-            "time": 440.5,
+            "time": 457.2416687011719,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "BestCrazyBot",
-        "Otter",
-        "YangBot",
-        "PotatOS But Better",
-        "Psyonix Rookie",
-        "Molten"
+        "Propeller",
+        "AdversityBot",
+        "Rapha",
+        "Bribblebot",
+        "Psyonix Allstar",
+        "St. Peter"
     ]
 }

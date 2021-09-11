@@ -22,8 +22,7 @@
     let summaryData = null;
 
     updateAll();
-    //setInterval(updateAll, 2000);
-    window.setTimeout (updateAll, 2000);
+    setInterval(updateAll, 2000);
 
     function updateAll() {
         $.get("summary.json", function (json) {
