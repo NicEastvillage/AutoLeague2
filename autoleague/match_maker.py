@@ -210,9 +210,13 @@ class MatchMaker:
         # 10:   0.448
         num_bot_groups_to_test = 400
 
-        tries_left = num_bot_groups_to_test
+        # How much we value the tightness of rating distribution in a given match.
+        # A higher number will yield matches with similarly skilled bots, but potentially lower probability of a draw.
+        tightness_weight = 2
 
+        tries_left = num_bot_groups_to_test
         best_quality_found = 0
+        best_score_found = 0
         best_match = None
 
         while tries_left > 0:
@@ -222,19 +226,22 @@ class MatchMaker:
             picked = ticket_sys.pick_bots(bot_ids)
             candidates = [Candidate(bot, rank_sys.get(bot)) for bot in picked]
             candidates.sort(key=lambda c: float(c.rating), reverse=True)
+            tightness = 1 / (numpy.std([float(c.rating) for c in candidates]) + 1)
 
             for balance in likely_balances:
                 blue_candidates = candidates[balance[0]], candidates[balance[1]], candidates[balance[2]]
                 orange_candidates = [c for c in candidates if c not in blue_candidates]
                 quality = trueskill.quality([[c.rating for c in blue_candidates], [c.rating for c in orange_candidates]])
-                if quality > best_quality_found:
+                score = quality + tightness * tightness_weight
+                if score > best_score_found:
+                    best_score_found = score
                     best_quality_found = quality
                     best_match = (blue_candidates, orange_candidates)
 
         blue_ids = [c.bot_id for c in best_match[0]]
         orange_ids = [c.bot_id for c in best_match[1]]
         tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
-        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  Tickets consumed: {tickets_consumed}")
+        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  Tickets consumed: {tickets_consumed}")
         ticket_sys.choose(blue_ids + orange_ids, bot_ids)
         return blue_ids, orange_ids
 

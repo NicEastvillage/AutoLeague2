@@ -48,7 +48,7 @@ class TestMatchMaker(unittest.TestCase):
             quality = get_trueskill_quality(players, rank_sys)
             quality_sum += quality
         average = quality_sum / NUM_ITERATIONS
-        print(f'New average quality: {average}')  # 0.460
+        print(f'New average quality: {average}')  # 0.453
 
 
 if __name__ == '__main__':
