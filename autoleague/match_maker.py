@@ -132,10 +132,12 @@ class TicketSystem:
         else:
             print("No tickets to undo.")
 
+
 @dataclass
 class Candidate:
     bot_id: BotID
     rating: Rating
+
 
 class MatchMaker:
     @staticmethod
@@ -192,7 +194,7 @@ class MatchMaker:
 
     @staticmethod
     def decide_on_players_2(bot_ids: Iterable[BotID], rank_sys: RankingSystem,
-                          ticket_sys: TicketSystem) -> Tuple[List[BotID], List[BotID]]:
+                            ticket_sys: TicketSystem) -> Tuple[List[BotID], List[BotID]]:
         """
         Find two balanced teams. The TicketSystem and the RankingSystem to find
         a fair match up between some bots that haven't played for a while.
@@ -212,7 +214,7 @@ class MatchMaker:
 
         # How much we value the tightness of rating distribution in a given match.
         # A higher number will yield matches with similarly skilled bots, but potentially lower probability of a draw.
-        tightness_weight = 2
+        tightness_weight = 1.0
 
         tries_left = num_bot_groups_to_test
         best_quality_found = 0
