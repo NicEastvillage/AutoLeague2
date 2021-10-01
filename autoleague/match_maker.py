@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from datetime import datetime
 from random import shuffle, choice
 from typing import Dict, List, Iterable, Mapping, Tuple, Optional
@@ -13,6 +14,7 @@ from leaguesettings import LeagueSettings
 from match import MatchDetails
 from paths import LeagueDir, PackageFiles
 from ranking_system import RankingSystem
+from trueskill import Rating
 
 # Minimum required TrueSkill match quality. Can't be higher than 0.44
 MIN_REQ_FAIRNESS = 0.3
@@ -130,6 +132,10 @@ class TicketSystem:
         else:
             print("No tickets to undo.")
 
+@dataclass
+class Candidate:
+    bot_id: BotID
+    rating: Rating
 
 class MatchMaker:
     @staticmethod
@@ -142,7 +148,7 @@ class MatchMaker:
         """
 
         time_stamp = make_timestamp()
-        blue, orange = MatchMaker.decide_on_players(bots.keys(), rank_sys, ticket_sys)
+        blue, orange = MatchMaker.decide_on_players_2(bots.keys(), rank_sys, ticket_sys)
         name = "_".join([time_stamp] + blue + ["vs"] + orange)
         map = choice([
             "ChampionsField",
@@ -177,11 +183,67 @@ class MatchMaker:
             # Is this a fair match?
             required_fairness = min(tries_left / limit, MIN_REQ_FAIRNESS)
             if trueskill.quality([blue, orange]) >= required_fairness:
-                print(f"Match: {picked[0:3]} vs {picked[3:6]}\nMatch quality: {trueskill.quality([blue, orange])}")
+                tickets_consumed = sum([ticket_sys.get_ensured(b) for b in picked])
+                print(f"Match: {picked[0:3]} vs {picked[3:6]}\nMatch quality: {trueskill.quality([blue, orange])}  Tickets consumed: {tickets_consumed}")
                 ticket_sys.choose(picked, bot_ids)
                 return picked[0:3], picked[3:6]
 
         raise Exception("Failed to find a fair match")
+
+    @staticmethod
+    def decide_on_players_2(bot_ids: Iterable[BotID], rank_sys: RankingSystem,
+                          ticket_sys: TicketSystem) -> Tuple[List[BotID], List[BotID]]:
+        """
+        Find two balanced teams. The TicketSystem and the RankingSystem to find
+        a fair match up between some bots that haven't played for a while.
+        """
+
+        # Composing a team of the best player + the worst two players will likely yield a balanced match (0, 4, 5).
+        # These represent a few arrangements like that which seem reasonable to try, they will be checked against
+        # the trueskill system.
+        likely_balances = [(0, 4, 5), (0, 3, 5), (0, 2, 5), (0, 3, 4)]
+
+        # Experimental average quality based on limit:
+        # 1000: 0.4615
+        # 400:  0.460
+        # 100:  0.457
+        # 10:   0.448
+        num_bot_groups_to_test = 400
+
+        # How much we value the tightness of rating distribution in a given match.
+        # A higher number will yield matches with similarly skilled bots, but potentially lower probability of a draw.
+        tightness_weight = 2
+
+        tries_left = num_bot_groups_to_test
+        best_quality_found = 0
+        best_score_found = 0
+        best_match = None
+
+        while tries_left > 0:
+            tries_left -= 1
+
+            # Pick some bots that haven't played for a while
+            picked = ticket_sys.pick_bots(bot_ids)
+            candidates = [Candidate(bot, rank_sys.get(bot)) for bot in picked]
+            candidates.sort(key=lambda c: float(c.rating), reverse=True)
+            tightness = 1 / (numpy.std([float(c.rating) for c in candidates]) + 1)
+
+            for balance in likely_balances:
+                blue_candidates = candidates[balance[0]], candidates[balance[1]], candidates[balance[2]]
+                orange_candidates = [c for c in candidates if c not in blue_candidates]
+                quality = trueskill.quality([[c.rating for c in blue_candidates], [c.rating for c in orange_candidates]])
+                score = quality + tightness * tightness_weight
+                if score > best_score_found:
+                    best_score_found = score
+                    best_quality_found = quality
+                    best_match = (blue_candidates, orange_candidates)
+
+        blue_ids = [c.bot_id for c in best_match[0]]
+        orange_ids = [c.bot_id for c in best_match[1]]
+        tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
+        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  Tickets consumed: {tickets_consumed}")
+        ticket_sys.choose(blue_ids + orange_ids, bot_ids)
+        return blue_ids, orange_ids
 
     @staticmethod
     def make_test_match(bot_id: BotID) -> MatchDetails:
