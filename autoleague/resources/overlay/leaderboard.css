@@ -11,7 +11,7 @@
 
 .rank-table-header p {
     font-weight: bold;
-    font-size: 0.8em;
+    font-size: 1.05em;
     margin: 3px 0;
 }
 
@@ -22,7 +22,7 @@
     grid-template-areas:
             "division number movement name mmr mmr-incr wins tickets";
     align-items: center;
-    font-size: 0.86em;
+    font-size: 1.05em;
 }
 
 .rank-item p {
