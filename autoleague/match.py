@@ -109,7 +109,7 @@ class MatchDetails:
         Read a specific MatchDetails file
         """
         with open(path) as f:
-            return json.load(f, object_hook=as_match_result)
+            return json.load(f, object_hook=as_match_details)
 
 
 # ====== MatchDetails -> JSON ======
@@ -135,7 +135,7 @@ class MatchDetailsEncoder(json.JSONEncoder):
 
 # ====== JSON -> MatchDetails ======
 
-def as_match_result(json_obj) -> MatchDetails:
+def as_match_details(json_obj) -> MatchDetails:
     for cls, tag in known_types.items():
         if not json_obj.get(tag, False):
             continue
