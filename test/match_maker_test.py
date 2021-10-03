@@ -58,7 +58,11 @@ class TestMatchMaker(unittest.TestCase):
         for i in range(19):
             MatchMaker.decide_on_players_2(bot_ids, rank_sys, ticket_sys)
         game_counts = list(ticket_sys.session_game_counts.values())
+        print(ticket_sys.session_game_counts)
         print(f'Game count std dev: {numpy.std(game_counts)}, max: {max(game_counts)} min: {min(game_counts)} avg: {numpy.mean(game_counts)}')
+        for i in range(5):
+            print(f'Num with {i}: {game_counts.count(i)}')
+        # Before the equity changes, there are ~12 bots who have only played once. Now it's usually 1 or 2.
 
 
 if __name__ == '__main__':

@@ -24,7 +24,6 @@ class TicketSystem:
     def __init__(self):
         self.tickets: Dict[BotID, float] = {}
         self.new_bot_ticket_count = 4.0
-        self.ticket_increase_rate = 2.0
         self.session_game_counts: Dict[BotID, int] = {}
 
     def ensure(self, bots: Iterable[BotID]):
@@ -91,8 +90,16 @@ class TicketSystem:
                 self.session_game_counts[bot] += 1
             else:
                 # Increase their tickets
+
+                # Tickets increase faster if the bot is lagging behind on the number of games played.
                 games_deficit = max_game_count - self.session_game_counts[bot]
-                self.tickets[bot] *= (self.ticket_increase_rate + games_deficit)
+
+                # Tickets also multiply a little even if the bot has played more games than any other.
+                # Decrease this number toward 1.0 if you want to prioritize a balanced number of games played.
+                # Increase it if you want more randomness, and priority for bots who haven't played recently.
+                base_ticket_multiplier = 1.2
+
+                self.tickets[bot] *= (base_ticket_multiplier + games_deficit)
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.tickets / f"{time_stamp}_tickets.json", 'w') as f:
