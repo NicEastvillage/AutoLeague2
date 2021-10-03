@@ -25,6 +25,7 @@ class TicketSystem:
         self.tickets: Dict[BotID, float] = {}
         self.new_bot_ticket_count = 4.0
         self.ticket_increase_rate = 2.0
+        self.session_game_counts: Dict[BotID, int] = {}
 
     def ensure(self, bots: Iterable[BotID]):
         """
@@ -34,6 +35,8 @@ class TicketSystem:
             if bot not in self.tickets:
                 # Give new bots some tickets right away
                 self.tickets[bot] = self.new_bot_ticket_count
+            if bot not in self.session_game_counts:
+                self.session_game_counts[bot] = 0
 
     def get_ensured(self, bot: BotID) -> float:
         """
@@ -80,13 +83,16 @@ class TicketSystem:
         """
         Choose the list of given bots, which will reset their number of tickets and double every else's.
         """
+        max_game_count = max(self.session_game_counts.values())
         for bot in all_bots:
             if bot in chosen_bots:
                 # Reset their tickets
                 self.tickets[bot] = 1.0
+                self.session_game_counts[bot] += 1
             else:
                 # Increase their tickets
-                self.tickets[bot] *= self.ticket_increase_rate
+                games_deficit = max_game_count - self.session_game_counts[bot]
+                self.tickets[bot] *= (self.ticket_increase_rate + games_deficit)
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.tickets / f"{time_stamp}_tickets.json", 'w') as f:
@@ -103,6 +109,14 @@ class TicketSystem:
         settings = LeagueSettings.load(ld)
         ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
         ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
+
+        matches_in_session = MatchDetails.latest(ld, settings.last_summary)
+        for match in matches_in_session:
+            bots = match.blue + match.orange
+            ticket_sys.ensure(bots)
+            for bot_id in bots:
+                ticket_sys.session_game_counts[bot_id] += 1
+
         return ticket_sys
 
     @staticmethod
