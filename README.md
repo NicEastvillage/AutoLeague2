@@ -45,6 +45,7 @@ I use AutoLeague2 for [East's League Play](https://docs.google.com/document/d/1P
 
 ```
 setup league <league_dir>           Setup a league in <league_dir>
+setup platform <steam|epic>         Set platform preference
 bot list [showRetired]              Print list of all known bots
 bot test <bot_id>                   Run test match using a specific bot
 bot details <bot_id>                Print details about the given bot
