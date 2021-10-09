@@ -14,6 +14,7 @@ from match_exercise import MatchExercise, MatchGrader
 from overlay import make_overlay
 from paths import LeagueDir
 from replays import ReplayPreference, ReplayMonitor, ReplayData
+from settings import PersistentSettings
 
 
 def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, BotConfigBundle],
@@ -22,7 +23,9 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
     Run a match, wait for it to finish, and return the result.
     """
 
-    with setup_manager_context() as setup_manager:
+    settings = PersistentSettings.load()
+
+    with setup_manager_context(settings.launcher()) as setup_manager:
 
         # Expose data to overlay
         make_overlay(ld, match_details, bots)

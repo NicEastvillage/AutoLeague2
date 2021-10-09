@@ -1,13 +1,25 @@
 import json
 from pathlib import Path
 
+from rlbot.setup_manager import RocketLeagueLauncherPreference
+
 
 class PersistentSettings:
     """
     This class is used to store information that should persist between usage.
     """
+
+    platforms = ["steam", "epic"]
+
     def __init__(self):
         self.league_dir_raw = None
+        self.platform_preference = "steam"
+
+    def launcher(self) -> RocketLeagueLauncherPreference:
+        if self.platform_preference == "steam":
+            return RocketLeagueLauncherPreference(RocketLeagueLauncherPreference.STEAM, False)
+        else:
+            return RocketLeagueLauncherPreference(RocketLeagueLauncherPreference.EPIC, True)
 
     def save(self):
         path = Path(__file__).absolute().parent / 'settings.json'
