@@ -249,6 +249,7 @@ class MatchMaker:
         best_quality_found = 0
         best_score_found = 0
         best_match = None
+        chosen_balance = None
 
         while tries_left > 0:
             tries_left -= 1
@@ -268,11 +269,13 @@ class MatchMaker:
                     best_score_found = score
                     best_quality_found = quality
                     best_match = (blue_candidates, orange_candidates)
+                    chosen_balance = balance
 
         blue_ids = [c.bot_id for c in best_match[0]]
         orange_ids = [c.bot_id for c in best_match[1]]
         tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
-        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  Tickets consumed: {tickets_consumed}")
+        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  "
+              f"Rank pattern: {chosen_balance}")
         ticket_sys.choose(blue_ids + orange_ids, bot_ids)
         return blue_ids, orange_ids
 
