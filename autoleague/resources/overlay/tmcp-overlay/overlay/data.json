@@ -1,37 +1,22 @@
 {
     "actions": {
-        "2": {
-            "action": {
-                "type": "BALL",
-                "time": 463.2416687011719,
-                "direction": [
-                    0.2603183755805926,
-                    -0.9655228341862668,
-                    0.0
-                ]
-            },
-            "name": "Rapha",
-            "team": 0,
-            "time": 457.2416687011719,
-            "outdated": false
-        },
-        "5": {
+        "0": {
             "action": {
                 "type": "DEFEND"
             },
-            "name": "St. Peter",
-            "team": 1,
-            "time": 457.2416687011719,
+            "name": "Molten",
+            "team": 0,
+            "time": 371.2416687011719,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "Propeller",
-        "AdversityBot",
-        "Rapha",
-        "Bribblebot",
+        "Molten",
+        "RedBot",
+        "TensorBot",
+        "Air Bud",
         "Psyonix Allstar",
-        "St. Peter"
+        "Beast from the East"
     ]
 }

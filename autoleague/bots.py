@@ -61,8 +61,7 @@ def logo(config: BotConfigBundle) -> Path:
     """
     Returns the path to the given bot or None if it does not exists.
     """
-    logo_path = Path(config.config_directory) / (config.base_agent_config.get("Locations", "logo_file") or "logo.png")
-    return logo_path if logo_path.exists() and logo_path.is_file() else None
+    return config.get_logo_file()
 
 
 def print_details(config: BotConfigBundle):

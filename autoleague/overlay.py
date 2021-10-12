@@ -1,5 +1,8 @@
 import json
+import shutil
+import string
 from collections import defaultdict
+from pathlib import Path
 from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
@@ -28,7 +31,7 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
         return {
             "name": config.name,
             "config_path": str(config.config_path),
-            "logo_path": str(logo(config)) if logo(config) else None,
+            "logo_path": try_copy_logo(config),
             "developer": config.base_agent_config.get("Details", "developer"),
             "description": config.base_agent_config.get("Details", "description"),
             "fun_fact": config.base_agent_config.get("Details", "fun_fact"),
@@ -124,3 +127,30 @@ def make_summary(ld: LeagueDir, count: int):
     league_settings = LeagueSettings.load(ld)
     league_settings.last_summary = count
     league_settings.save(ld)
+
+
+# Borrowed from RLBotGUI
+def try_copy_logo(bundle: BotConfigBundle):
+    logo_path = bundle.get_logo_file()
+    if logo_path is not None:
+        root_folder = PackageFiles.overlay_dir
+        folder = root_folder / 'images' / 'logos'
+        folder.mkdir(parents=True, exist_ok=True)  # Ensure the folder exists
+        web_url = 'images/logos/' + convert_to_filename(logo_path)
+        target_file = root_folder / web_url
+        shutil.copy(logo_path, target_file)
+        return web_url
+    return None
+
+
+def convert_to_filename(text):
+    """
+    Normalizes string, converts to lowercase, removes non-alphanumeric characters,
+    and converts spaces to underscores.
+    """
+    import unicodedata
+    normalized = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
+    valid_chars = f'-_.() {string.ascii_letters}{string.digits}'
+    filename = ''.join(c for c in normalized if c in valid_chars)
+    filename = filename.replace(' ', '_')  # Replace spaces with underscores
+    return filename
