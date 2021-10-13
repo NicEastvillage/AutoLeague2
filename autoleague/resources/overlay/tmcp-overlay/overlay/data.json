@@ -1,21 +1,12 @@
 {
-    "actions": {
-        "0": {
-            "action": {
-                "type": "BALL",
-                "time": 421.60817467139964,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "Teammate",
-            "team": 0,
-            "time": 420.29998779296875,
-            "outdated": false
-        }
-    },
+    "actions": {},
     "active": true,
-    "names": []
+    "names": [
+        "Element",
+        "Bumbler",
+        "HellowBot",
+        "RedBot",
+        "Beast from the East",
+        "AdversityBot"
+    ]
 }

@@ -38,6 +38,10 @@
                 previousData = comparisonString;
 
                 const unknown_image = 'images/ghost_car.png';
+
+                blueBotLogosEl.innerHTML = ''
+                orangeBotLogosEl.innerText = ''
+
                 for (let bot of data.blue) {
                     $(blueBotLogosEl).append(`<div class="bot-herald">
                             <img src="${bot.logo_path || unknown_image}" /><h1>${bot.name.trim()}</h1>
