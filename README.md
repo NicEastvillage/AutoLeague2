@@ -22,6 +22,7 @@ AutoLeague2 is a continuation of RLBot's [AutoLeaguePlay](https://github.com/RLB
   * `ingame_leaderboard.html` shows only the leaderboard.
   * `overlay.html` shows the currently playing bots in two banners near the top.
   * `tmcp-overlay/overlay/overlay.html` shows [TMCP](https://github.com/RLBot/RLBot/wiki/Team-Match-Communication-Protocol) messages sent between bots.
+  * `versus_logos.html` shows the play bots and their logos on a big versus screen.
 
   You can show these overlays on stream using a browser source in OBS.
 
@@ -39,6 +40,7 @@ I use AutoLeague2 for [East's League Play](https://docs.google.com/document/d/1P
   * Run `autoleague.py summary` to reset the summary shown by the overlay
 * During stream:
   * Run `autoleague.py match run` to run a single match. Overlays, tickets, mmr, summary, and more updates automatically.
+  * Run `autoleague.py match prepare` to show off the playing bots before the match starts.
   * If needed, a match can be undone using `autoleague.py match undo`.
 
 ### Other commands
@@ -59,6 +61,7 @@ ticket ticketIncreaseRate <rate>    Set the rate at which tickets increase
 ticket gameCatchupBoost <boost>     Set the extra ticket increase factor when a bot has played fewer games
 rank list [showRetired]             Print list of the current leaderboard
 match run                           Run a standard 3v3 soccer match
+match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
 match undo                          Undo the last match
 match list [n]                      Show the latest matches
 summary [n]                         Create a summary of the last [n] matches

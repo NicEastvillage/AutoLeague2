@@ -1,12 +1,28 @@
 {
-    "actions": {},
-    "active": true,
+    "actions": {
+        "3": {
+            "action": {
+                "type": "BALL",
+                "time": 127.88333129882812,
+                "direction": [
+                    0.9449562221145166,
+                    0.32719678832021,
+                    0.0
+                ]
+            },
+            "name": "St. Peter",
+            "team": 1,
+            "time": 134.48333740234375,
+            "outdated": false
+        }
+    },
+    "active": false,
     "names": [
-        "Element",
-        "Bumbler",
+        "Botimus Prime",
+        "AdversityBot",
         "HellowBot",
-        "RedBot",
-        "Beast from the East",
-        "AdversityBot"
+        "St. Peter",
+        "ReliefBot",
+        "Propeller"
     ]
 }

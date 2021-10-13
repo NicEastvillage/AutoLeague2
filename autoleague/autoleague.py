@@ -9,7 +9,7 @@ from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, make_timestamp
 from match_runner import run_match
-from overlay import make_summary
+from overlay import make_summary, make_overlay
 from paths import LeagueDir
 from prompt import prompt_yes_no
 from ranking_system import RankingSystem
@@ -42,6 +42,7 @@ Usage:
     autoleague ticket gameCatchupBoost <boost>     Set the extra ticket increase factor when a bot has played fewer games
     autoleague rank list [showRetired]             Print list of the current leaderboard
     autoleague match run                           Run a standard 3v3 soccer match
+    autoleague match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
     autoleague summary [n]                         Create a summary of the last [n] matches
@@ -315,6 +316,7 @@ def parse_subcommand_match(args: List[str]):
     assert args[0] == "match"
     help_msg = """Usage:
     autoleague match run                        Run a standard 3v3 soccer match
+    autoleague match prepare                    Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                       Undo the last match
     autoleague match list [n]                   Show the latest matches"""
 
@@ -323,7 +325,7 @@ def parse_subcommand_match(args: List[str]):
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "run" and len(args) == 2:
+    elif (args[1] == "run" or args[1] == "prepare") and len(args) == 2:
 
         # Load
         bots = load_all_unretired_bots(ld)
@@ -332,23 +334,28 @@ def parse_subcommand_match(args: List[str]):
 
         # Run
         match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
-        result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
-        rank_sys.update(match, result)
-        match.result = result
-        match.replay_id = replay.replay_id
+        make_overlay(ld, match, bots)
+        # Ask before starting?
+        if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
+            result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
+            rank_sys.update(match, result)
+            match.result = result
+            match.replay_id = replay.replay_id
 
-        # Save
-        match.save(ld)
-        rank_sys.save(ld, match.time_stamp)
-        ticket_sys.save(ld, match.time_stamp)
+            # Save
+            match.save(ld)
+            rank_sys.save(ld, match.time_stamp)
+            ticket_sys.save(ld, match.time_stamp)
 
-        # Print new ranks
-        rank_sys.print_ranks_and_mmr()
+            # Print new ranks
+            rank_sys.print_ranks_and_mmr()
 
-        # Make summary
-        league_settings = LeagueSettings.load(ld)
-        make_summary(ld, league_settings.last_summary + 1)
-        print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+            # Make summary
+            league_settings = LeagueSettings.load(ld)
+            make_summary(ld, league_settings.last_summary + 1)
+            print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+        else:
+            print("Match cancelled.")
 
     elif args[1] == "undo" and len(args) == 2:
 
