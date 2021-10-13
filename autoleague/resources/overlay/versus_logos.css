@@ -34,6 +34,7 @@ body {
 
 .bot-herald img {
     height: 200px;
+    max-width: 400px;
 }
 
 .bot-herald>h1 {
@@ -51,13 +52,13 @@ body {
 
 #blue-bot-logos .bot-herald>h1 {
     right: 0;
-    background: linear-gradient(50deg, rgba(255,111,0,0) 5%, rgb(0, 83, 119) 10%);
+    background: linear-gradient(50deg, #284DBA00 5%, #284DBAFF 10%, #3362E5FF 100%);
 
 }
 
 #orange-bot-logos .bot-herald>h1 {
     left: 0;
-    background: linear-gradient(130deg, rgba(255,119,0,1) 90%, rgba(255,111,0,0) 95%);
+    background: linear-gradient(130deg, #D86F36FF 0%, #A75325FF 90%, #BC5F2D00 95%);
 }
 
 #versus-container>img {

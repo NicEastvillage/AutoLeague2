@@ -2,21 +2,20 @@
     "actions": {
         "0": {
             "action": {
-                "type": "DEFEND"
+                "type": "BALL",
+                "time": 421.60817467139964,
+                "direction": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
             },
-            "name": "Molten",
+            "name": "Teammate",
             "team": 0,
-            "time": 371.2416687011719,
+            "time": 420.29998779296875,
             "outdated": false
         }
     },
-    "active": false,
-    "names": [
-        "Molten",
-        "RedBot",
-        "TensorBot",
-        "Air Bud",
-        "Psyonix Allstar",
-        "Beast from the East"
-    ]
+    "active": true,
+    "names": []
 }
