@@ -1,5 +1,6 @@
 import sys
 import unittest
+import numpy
 from pathlib import Path
 from typing import Tuple, List
 
@@ -48,7 +49,20 @@ class TestMatchMaker(unittest.TestCase):
             quality = get_trueskill_quality(players, rank_sys)
             quality_sum += quality
         average = quality_sum / NUM_ITERATIONS
-        print(f'New average quality: {average}')  # 0.453
+        print(f'New average quality: {average}')  # 0.449
+
+    def test_gamecount_equity(self):
+        rank_sys = RankingSystem.read(RESOURCES_FOLDER / '20210925212802_rankings.json')
+        ticket_sys = TicketSystem.read(RESOURCES_FOLDER / '20210925212802_tickets.json', LeagueSettings())
+        bot_ids = rank_sys.ratings.keys()
+        for i in range(19):
+            MatchMaker.decide_on_players_2(bot_ids, rank_sys, ticket_sys)
+        game_counts = list(ticket_sys.session_game_counts.values())
+        print(ticket_sys.session_game_counts)
+        print(f'Game count std dev: {numpy.std(game_counts)}, max: {max(game_counts)} min: {min(game_counts)} avg: {numpy.mean(game_counts)}')
+        for i in range(5):
+            print(f'Num with {i}: {game_counts.count(i)}')
+        # Before the equity changes, there are ~12 bots who have only played once. Now it's usually 1 or 2.
 
 
 if __name__ == '__main__':

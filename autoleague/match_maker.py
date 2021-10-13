@@ -24,7 +24,16 @@ class TicketSystem:
     def __init__(self):
         self.tickets: Dict[BotID, float] = {}
         self.new_bot_ticket_count = 4.0
-        self.ticket_increase_rate = 2.0
+        self.session_game_counts: Dict[BotID, int] = {}
+
+        # Decrease this number toward 1.0 if you want to prioritize a balanced number of games played.
+        # Increase it if you want more randomness, and priority for bots who haven't played recently.
+        self.ticket_increase_rate = 1.2
+
+        # Increase this number to more heavily prioritize bots who have not played many games yet
+        # during the current session. Can be anything >= 0.
+        self.game_catchup_boost = 1.0
+
 
     def ensure(self, bots: Iterable[BotID]):
         """
@@ -34,6 +43,8 @@ class TicketSystem:
             if bot not in self.tickets:
                 # Give new bots some tickets right away
                 self.tickets[bot] = self.new_bot_ticket_count
+            if bot not in self.session_game_counts:
+                self.session_game_counts[bot] = 0
 
     def get_ensured(self, bot: BotID) -> float:
         """
@@ -80,13 +91,20 @@ class TicketSystem:
         """
         Choose the list of given bots, which will reset their number of tickets and double every else's.
         """
+        max_game_count = max(self.session_game_counts.values())
         for bot in all_bots:
             if bot in chosen_bots:
                 # Reset their tickets
                 self.tickets[bot] = 1.0
+                self.session_game_counts[bot] += 1
             else:
                 # Increase their tickets
-                self.tickets[bot] *= self.ticket_increase_rate
+
+                # Tickets increase faster if the bot is lagging behind on the number of games played.
+                games_deficit = max_game_count - self.session_game_counts[bot]
+
+                # Tickets also multiply a little even if the bot has played more games than any other.
+                self.tickets[bot] *= (self.ticket_increase_rate + games_deficit * self.game_catchup_boost)
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.tickets / f"{time_stamp}_tickets.json", 'w') as f:
@@ -103,6 +121,15 @@ class TicketSystem:
         settings = LeagueSettings.load(ld)
         ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
         ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
+        ticket_sys.game_catchup_boost = settings.game_catchup_boost
+
+        matches_in_session = MatchDetails.latest(ld, settings.last_summary)
+        for match in matches_in_session:
+            bots = match.blue + match.orange
+            ticket_sys.ensure(bots)
+            for bot_id in bots:
+                ticket_sys.session_game_counts[bot_id] += 1
+
         return ticket_sys
 
     @staticmethod
@@ -112,6 +139,7 @@ class TicketSystem:
             ticket_sys.tickets = json.load(f)
             ticket_sys.new_bot_ticket_count = settings.new_bot_ticket_count
             ticket_sys.ticket_increase_rate = settings.ticket_increase_rate
+            ticket_sys.game_catchup_boost = settings.game_catchup_boost
             return ticket_sys
 
     @staticmethod
@@ -119,6 +147,7 @@ class TicketSystem:
         first = TicketSystem()
         first.new_bot_ticket_count = settings.new_bot_ticket_count
         first.ticket_increase_rate = settings.ticket_increase_rate
+        first.game_catchup_boost = settings.game_catchup_boost
         return [first] + [TicketSystem.read(path, settings) for path in list(ld.tickets.iterdir())]
 
     @staticmethod
@@ -220,6 +249,7 @@ class MatchMaker:
         best_quality_found = 0
         best_score_found = 0
         best_match = None
+        chosen_balance = None
 
         while tries_left > 0:
             tries_left -= 1
@@ -239,11 +269,13 @@ class MatchMaker:
                     best_score_found = score
                     best_quality_found = quality
                     best_match = (blue_candidates, orange_candidates)
+                    chosen_balance = balance
 
         blue_ids = [c.bot_id for c in best_match[0]]
         orange_ids = [c.bot_id for c in best_match[1]]
         tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
-        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  Tickets consumed: {tickets_consumed}")
+        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  "
+              f"Rank pattern: {chosen_balance}")
         ticket_sys.choose(blue_ids + orange_ids, bot_ids)
         return blue_ids, orange_ids
 

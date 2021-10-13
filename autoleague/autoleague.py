@@ -39,6 +39,7 @@ Usage:
     autoleague ticket list [showRetired]           Print list of number of tickets for all bots
     autoleague ticket newBotTickets <tickets>      Set the number of tickets given to new bots
     autoleague ticket ticketIncreaseRate <rate>    Set the rate at which tickets increase
+    autoleague ticket gameCatchupBoost <boost>     Set the extra ticket increase factor when a bot has played fewer games
     autoleague rank list [showRetired]             Print list of the current leaderboard
     autoleague match run                           Run a standard 3v3 soccer match
     autoleague match undo                          Undo the last match
@@ -196,7 +197,8 @@ def parse_subcommand_ticket(args: List[str]):
     autoleague ticket set <bot_id> <tickets>      Set the number of tickets owned by <bot_id>
     autoleague ticket list [showRetired]          Print list of number of tickets for all bots
     autoleague ticket newBotTickets <tickets>     Set the number of tickets given to new bots
-    autoleague ticket ticketIncreaseRate <rate>   Set the rate at which tickets increase"""
+    autoleague ticket ticketIncreaseRate <rate>   Set the rate at which tickets increase
+    autoleague ticket gameCatchupBoost <boost>    Set the extra ticket increase factor when a bot has played fewer games"""
 
     ld = require_league_dir()
 
@@ -268,6 +270,18 @@ def parse_subcommand_ticket(args: List[str]):
 
             print(f"Updated ticket increase rate to {rate}")
 
+    elif args[1] == "gameCatchupBoost" and len(args) == 3:
+
+        rate = float(args[2])
+        if rate < 0.0:
+            print(f"The game catchup boost must be 0.0 or greater")
+        else:
+            # The ticket-increase-rate setting is stored in LeagueSettings
+            league_settings = LeagueSettings.load(ld)
+            league_settings.game_catchup_boost = rate
+            league_settings.save(ld)
+
+            print(f"Updated game catchup boost to {rate}")
     else:
         print(help_msg)
 

@@ -16,7 +16,8 @@ class LeagueSettings:
 
         # Number of tickets given to new bots
         self.new_bot_ticket_count = 4.0
-        self.ticket_increase_rate = 2.0
+        self.ticket_increase_rate = 1.2
+        self.game_catchup_boost = 1.0
 
     def save(self, ld: LeagueDir):
         with open(ld.league_settings, 'w') as f:
