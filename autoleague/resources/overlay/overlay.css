@@ -161,3 +161,13 @@ div.active-division {
     font-weight: bold;
     margin-bottom: 5px;
 }
+
+img[src=""] {
+    display: none;
+}
+
+#tip-logo {
+    max-width: 100px;
+    float: right;
+    margin-left: 8px;
+}

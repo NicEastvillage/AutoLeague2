@@ -22,6 +22,7 @@
     </div>
 </div>
 <div id="tipcard">
+    <img id="tip-logo" src="" />
     <div id="tip-title"></div>
     <div id="tip-text"></div>
 </div>
@@ -34,14 +35,20 @@
 
     setInterval(function () {
         $.get("current_match.json", function (json) {
-            if (json !== previousData) {
-                try {
+            let comparisonString = '';
+            if (typeof json === 'string') {
+                comparisonString = json;
+            } else {
+                comparisonString = JSON.stringify(json);
+            }
+            if (comparisonString !== previousData) {
+                if (typeof json === 'string') {
                     data = JSON.parse(json);
-                } catch (e) {
+                } else {
                     // In normal browsers (not OBS), json is already an object and not a string. Not sure why
-                    data = json
+                    data = json;
                 }
-                previousData = json;
+                previousData = comparisonString;
 
                 let blueNames = data.blue.map(bot => `${bot.name} [${bot.mmr}]`)
                 let orangeNames = data.orange.map(bot => `${bot.name} [${bot.mmr}]`)
@@ -53,23 +60,26 @@
                 tipCards = [];
 				for (let bots of [data.blue, data.orange]) {
                     for (let bot of bots) {
-                        if (bot.developer != null && bot.developer == "The RLBot community")
+                        if (bot.developer != null && bot.developer === "The RLBot community")
                             // The developer has not added details about their bot
                             continue
                         if (bot.developer != null && bot.language != null)
                             tipCards.push({
                                 title: `${bot.name.trim()}`,
-                                text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`
+                                text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`,
+                                logo: bot.logo_path
                             });
                         if (bot.description != null && bot.description.trim().length)
                             tipCards.push({
                                 title: `${bot.name.trim()}`,
                                 text: bot.description.trim(),
+                                logo: bot.logo_path
                             });
                         if (bot.fun_fact != null && bot.fun_fact.trim().length)
                             tipCards.push({
                                 title: `Fun fact about ${bot.name.trim()}`,
                                 text: bot.fun_fact.trim(),
+                                logo: bot.logo_path
                             });
                     }
                 }
@@ -80,12 +90,14 @@
     const tipCardEl = document.getElementById("tipcard");
     const tipTitleEl = document.getElementById("tip-title");
     const tipTextEl = document.getElementById("tip-text");
+    const tipLogoEl = document.getElementById("tip-logo");
     setInterval(function () {
-        if (!tipCards || tipCards.length == 0)
+        if (!tipCards || tipCards.length === 0)
             return;
         const tipCard = tipCards[Math.floor(Math.random() * tipCards.length)];
         tipTitleEl.innerText = tipCard.title;
         tipTextEl.innerText = tipCard.text;
+        tipLogoEl.src = tipCard.logo || "";
         tipCardEl.setAttribute("visible", "");
         setTimeout(_ => tipCardEl.removeAttribute("visible"), 14*1000);
     }, 68*1000);

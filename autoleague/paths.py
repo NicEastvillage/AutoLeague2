@@ -66,7 +66,7 @@ class PackageFiles:
     """
     _package_dir = Path(__file__).absolute().parent
     _resource_dir = _package_dir / "resources"
-    _overlay_dir = _resource_dir / "overlay"
+    overlay_dir = _resource_dir / "overlay"
 
     default_match_config = _resource_dir / "default_match_config.cfg"
 
@@ -75,5 +75,5 @@ class PackageFiles:
     psyonix_rookie = _resource_dir / "psyonix_rookie.cfg"
     psyonix_appearance = _resource_dir / "psyonix_appearance.cfg"
 
-    overlay_current_match = _overlay_dir / "current_match.json"
-    overlay_summary = _overlay_dir / "summary.json"
+    overlay_current_match = overlay_dir / "current_match.json"
+    overlay_summary = overlay_dir / "summary.json"

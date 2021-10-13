@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="versus_logos.css"/>
+</head>
+<body>
+<div id="bot-logo-sheet">
+    <div id="blue-bot-logos"></div>
+    <div id="versus-container"><img src="images/versus.png" /></div>
+    <div id="orange-bot-logos"></div>
+</div>
+
+<script>
+    const blueBotLogosEl = document.getElementById("blue-bot-logos");
+    const orangeBotLogosEl = document.getElementById("orange-bot-logos");
+    let previousData = null;
+
+    setInterval(function () {
+        $.get("current_match.json", function (json) {
+            let comparisonString = '';
+            if (typeof json === 'string') {
+                comparisonString = json;
+            } else {
+                comparisonString = JSON.stringify(json);
+            }
+            if (comparisonString !== previousData) {
+                if (typeof json === 'string') {
+                    data = JSON.parse(json);
+                } else {
+                    // In normal browsers (not OBS), json is already an object and not a string. Not sure why
+                    data = json;
+                }
+                previousData = comparisonString;
+
+                const unknown_image = 'images/ghost_car.png';
+                for (let bot of data.blue) {
+                    $(blueBotLogosEl).append(`<div class="bot-herald">
+                            <img src="${bot.logo_path || unknown_image}" /><h1>${bot.name.trim()}</h1>
+                        </div>`);
+                }
+                for (let bot of data.orange) {
+                    $(orangeBotLogosEl).append(`<div class="bot-herald">
+                            <img src="${bot.logo_path || unknown_image}" /><h1>${bot.name.trim()}</h1>
+                        </div>`);
+                }
+            }
+        });
+    }, 1000);
+</script>
+
+</body>
+</html>
