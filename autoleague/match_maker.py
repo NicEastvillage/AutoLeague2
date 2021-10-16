@@ -355,8 +355,10 @@ class MatchMaker:
             if best_quality >= MIN_QUALITY:
                 break
 
-        blue_ids = [c.bot_id for c in best_match[0]]
-        orange_ids = [c.bot_id for c in best_match[1]]
+        # We sort by get_mmr() because it considers sigma
+        blue_ids = sorted([c.bot_id for c in best_match[0]], key=lambda id: rank_sys.get_mmr(id), reverse=True)
+        orange_ids = sorted([c.bot_id for c in best_match[1]], key=lambda id: rank_sys.get_mmr(id), reverse=True)
+        
         tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
         print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality}  Tickets consumed: {tickets_consumed}")
         ticket_sys.choose(blue_ids + orange_ids, bot_ids)
