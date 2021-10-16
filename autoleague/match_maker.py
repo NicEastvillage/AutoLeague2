@@ -4,8 +4,10 @@ from datetime import datetime
 from random import shuffle, choice
 from typing import Dict, List, Iterable, Mapping, Tuple, Optional
 
+import math
 import numpy
 import trueskill
+import itertools
 from pathlib import Path
 from rlbot.parsing.bot_config_bundle import BotConfigBundle, get_bot_config_bundle
 
@@ -168,6 +170,13 @@ class Candidate:
     rating: Rating
 
 
+# We need this here until Trueskill fixes their implementation
+def pdf(x, mu: float = 0, sigma: float = 1):
+    """Probability density function"""
+    return (1 / (math.sqrt(2 * math.pi) * abs(sigma)) *
+            math.exp(-(((x - mu) / abs(sigma)) ** 2 / 2)))
+
+
 class MatchMaker:
     @staticmethod
     def make_next(bots: Mapping[BotID, BotConfigBundle], rank_sys: RankingSystem,
@@ -179,7 +188,7 @@ class MatchMaker:
         """
 
         time_stamp = make_timestamp()
-        blue, orange = MatchMaker.decide_on_players_2(bots.keys(), rank_sys, ticket_sys)
+        blue, orange = MatchMaker.decide_on_players_3(bots.keys(), rank_sys, ticket_sys)
         name = "_".join([time_stamp] + blue + ["vs"] + orange)
         map = choice([
             "ChampionsField",
@@ -276,6 +285,80 @@ class MatchMaker:
         tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
         print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality_found}  score: {best_score_found}  "
               f"Rank pattern: {chosen_balance}")
+        ticket_sys.choose(blue_ids + orange_ids, bot_ids)
+        return blue_ids, orange_ids
+
+    @staticmethod
+    def decide_on_players_3(bot_ids: Iterable[BotID], rank_sys: RankingSystem,
+                            ticket_sys: TicketSystem) -> Tuple[List[BotID], List[BotID]]:
+        """
+        Find two balanced teams. The TicketSystem and the RankingSystem to find
+        a fair match up between some bots that haven't played for a while.
+        """
+        # Higher ticket strength produces a more uniform distribution of matches played, adjust by increments of 0.1
+        TICKET_STRENGTH = 1
+        # Higher MMR tolerance allows accurately rated bots to play in more "distant" MMR matches, adjust by increments of 1
+        MMR_TOLERANCE = 4
+        # Max attempts to build match of quality >= MIN_QUALITY
+        MAX_ITERATIONS = 20
+        MIN_QUALITY = 0.4
+
+        rank_sys.ensure_all(bot_ids)
+        ticket_sys.ensure(bot_ids)
+
+        best_quality = 0
+        best_match = None
+
+        for i in range(MAX_ITERATIONS):
+            # Get Leader Bot (choose randomly between bots with highest tickets)
+            max_tickets = max(ticket_sys.tickets.values())
+            possible_leaders = [bot_id for bot_id, tickets in ticket_sys.tickets.items() if tickets == max_tickets]
+            leader = numpy.random.choice(possible_leaders)
+
+            # Get MU for Leader bot, that will be the match mmr
+            match_mmr = rank_sys.get(leader).mu
+
+            # Score all bots based on probability to perform at target mmr, scaled by amount of tickets
+            candidates = [Candidate(bot_id, rank_sys.get(bot_id)) for bot_id in bot_ids if bot_id != leader]
+            scores = []
+
+            for c in candidates:
+                # Calculate probability to perform at desired mmr
+                performance_prob = pdf(match_mmr, mu=c.rating.mu, sigma=math.sqrt(c.rating.sigma**2 + MMR_TOLERANCE**2))
+
+                # Calculate weighting factor based on tickets
+                tickets = ticket_sys.get(c.bot_id)
+                tickets_weight = tickets ** TICKET_STRENGTH
+
+                # Calculate candidate score
+                scores.append(performance_prob * tickets_weight)
+
+            # Pick 5 bots randomly based on their score
+            probs = numpy.asarray(scores) / sum(scores)
+            players = list(numpy.random.choice(candidates, size=5, p=probs, replace=False))
+            players.append(Candidate(leader, rank_sys.get(leader)))
+
+            # Get the highest quality match with the 6 chosen bots
+            combinations = list(itertools.combinations(players, 3))
+            possible_matches = len(combinations) // 2
+            blue_combs = combinations[:possible_matches]
+            orange_combs = combinations[:possible_matches-1:-1]
+
+            for i in range(possible_matches):
+                blue_team = blue_combs[i]
+                orange_team = orange_combs[i]
+                quality = trueskill.quality([[c.rating for c in blue_team], [c.rating for c in orange_team]])
+                if quality > best_quality:
+                    best_quality = quality
+                    best_match = (blue_team, orange_team)
+
+            if best_quality >= MIN_QUALITY:
+                break
+
+        blue_ids = [c.bot_id for c in best_match[0]]
+        orange_ids = [c.bot_id for c in best_match[1]]
+        tickets_consumed = sum([ticket_sys.get_ensured(b) for b in blue_ids + orange_ids])
+        print(f"Match: {blue_ids} vs {orange_ids}\nMatch quality: {best_quality}  Tickets consumed: {tickets_consumed}")
         ticket_sys.choose(blue_ids + orange_ids, bot_ids)
         return blue_ids, orange_ids
 
