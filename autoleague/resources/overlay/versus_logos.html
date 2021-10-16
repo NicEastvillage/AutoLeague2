@@ -9,15 +9,18 @@
     <link rel="stylesheet" href="versus_logos.css"/>
 </head>
 <body>
-<div id="bot-logo-sheet">
-    <div id="blue-bot-logos"></div>
-    <div id="versus-container"><img src="images/versus.png" /></div>
-    <div id="orange-bot-logos"></div>
-</div>
-
+    <div id="bg-field"></div>
+    <div id="dark">
+        <div id="bot-logo-sheet">
+            <div id="blue-bot-logos"></div>
+            <div id="versus-container"><img src="images/versus.png" /></div>
+            <div id="orange-bot-logos"></div>
+        </div>
+    </div>
 <script>
     const blueBotLogosEl = document.getElementById("blue-bot-logos");
     const orangeBotLogosEl = document.getElementById("orange-bot-logos");
+    const backgroundEl = document.getElementById("bg-field");
     let previousData = null;
 
     setInterval(function () {
@@ -52,6 +55,8 @@
                             <img src="${bot.logo_path || unknown_image}" /><h1>${bot.name.trim()}</h1>
                         </div>`);
                 }
+
+                backgroundEl.style.backgroundImage = `url('images/fields/${data.map}.png')`;
             }
         });
     }, 1000);

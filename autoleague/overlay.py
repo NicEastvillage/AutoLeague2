@@ -43,7 +43,8 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
 
     overlay = {
         "blue": [bot_data(bot_id) for bot_id in match.blue],
-        "orange": [bot_data(bot_id) for bot_id in match.orange]
+        "orange": [bot_data(bot_id) for bot_id in match.orange],
+        "map": match.map
     }
 
     with open(PackageFiles.overlay_current_match, 'w') as f:

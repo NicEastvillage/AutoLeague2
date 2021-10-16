@@ -1,12 +1,35 @@
 body {
-    background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 90%) no-repeat;
     height: 1080px;
+    background-color: #2D334D;
+}
+
+#bg-field {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/fields/ChampionsField.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+#dark {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #1A1E2DDD 0%, rgba(0,0,0,0) 90%) no-repeat;
 }
 
 #bot-logo-sheet {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 170px;
+    margin-top: 160px;
     height: 600px;
     width: 1400px;
     display: flex;

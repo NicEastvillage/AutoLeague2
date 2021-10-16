@@ -187,6 +187,9 @@ class MatchMaker:
             "NeoTokyo",
             "UrbanCentral",
             "BeckwithPark",
+            "Mannfield",
+            "NeonFields",
+            "UtopiaColiseum",
         ])
         return MatchDetails(time_stamp, name, blue, orange, map)
 
