@@ -316,7 +316,7 @@ class MatchMaker:
 
         for i in range(MAX_ITERATIONS):
             # Get Leader Bot (choose randomly between bots with highest tickets)
-            possible_leaders = [bot_id for bot_id, tickets in ticket_sys.tickets.items() if tickets == max_tickets]
+            possible_leaders = [bot_id for bot_id, tickets in ticket_sys.tickets.items() if tickets == max_tickets and bot_id in bot_ids]
             leader = numpy.random.choice(possible_leaders)
 
             # Get MU for Leader bot, that will be the match mmr
