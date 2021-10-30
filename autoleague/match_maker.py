@@ -312,9 +312,10 @@ class MatchMaker:
         best_quality = 0
         best_match = None
 
+        max_tickets = max([ticket_sys.get(bot_id) for bot_id in bot_ids])
+
         for i in range(MAX_ITERATIONS):
             # Get Leader Bot (choose randomly between bots with highest tickets)
-            max_tickets = max(ticket_sys.tickets.values())
             possible_leaders = [bot_id for bot_id, tickets in ticket_sys.tickets.items() if tickets == max_tickets]
             leader = numpy.random.choice(possible_leaders)
 
