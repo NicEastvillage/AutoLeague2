@@ -47,7 +47,10 @@ function updateLeaderboard(summary, current_match) {
             ][Math.min(Math.max(0, Math.floor(bot.mmr / 20.0)), 4)]
 
             // Win indicators
-            let win_indicators = bot.wins
+            let win_indicators = bot.wins.length > 6 ?
+                `${bot.wins.filter(win => win).length}/${bot.wins.length}`
+                : 
+                bot.wins
                 .map(win => win ? "images/win.png" : "images/loss.png")
                 .map(img => `<img class="rank-win-indicator" src=${img} />`)
                 .join("")

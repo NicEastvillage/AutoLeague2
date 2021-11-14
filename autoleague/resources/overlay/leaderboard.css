@@ -22,7 +22,7 @@
     grid-template-areas:
             "division number movement name mmr mmr-incr wins tickets";
     align-items: center;
-    font-size: 1.05em;
+    font-size: 1.00em;
 }
 
 .rank-item p {
