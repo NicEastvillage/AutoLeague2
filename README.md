@@ -33,17 +33,19 @@ The entire state of the league is stored in the folder `path/to/my/league/`, whi
 I use AutoLeague2 for [East's League Play](https://docs.google.com/document/d/1PzZ3UgBp36RO7V6iiXN3AnLioDUAW9jwgHpZXiFuvIg/edit#). The league play is split in weeks, and each week I do the following steps:
 
 * Before stream:
+  * Make sure `path/to/my/league` is up-to-date
   * Delete the old submission folder `path/to/my/league/bots/` and unzip the new one
   * Unzip all bots using the command `autoleague.py bot unzip`
   * Check if `autoleague.py bot list` shows all the bots I expect
   * Test all updated/new bots using `autoleague.py bot test <bot_id>`. If a is bot misbehaving, I send a message to the creator explaining the issue and delete the bot's config in the `path/to/my/league/bots/`. This will prevent it from playing.
   * Run `autoleague.py summary` to reset the summary shown by the overlay
+
 * During stream:
   * Run `autoleague.py match run` to run a single match. Overlays, tickets, mmr, summary, and more updates automatically.
   * Run `autoleague.py match prepare` to show off the playing bots before the match starts.
   * If needed, a match can be undone using `autoleague.py match undo`.
 
-### Other commands
+### All commands
 
 ```
 setup league <league_dir>           Setup a league in <league_dir>
