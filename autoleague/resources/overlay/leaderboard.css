@@ -1,95 +1,53 @@
 
-.rank-table-header {
+.leaderboard-table-header {
     display: grid;
-    grid-template-columns: 2px 62px auto 76px 56px 66px;
+    grid-template-columns: 26px auto 72px 62px;
     grid-template-rows: auto;
     grid-template-areas:
-            "division number name mmr wins tickets";
+            "number name games points";
     border: 1px none #C8CCD0;
     border-bottom-style: solid;
 }
 
-.rank-table-header p {
+.leaderboard-table-header p {
     font-weight: bold;
     font-size: 1.05em;
     margin: 3px 0;
 }
 
-.rank-item {
+.leaderboard-item {
     display: grid;
-    grid-template-columns: 2px 36px 26px auto 38px 38px 56px 66px;
+    grid-template-columns: 26px auto 72px 62px;
     grid-template-rows: auto;
     grid-template-areas:
-            "division number movement name mmr mmr-incr wins tickets";
+            "number name games points";
     align-items: center;
     font-size: 1.00em;
 }
 
-.rank-item p {
+.leaderboard-item p {
     margin: 5px 0;
 }
 
-.rank-item .rank-division {
-    grid-area: division;
-    width: 100%;
-    height: 100%;
-}
-
-.division-quantum {
-    background: #D077FA;
-}
-
-.division-overclocked {
-    background: #EF4435;
-}
-
-.division-processor {
-    background: #64AAFF;
-}
-
-.division-circuit {
-    background: #2ADA5D;
-}
-
-.division-transistor {
-    background: #DCCC22;
-}
-
-.rank-item .rank-number {
+.leaderboard-item .leaderboard-number {
     grid-area: number;
 }
 
-.rank-item .rank-movement {
-    grid-area: movement;
-}
-
-.rank-item .rank-bot-name {
+.leaderboard-item .leaderboard-bot-name {
     grid-area: name;
 }
 
-.rank-item .rank-wins {
-    grid-area: wins;
+.leaderboard-item .leaderboard-games {
+    grid-area: games;
     justify-content: center;
     display:flex;
 }
 
-.rank-win-indicator {
+.leaderboard-game-indicator {
     padding-right: 2px;
 }
 
-.rank-item .rank-mmr {
-    grid-area: mmr;
-    margin-right: 2px;
-}
-
-.rank-item .rank-mmr-incr {
-    grid-area: mmr-incr;
-    color: #7a7a80;
-}
-
-.rank-item .rank-tickets {
-    grid-area: tickets;
-    margin-left: 10px;
-    background: #FFF05A;
-    min-height: 10px;
+.leaderboard-item .leaderboard-points {
+    grid-area: points;
+    text-align: center;
 }
