@@ -15,14 +15,6 @@ p.right {
     text-align: right;
 }
 
-.odd {
-    background: #2D334D;
-}
-
-.even {
-    background: #353C5A;
-}
-
 #matches-container {
     width: 900px;
     padding: 8px;
@@ -35,38 +27,66 @@ p.right {
 
 .match-item {
     display: grid;
-    grid-template-columns: 30px 390px 16px 60px 16px 390px;
-    grid-template-rows: auto;
+    grid-template-columns: auto 30px auto;
+    grid-template-rows: auto auto auto;
     grid-template-areas:
-            "number blue-names blue-crown mid orange-crown orange-names";
+            "bot1 blue-score bot4"
+            "bot2 . bot5"
+            "bot3 orange-score bot6";
     align-items: center;
+    width: 400px;
+    height: 120px;
+    background-image: url('images/match background.png'), url('images/match background edge.png');
+    background-size: contain, contain;
+    background-repeat: no-repeat, repeat;
+    background-position: 50%;
 }
 
-.match-number {
-    grid-area: number;
-    margin-right: 2px;
+.match-score {
+    text-align: center;
+    margin: 0
 }
 
-.match-name .blue {
-    grid-area: blue-names;
+.blue-score {
+    grid-area: blue-score;
 }
 
-.match-name .orange {
-    grid-area: orange-names;
+.orange-score {
+    grid-area: orange-score;
 }
 
-.crown {
-    margin-top: 4px;
+.match-bot-name {
+    margin: 0 14px;
 }
 
-.crown .blue {
-    grid-area: blue-crown;
+.match-blue-name {
+
 }
 
-.crown .orange {
-    grid-area: orange-crown;
+.match-orange-name {
+    text-align: right;
 }
 
-.hide {
-    display: none;
+.bot1 {
+    grid-area: bot1;
+}
+
+.bot2 {
+    grid-area: bot2;
+}
+
+.bot3 {
+    grid-area: bot3;
+}
+
+.bot4 {
+    grid-area: bot4;
+}
+
+.bot5 {
+    grid-area: bot5;
+}
+
+.bot6 {
+    grid-area: bot6;
 }
