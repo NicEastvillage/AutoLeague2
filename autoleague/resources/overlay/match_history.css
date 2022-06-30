@@ -16,9 +16,9 @@ p.right {
 }
 
 #matches-container {
-    width: 900px;
+    width: 1150px;
     padding: 8px;
-    background: #2D334D;
+    background: #161616;
 }
 
 #matches-table {
@@ -26,6 +26,8 @@ p.right {
 }
 
 .match-item {
+    float: left;
+    margin: 16px;
     display: grid;
     grid-template-columns: auto 30px auto;
     grid-template-rows: auto auto auto;
@@ -34,17 +36,34 @@ p.right {
             "bot2 . bot5"
             "bot3 orange-score bot6";
     align-items: center;
-    width: 400px;
-    height: 120px;
-    background-image: url('images/match background.png'), url('images/match background edge.png');
-    background-size: contain, contain;
+    width: 340px;
+    height: 118px;
+    background-image: url('images/match middle.png'), url('images/match edge.png');
+    background-size: contain, 100% 100%;
     background-repeat: no-repeat, repeat;
     background-position: 50%;
 }
 
+.blue-win {
+    background-image: url('images/match middle blue win.png'), url('images/match edge blue win.png');
+}
+
+.blue-close {
+    background-image: url('images/match middle blue close.png'), url('images/match edge blue close.png');
+}
+
+.orange-win {
+    background-image: url('images/match middle orange win.png'), url('images/match edge orange win.png');
+}
+
+.orange-close {
+    background-image: url('images/match middle orange close.png'), url('images/match edge orange close.png');
+}
+
 .match-score {
     text-align: center;
-    margin: 0
+    margin: 0;
+    font-weight: bold;
 }
 
 .blue-score {
