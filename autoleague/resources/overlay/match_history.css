@@ -109,3 +109,7 @@ p.right {
 .bot6 {
     grid-area: bot6;
 }
+
+.surrogate {
+    color: #1a1a1c;
+}
