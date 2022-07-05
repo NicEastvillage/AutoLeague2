@@ -9,10 +9,7 @@ class LeagueSettings:
     `league_settings.json` in the league directory.
     """
     def __init__(self):
-        # Number of matches included in the last summary.
-        # Increased when a match is run.
-        # Can be set using `summary make <count>`.
-        self.last_summary = 0
+        pass
 
     def save(self, ld: LeagueDir):
         with open(ld.league_settings, 'w') as f:

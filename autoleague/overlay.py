@@ -47,7 +47,7 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
         json.dump(overlay, f, indent=4)
 
 
-def make_summary(ld: LeagueDir, count: int):
+def make_summary(ld: LeagueDir):
     """
     Make a summary of the N latest matches and the resulting ranks and tickets.
     If N is 0 the summary will just contain the current ratings.
@@ -56,40 +56,56 @@ def make_summary(ld: LeagueDir, count: int):
 
     # ========== Matches ==========
 
-    matches = []
-    bot_wins = defaultdict(list)  # Maps bots to list of booleans, where true=win and false=loss
+    matches_summary = []
+    bot_games = defaultdict(list)  # Maps bots to list of strings (either "win", "close", "loss", or "todo")
 
-    if count > 0:
-        latest_matches = MatchDetails.latest(ld, count)
-        for i, match in enumerate(latest_matches):
-            matches.append({
-                "index": i,
-                "blue_names": [defmt_bot_name(bot_id) for bot_id in match.blue],
-                "orange_names": [defmt_bot_name(bot_id) for bot_id in match.orange],
-                "blue_goals": match.result.blue_goals,
-                "orange_goals": match.result.orange_goals,
-            })
+    matches = MatchDetails.all(ld, unfinished=True)
+    print(f"Matches: {len(matches)}")
+    for i, match in enumerate(matches):
+        matches_summary.append({
+            "index": i,
+            "blue_names": [defmt_bot_name(bot_id) for bot_id in match.blue],
+            "orange_names": [defmt_bot_name(bot_id) for bot_id in match.orange],
+            "surrogate_names": [defmt_bot_name(bot_id) for bot_id in match.surrogate],
+            "complete": match.result is not None,
+            "blue_goals": match.result.blue_goals if match.result is not None else 0,
+            "orange_goals": match.result.orange_goals if match.result is not None else 0,
+        })
+        if match.result is None:
             for bot in match.blue:
-                bot_wins[bot].append(match.result.blue_goals > match.result.orange_goals)
+                if bot not in match.surrogate:
+                    bot_games[bot].append("todo")
             for bot in match.orange:
-                bot_wins[bot].append(match.result.blue_goals < match.result.orange_goals)
+                if bot not in match.surrogate:
+                    bot_games[bot].append("todo")
+        else:
+            win_or_close = "close" if abs(match.result.blue_goals - match.result.orange_goals) == 1 else "win"
+            blue_win = match.result.blue_goals > match.result.orange_goals
+            for bot in match.blue:
+                if bot not in match.surrogate:
+                    bot_games[bot].append(win_or_close if blue_win else "loss")
+            for bot in match.orange:
+                if bot not in match.surrogate:
+                    bot_games[bot].append(win_or_close if not blue_win else "loss")
 
-    summary["matches"] = matches
+    summary["matches"] = matches_summary
 
     # ========= Ranks/Ratings =========
 
     bots = load_all_bots(ld)
     bots_by_rank = []
 
-    if count <= 0:
-        # Old rankings and current rankings is the same, but make sure all bots have a rank currently
-        old_rankings = RankingSystem.load(ld).as_sorted_list()
-        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
+    # Determine current rank and the ranks 1 match ago
+    all_rankings = RankingSystem.all(ld)
+    print(f"Rankings: {len(all_rankings)}")
+    if len(all_rankings) > 1:
+        old_rankings = all_rankings[-2].as_sorted_list()
+        cur_rankings = all_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
     else:
-        # Determine current rank and their to N matches ago
-        n_rankings = RankingSystem.latest(ld, count + 1)
-        old_rankings = n_rankings[0].as_sorted_list()
-        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
+        old_rankings = all_rankings[-1].as_sorted_list()
+        cur_rankings = all_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
+
+    print(cur_rankings)
 
     for i, (bot, mrr) in enumerate(cur_rankings):
         cur_rank = i + 1
@@ -106,7 +122,7 @@ def make_summary(ld: LeagueDir, count: int):
             "old_mmr": old_mmr,
             "cur_rank": cur_rank,
             "old_rank": old_rank,
-            "wins": bot_wins[bot],
+            "games": bot_games[bot],
         })
 
     summary["bots_by_rank"] = bots_by_rank
@@ -115,10 +131,6 @@ def make_summary(ld: LeagueDir, count: int):
 
     with open(PackageFiles.overlay_summary, 'w') as f:
         json.dump(summary, f, indent=4)
-
-    league_settings = LeagueSettings.load(ld)
-    league_settings.last_summary = count
-    league_settings.save(ld)
 
 
 # Borrowed from RLBotGUI

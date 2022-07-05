@@ -1,7 +1,7 @@
 #body-container {
     margin-top: 0;
     display: grid;
-    grid-template-columns: auto 410px 80px auto auto;
+    grid-template-columns: auto 350px 80px auto auto;
     grid-template-rows: auto;
     grid-template-areas:
             ". ranks . matches .";

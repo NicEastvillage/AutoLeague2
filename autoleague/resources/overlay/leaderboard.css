@@ -1,7 +1,7 @@
 
 .leaderboard-table-header {
     display: grid;
-    grid-template-columns: 26px auto 72px 62px;
+    grid-template-columns: 30px auto 72px 62px;
     grid-template-rows: auto;
     grid-template-areas:
             "number name games points";

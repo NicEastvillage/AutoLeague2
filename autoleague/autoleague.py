@@ -51,12 +51,11 @@ Usage:
         parse_subcommand_rank(args)
     elif args[0] == "match":
         parse_subcommand_match(args)
-    elif args[0] == "summary" and (1 <= len(args) <= 2):
+    elif args[0] == "summary" and len(args) == 1:
 
-        count = int(args[1]) if len(args) == 2 else 0
         ld = require_league_dir()
-        make_summary(ld, count)
-        print(f"Created summary of the last {count} matches")
+        make_summary(ld)
+        print(f"Created summary.json")
 
     else:
         print(help_msg)
@@ -234,9 +233,8 @@ def parse_subcommand_match(args: List[str]):
             rank_sys.print_ranks()
 
             # Make summary
-            league_settings = LeagueSettings.load(ld)
-            make_summary(ld, league_settings.last_summary + 1)
-            print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+            make_summary(ld)
+            print(f"Created summary.json")
         else:
             print("Match cancelled.")
 

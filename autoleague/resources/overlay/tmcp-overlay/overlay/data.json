@@ -1,88 +1,28 @@
 {
     "actions": {
-        "3": {
-            "action": {
-                "type": "BOOST",
-                "target": 30
-            },
-            "name": "Teammate2",
-            "team": 1,
-            "time": 168.99166870117188,
-            "outdated": false
-        },
         "0": {
             "action": {
                 "type": "BALL",
-                "time": 343.178336657146,
+                "time": 507.7154846191406,
                 "direction": [
                     0.0,
                     0.0,
                     0.0
                 ]
             },
-            "name": "Teammate3",
+            "name": "Molten",
             "team": 0,
-            "time": 342.70001220703125,
-            "outdated": false
-        },
-        "1": {
-            "action": {
-                "type": "BOOST",
-                "target": 15
-            },
-            "name": "Teammate4",
-            "team": 0,
-            "time": 334.5833435058594,
-            "outdated": false
-        },
-        "4": {
-            "action": {
-                "type": "BALL",
-                "time": 344.58366676673575,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "Teammate5",
-            "team": 1,
-            "time": 342.70001220703125,
-            "outdated": false
-        },
-        "2": {
-            "action": {
-                "type": "BOOST",
-                "target": 4
-            },
-            "name": "Teammate7",
-            "team": 0,
-            "time": 337.4916687011719,
-            "outdated": false
-        },
-        "5": {
-            "action": {
-                "type": "BALL",
-                "time": 339.0899830700719,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "Teammate6",
-            "team": 1,
-            "time": 337.9416809082031,
+            "time": 506.67498779296875,
             "outdated": false
         }
     },
     "active": false,
     "names": [
-        "Teammate3",
-        "Teammate4",
-        "Teammate7",
-        "Teammate2",
-        "Teammate5",
-        "Teammate6"
+        "Molten",
+        "Engine",
+        "BitBot",
+        "Bumbler",
+        "CTAUtils",
+        "DishBot"
     ]
 }
