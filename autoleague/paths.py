@@ -41,11 +41,9 @@ class LeagueDir:
     def __init__(self, league_dir: Path):
         self._league_dir = league_dir.absolute()
         self.league_settings = self._league_dir / "league_settings.json"
-        self.retirement = self._league_dir / "retirement.json"
         self.matches = self._league_dir / f"matches"
         self.bots = self._league_dir / "bots"
         self.rankings = self._league_dir / "rankings"
-        self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
         self.bot_summary = self._league_dir / "bot_summary.json"
         self.stats = self._league_dir / "stats"
@@ -54,7 +52,6 @@ class LeagueDir:
     def _ensure_directory_structure(self):
         self.matches.mkdir(exist_ok=True)
         self.rankings.mkdir(exist_ok=True)
-        self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
         self.replays.mkdir(exist_ok=True)
         self.stats.mkdir(exist_ok=True)

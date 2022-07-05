@@ -4,7 +4,7 @@ from typing import Mapping, Tuple, Optional
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 from rlbot.setup_manager import setup_manager_context
 from rlbot.training.training import Fail, run_exercises
-from rlbottraining.exercise_runner import run_playlist, RenderPolicy, use_or_create, apply_render_policy
+from rlbottraining.exercise_runner import use_or_create
 from rlbottraining.history.exercise_result import ExerciseResult
 from rlbottraining.training_exercise_adapter import TrainingExerciseAdapter
 

@@ -1,10 +1,8 @@
 from pathlib import Path
 
-from match import MatchDetails
 from paths import LeagueDir
 from ranking_system import RankingSystem
 from settings import PersistentSettings
-import seaborn as sns
 import pandas as pd
 import matplotlib.pylab as plt
 
@@ -17,7 +15,8 @@ for path in list(ld.rankings.iterdir()):
     if time not in rankings:
         rankings[time] = {}
     ranking = RankingSystem.read(path)
-    rankings[time].update(ranking.get_mmr_all())
+    # todo - I probably broke this
+    rankings[time].update(ranking.all(ld))
 
 bots = sorted(set([bot_id for time in rankings for bot_id in rankings[time]]))
 times = sorted(rankings.keys())

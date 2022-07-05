@@ -20,7 +20,7 @@ settings = PersistentSettings.load()
 ld = LeagueDir(Path(settings.league_dir_raw))
 
 ranks = RankingSystem.latest(ld, 1)[0]
-bots = sorted(ranks.ratings.keys(), key=lambda bot: -ranks.get_mmr(bot))
+bots = sorted(ranks.ratings.keys(), key=lambda bot: -ranks.get(bot))
 N = len(bots)
 matches = MatchDetails.all(ld)
 

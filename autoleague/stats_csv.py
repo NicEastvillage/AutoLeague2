@@ -4,7 +4,6 @@ from pathlib import Path
 
 from leaguesettings import LeagueSettings
 from match import MatchDetails
-from match_maker import TicketSystem
 from paths import LeagueDir
 from ranking_system import RankingSystem
 from settings import PersistentSettings
@@ -15,17 +14,9 @@ league_settings = LeagueSettings.load(ld)
 
 times = ["00000000000000"] + [path.name[:14] for path in list(ld.rankings.iterdir())]
 rankings = RankingSystem.all(ld)
-tickets = TicketSystem.all(ld, league_settings)
 bots = sorted(rankings[-1].ratings.keys())
 matches = MatchDetails.all(ld)
 
-# Tickets
-with open(ld.stats / "tickets.csv", 'w', newline="") as csvfile_match:
-    writer_match = csv.writer(csvfile_match)
-    # Header
-    writer_match.writerow(["time"] + bots)
-    for time, ticket in zip(times, tickets):
-        writer_match.writerow([time] + [float(ticket.get_ensured(bot)) for bot in bots])
 
 # Rankings
 with open(ld.stats / "mmr.csv", 'w', newline="") as csvfile_mmr:

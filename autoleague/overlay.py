@@ -2,15 +2,13 @@ import json
 import shutil
 import string
 from collections import defaultdict
-from pathlib import Path
 from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name, load_all_unretired_bots, load_retired_bots
+from bots import BotID, defmt_bot_name, load_all_bots
 from leaguesettings import LeagueSettings
 from match import MatchDetails
-from match_maker import TicketSystem
 from paths import PackageFiles, LeagueDir
 from ranking_system import RankingSystem
 
@@ -20,14 +18,12 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
     Make a `current_match.json` file which contains the details about the current
     match and its participants.
     """
-
-    retired = load_retired_bots(ld)
     rankings = RankingSystem.load(ld).ensure_all(list(bots.keys()))
-    rank_list = rankings.as_sorted_list(exclude=retired)
+    rank_list = rankings.as_sorted_list()
 
     def bot_data(bot_id):
         config = bots[bot_id]
-        rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
+        rank, mmr = [(i + 1, mrr) for i, (id, mrr) in enumerate(rank_list) if id == bot_id][0]
         return {
             "name": config.name,
             "config_path": str(config.config_path),
@@ -58,8 +54,6 @@ def make_summary(ld: LeagueDir, count: int):
     """
     summary = {}
 
-    tickets = TicketSystem.load(ld)
-
     # ========== Matches ==========
 
     matches = []
@@ -84,25 +78,24 @@ def make_summary(ld: LeagueDir, count: int):
 
     # ========= Ranks/Ratings =========
 
-    bots = load_all_unretired_bots(ld)
-    retired = load_retired_bots(ld)
+    bots = load_all_bots(ld)
     bots_by_rank = []
 
     if count <= 0:
         # Old rankings and current rankings is the same, but make sure all bots have a rank currently
-        old_rankings = RankingSystem.load(ld).as_sorted_list(exclude=retired)
-        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list(exclude=retired)
+        old_rankings = RankingSystem.load(ld).as_sorted_list()
+        cur_rankings = RankingSystem.load(ld).ensure_all(list(bots.keys())).as_sorted_list()
     else:
         # Determine current rank and their to N matches ago
         n_rankings = RankingSystem.latest(ld, count + 1)
-        old_rankings = n_rankings[0].as_sorted_list(exclude=retired)
-        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list(exclude=retired)
+        old_rankings = n_rankings[0].as_sorted_list()
+        cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
-    for i, (bot, mrr, sigma) in enumerate(cur_rankings):
+    for i, (bot, mrr) in enumerate(cur_rankings):
         cur_rank = i + 1
         old_rank = None
         old_mmr = None
-        for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
+        for j, (other_bot, other_mrr) in enumerate(old_rankings):
             if bot == other_bot:
                 old_rank = j + 1
                 old_mmr = other_mrr
@@ -111,10 +104,8 @@ def make_summary(ld: LeagueDir, count: int):
             "bot_id": defmt_bot_name(bot),
             "mmr": mrr,
             "old_mmr": old_mmr,
-            "sigma": sigma,
             "cur_rank": cur_rank,
             "old_rank": old_rank,
-            "tickets": tickets.get(bot) or tickets.new_bot_ticket_count,
             "wins": bot_wins[bot],
         })
 
