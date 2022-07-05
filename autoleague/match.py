@@ -7,7 +7,7 @@ from rlbot.matchconfig.conversions import read_match_config_from_file
 from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID, psyonix_bot_skill
+from bots import BotID
 from paths import PackageFiles, LeagueDir
 
 
@@ -42,6 +42,7 @@ class MatchDetails:
     name: str = ""
     blue: List[BotID] = field(default_factory=list)
     orange: List[BotID] = field(default_factory=list)
+    surrogate: List[BotID] = field(default_factory=list)
     map: str = ""
     result: Optional[MatchResult] = None
     replay_id: Optional[str] = None
@@ -61,10 +62,6 @@ class MatchDetails:
 
     def bot_to_config(self, bot: BotID, bots: Mapping[BotID, BotConfigBundle], team: Team) -> PlayerConfig:
         config = PlayerConfig.bot_config(Path(bots[bot].config_path), team)
-        # Resolve Psyonix bots -- only Psyonix bots are in this list
-        if bot in psyonix_bot_skill:
-            config.rlbot_controlled = False
-            config.bot_skill = psyonix_bot_skill[bot]
         return config
 
     def save(self, ld: LeagueDir):
@@ -95,13 +92,16 @@ class MatchDetails:
     @staticmethod
     def undo(ld: LeagueDir):
         """
+        todo - this doesn't work with TT's match schedule because all the matches are generated at once
         Remove latest match
-        """
+
         if any(ld.matches.iterdir()):
             # Assume last match file is the newest, since they are prefixed with a time stamp
             list(ld.matches.iterdir())[-1].unlink()   # Remove file
         else:
             print("No match to undo.")
+        """
+        print("Depricated: undo is not supported with TT's match schedule")
 
     @staticmethod
     def read(path: Path) -> 'MatchDetails':

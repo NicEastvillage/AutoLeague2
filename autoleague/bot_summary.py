@@ -16,7 +16,7 @@ def create_bot_summary(ld: LeagueDir):
 
     def bot_data(bot_id):
         config = bots[bot_id]
-        rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
+        rank, points = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
         return {
             "name": config.name,
             "developer": config.base_agent_config.get("Details", "developer"),
@@ -25,7 +25,7 @@ def create_bot_summary(ld: LeagueDir):
             "github": config.base_agent_config.get("Details", "github"),
             "language": config.base_agent_config.get("Details", "language"),
             "rank": rank,
-            "mmr": mmr,
+            "points": points,
         }
 
     bot_summary = {defmt_bot_name(bot_id): bot_data(bot_id) for bot_id in bots.keys()}
