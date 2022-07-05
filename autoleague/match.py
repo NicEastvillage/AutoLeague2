@@ -80,14 +80,18 @@ class MatchDetails:
         Returns the match details of the n latest matches
         """
         # Assume last match file is the newest, since they are prefixed with a time stamp
-        return [MatchDetails.read(path) for path in list(ld.matches.iterdir())[-count:]]
+        matches = [MatchDetails.read(path) for path in list(ld.matches.iterdir())]
+        return [match for match in matches if match.result is not None][-count:]
 
     @staticmethod
-    def all(ld: LeagueDir) -> List['MatchDetails']:
+    def all(ld: LeagueDir, unfinished=False) -> List['MatchDetails']:
         """
         Returns a list of all matches played, chronological order
         """
-        return [MatchDetails.read(path) for path in list(ld.matches.iterdir())]
+        matches = [MatchDetails.read(path) for path in list(ld.matches.iterdir())]
+        if unfinished:
+            return matches
+        return [match for match in matches if match.result is not None]
 
     @staticmethod
     def undo(ld: LeagueDir):

@@ -23,7 +23,7 @@ def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotCon
 
     def bot_data(bot_id):
         config = bots[bot_id]
-        rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
+        rank, mmr = [(i + 1, mrr) for i, (id, mrr) in enumerate(rank_list) if id == bot_id][0]
         return {
             "name": config.name,
             "config_path": str(config.config_path),
@@ -91,11 +91,11 @@ def make_summary(ld: LeagueDir, count: int):
         old_rankings = n_rankings[0].as_sorted_list()
         cur_rankings = n_rankings[-1].ensure_all(list(bots.keys())).as_sorted_list()
 
-    for i, (bot, mrr, sigma) in enumerate(cur_rankings):
+    for i, (bot, mrr) in enumerate(cur_rankings):
         cur_rank = i + 1
         old_rank = None
         old_mmr = None
-        for j, (other_bot, other_mrr, _) in enumerate(old_rankings):
+        for j, (other_bot, other_mrr) in enumerate(old_rankings):
             if bot == other_bot:
                 old_rank = j + 1
                 old_mmr = other_mrr
@@ -104,7 +104,6 @@ def make_summary(ld: LeagueDir, count: int):
             "bot_id": defmt_bot_name(bot),
             "mmr": mrr,
             "old_mmr": old_mmr,
-            "sigma": sigma,
             "cur_rank": cur_rank,
             "old_rank": old_rank,
             "wins": bot_wins[bot],

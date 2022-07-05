@@ -39,6 +39,8 @@ class RankingSystem:
         Call `save` to save changes persistently.
         """
 
+        self.ensure_all(match.blue + match.orange)
+
         close_game = 1 if abs(result.blue_goals - result.orange_goals) <= 1 else 0
         blue = 2 if result.blue_goals > result.orange_goals else close_game
         orange = 2 if result.orange_goals > result.blue_goals else close_game

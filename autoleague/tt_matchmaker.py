@@ -2,7 +2,6 @@ import subprocess
 import sys
 from typing import List
 
-from autoleague.paths import LeagueDir
 from bots import BotID
 from match import MatchDetails
 from random import choice
@@ -11,7 +10,7 @@ from random import choice
 class TTMatchmaker:
 
     @staticmethod
-    def get_next_match(ld: LeagueDir) -> MatchDetails:
+    def get_next_match(ld) -> MatchDetails:
         matches = TTMatchmaker.load_match_schedule(ld)
         if len(matches) < 1:
             print(f"There are no matches left to run!")
@@ -22,20 +21,20 @@ class TTMatchmaker:
             return match
 
     @staticmethod
-    def load_match_schedule(ld: LeagueDir) -> List[MatchDetails]:
+    def load_match_schedule(ld) -> List[MatchDetails]:
         """
         loads all matches that don't have a result yet
         """
-        matches = MatchDetails.all(ld)
+        matches = MatchDetails.all(ld, True)
         return [match for match in matches if match.result is None]
 
     @staticmethod
-    def save_match_schedule(schedule: List[MatchDetails], ld: LeagueDir):
+    def save_match_schedule(schedule: List[MatchDetails], ld):
         for match in schedule:
             match.save(ld)
 
     @staticmethod
-    def generate_match_schedule(bots: List[BotID], match_amount: int, ld: LeagueDir):
+    def generate_match_schedule(bots: List[BotID], match_amount: int, ld):
         """
         Generates a list of MatchDetails for each match to be played in the tournament.
         """
@@ -56,19 +55,19 @@ class TTMatchmaker:
             raw_schedule = subprocess.check_output(args).strip().decode("UTF-8")
 
             for match in raw_schedule.split("\n"):
-                data: List = match.split(" ")
+                data: List = list(map(int, match.split(" ")))
                 blue: List[BotID] = []
                 orange: List[BotID] = []
                 surrogate: List[BotID] = []
                 for i in range(1, len(data), 2):
                     if i < 6:
-                        blue.append(bots[data[i]])
+                        blue.append(bots[data[i]-1])
                     else:
-                        orange.append(bots[data[i]])
+                        orange.append(bots[data[i]-1])
                     if data[i + 1] == 1:
-                        surrogate.append(bots[data[i]])
-                name = "_".join([data[0]] + blue + ["vs"] + orange)
-                map = choice([
+                        surrogate.append(bots[data[i]-1])
+                name = "_".join([str(data[0])] + blue + ["vs"] + orange)
+                game_map = choice([
                     "ChampionsField",
                     "DFHStadium",
                     "NeoTokyo",
@@ -78,7 +77,7 @@ class TTMatchmaker:
                     "NeonFields",
                     "UtopiaColiseum",
                 ])
-                match_schedule.append(MatchDetails(data[0], name, blue, orange, surrogate, map))
+                match_schedule.append(MatchDetails(data[0], name, blue, orange, surrogate, game_map))
 
         # save the match schedule
         TTMatchmaker.save_match_schedule(match_schedule, ld)
