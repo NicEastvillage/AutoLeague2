@@ -1,28 +1,12 @@
 {
-    "actions": {
-        "0": {
-            "action": {
-                "type": "BALL",
-                "time": 507.7154846191406,
-                "direction": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            "name": "Molten",
-            "team": 0,
-            "time": 506.67498779296875,
-            "outdated": false
-        }
-    },
+    "actions": {},
     "active": false,
     "names": [
-        "Molten",
-        "Engine",
-        "BitBot",
-        "Bumbler",
-        "CTAUtils",
-        "DishBot"
+        "Kamael",
+        "Codename Cryo",
+        "Bumblebee",
+        "BroccoliBot",
+        "Lanfear",
+        "FormularBot 1.4"
     ]
 }
