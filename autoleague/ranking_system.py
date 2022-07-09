@@ -47,9 +47,11 @@ class RankingSystem:
 
         # Update bot ratings
         for bot_id in match.blue:
-            self.ratings[bot_id] += blue
+            if bot_id not in match.surrogate:
+                self.ratings[bot_id] += blue
         for bot_id in match.orange:
-            self.ratings[bot_id] += orange
+            if bot_id not in match.surrogate:
+                self.ratings[bot_id] += orange
 
     def print_ranks(self):
         """

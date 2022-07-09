@@ -79,14 +79,14 @@ def make_summary(ld: LeagueDir):
                 if bot not in match.surrogate:
                     bot_games[bot].append("todo")
         else:
-            win_or_close = "close" if abs(match.result.blue_goals - match.result.orange_goals) == 1 else "win"
+            loss_or_close = "close" if abs(match.result.blue_goals - match.result.orange_goals) == 1 else "loss"
             blue_win = match.result.blue_goals > match.result.orange_goals
             for bot in match.blue:
                 if bot not in match.surrogate:
-                    bot_games[bot].append(win_or_close if blue_win else "loss")
+                    bot_games[bot].append(loss_or_close if not blue_win else "win")
             for bot in match.orange:
                 if bot not in match.surrogate:
-                    bot_games[bot].append(win_or_close if not blue_win else "loss")
+                    bot_games[bot].append(loss_or_close if blue_win else "win")
 
     summary["matches"] = matches_summary
 
