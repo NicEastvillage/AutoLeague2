@@ -66,7 +66,7 @@ class TTMatchmaker:
                         orange.append(bots[data[i]-1])
                     if data[i + 1] == 1:
                         surrogate.append(bots[data[i]-1])
-                name = "_".join([str(data[0])] + blue + ["vs"] + orange)
+                name = "_".join([f"{data[0]:>05}"] + blue + ["vs"] + orange)
                 game_map = choice([
                     "ChampionsField",
                     "DFHStadium",
