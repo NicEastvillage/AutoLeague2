@@ -113,7 +113,8 @@ sheets-api-token.pickle
 credentials.json
 
 # League
-*league/
+league/
+tt_league/
 settings.json
 autoleague/resources/overlay/current_match.json
 autoleague/resources/overlay/summary.json
