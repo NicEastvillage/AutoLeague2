@@ -10,8 +10,9 @@ function updateMatchHistory(data) {
                 winClass = winClass + (Math.abs(match.blue_goals - match.orange_goals) == 1 ? "-close" : "-win")
             }
 
-            let blueSurrogateClasses = match.blue_names.map(bot => bot in match.surrogate_names ? "surrogate" : "")
-            let orangeSurrogateClasses = match.orange_names.map(bot => bot in match.surrogate_names ? "surrogate" : "")
+            let blueSurrogateClasses = match.blue_names.map(bot => match.surrogate_names.includes(bot) ? "surrogate" : "")
+            let orangeSurrogateClasses = match.orange_names.map(bot => match.surrogate_names.includes(bot) ? "surrogate" : "")
+            console.log(orangeSurrogateClasses)
 
             return `
 <div class="match-item ${winClass}">
