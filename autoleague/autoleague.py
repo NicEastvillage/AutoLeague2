@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 from typing import List
@@ -5,7 +6,7 @@ from typing import List
 from bot_summary import create_bot_summary
 from bots import load_all_bots, print_details, unzip_all_bots
 from leaguesettings import LeagueSettings
-from match import MatchDetails
+from match import MatchDetails, as_match_result
 from match_runner import run_match
 from overlay import make_summary, make_overlay
 from paths import LeagueDir
@@ -38,6 +39,7 @@ Usage:
     autoleague match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
+    autoleague match frombackup                    Concludes the next match using the latest_match_result.json
     autoleague summary [n]                         Create a summary of the last [n] matches
     autoleague help                                Print this message"""
 
@@ -202,7 +204,8 @@ def parse_subcommand_match(args: List[str]):
     autoleague match run                        Run a standard 3v3 soccer match
     autoleague match prepare                    Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                       Undo the last match
-    autoleague match list [n]                   Show the latest matches"""
+    autoleague match list [n]                   Show the latest matches
+    autoleague match frombackup                 Concludes the next match using the latest_match_result.json"""
 
     ld = require_league_dir()
 
@@ -278,6 +281,29 @@ def parse_subcommand_match(args: List[str]):
             for match in latest_matches:
                 print(
                     f"{match.time_stamp}: {', '.join(match.blue) + ' ':.<46} {match.result.blue_goals} VS {match.result.orange_goals} {' ' + ', '.join(match.orange):.>46}")
+
+    elif args[1] == "frombackup" and len(args) == 2:
+
+        # Load
+        rank_sys = RankingSystem.load(ld)
+
+        # Conclude next match using backup result
+        match = TTMatchmaker.get_next_match(ld)
+        with open(ld.latest_match_result) as f:
+            result = json.load(f, object_hook=as_match_result)
+        match.result = result
+
+        # Save
+        match.save(ld)
+        rank_sys.save(ld, match.time_stamp)
+        print(f"Match successfully concluded ({result.blue_goals}-{result.orange_goals}) using latest_match_result.json")
+
+        # Print new ranks
+        rank_sys.print_ranks()
+
+        # Make summary
+        make_summary(ld)
+        print(f"Created summary.json")
 
     else:
         print(help_msg)

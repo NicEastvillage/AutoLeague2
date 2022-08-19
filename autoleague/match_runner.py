@@ -1,3 +1,4 @@
+import json
 import shutil
 from typing import Mapping, Tuple, Optional
 
@@ -9,7 +10,7 @@ from rlbottraining.history.exercise_result import ExerciseResult
 from rlbottraining.training_exercise_adapter import TrainingExerciseAdapter
 
 from bots import BotID
-from match import MatchDetails, MatchResult
+from match import MatchDetails, MatchResult, MatchDetailsEncoder
 from match_exercise import MatchExercise, MatchGrader
 from overlay import make_overlay
 from paths import LeagueDir
@@ -69,4 +70,10 @@ def run_match(ld: LeagueDir, match_details: MatchDetails, bots: Mapping[BotID, B
                             pass
 
                 match_result = exercise_result.exercise.grader.match_result
+
+                # Save match result before shutting down bots (in case that goes wrong)
+                with open(ld.latest_match_result, 'w') as f:
+                    json.dump(match_result, f, cls=MatchDetailsEncoder, sort_keys=True)
+                    print("Saved match result as", ld.latest_match_result.name)
+
                 return match_result, replay_data

@@ -47,6 +47,7 @@ class LeagueDir:
         self.replays = self._league_dir / "replays"
         self.bot_summary = self._league_dir / "bot_summary.json"
         self.stats = self._league_dir / "stats"
+        self.latest_match_result = self._league_dir / "latest_match_result.json"
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):

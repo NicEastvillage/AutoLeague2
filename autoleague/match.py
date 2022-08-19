@@ -148,3 +148,14 @@ def as_match_details(json_obj) -> MatchDetails:
         obj.__dict__ = json_obj
         return obj
     return json_obj
+
+
+def as_match_result(json_obj) -> MatchResult:
+    for cls, tag in known_types.items():
+        if not json_obj.get(tag, False):
+            continue
+        obj = cls()
+        del json_obj[tag]
+        obj.__dict__ = json_obj
+        return obj
+    return json_obj
