@@ -58,6 +58,7 @@ class MatchDetails:
             self.bot_to_config(self.orange[1], bots, Team.ORANGE),
             self.bot_to_config(self.orange[2], bots, Team.ORANGE),
         ]
+        match_config.mutators.max_score = "5 Goals"
         return match_config
 
     def bot_to_config(self, bot: BotID, bots: Mapping[BotID, BotConfigBundle], team: Team) -> PlayerConfig:
