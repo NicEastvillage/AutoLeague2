@@ -21,6 +21,11 @@ const app = new Vue({
                 this.info = JSON.parse(res);
             } catch (err) {
                 console.error(err);
+                this.info = {
+                    actions: {},
+                    active: false,
+                    names: [],
+                };
             }
         },
         format(value, precision=10) {

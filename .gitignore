@@ -114,8 +114,5 @@ credentials.json
 
 # League
 league/
+tt_league/
 settings.json
-autoleague/resources/overlay/current_match.json
-autoleague/resources/overlay/summary.json
-autoleague/resources/overlay/tmcp-overlay/overlay/data.json
-autoleague/resources/overlay/images/logos/
