@@ -71,5 +71,6 @@ retirement list                     Print all bots in retirement
 retirement retire <bot>             Retire a bot, removing it from play and the leaderboard
 retirement unretire <bot>           Unretire a bot
 retirement retireall                Retire all bots
+csvs generate                       Generate csv files with league data
 help                                Print this message
 ```

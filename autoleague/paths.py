@@ -30,11 +30,11 @@ class LeagueDir:
     #     98NY24350NV120NVC34N8V120.replay
     #     JHDAJQJ11M1MGFQZXRJGNWE23.replay
     #     ...
-    # stats/
-    #     # CSV files with stats
-    #     match.csv
-    #     mmr.csv
-    #     tickets.csv
+    # csvs/
+    #     # CSV files with data
+    #     bots.csv
+    #     matches.csv
+    #     ratings.csv
     #     ...
     """
 
@@ -48,7 +48,13 @@ class LeagueDir:
         self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
         self.bot_summary = self._league_dir / "bot_summary.json"
-        self.stats = self._league_dir / "stats"
+        self.csvs = self._league_dir / "csvs"
+        self.csv_bots = self.csvs / "bots.csv"
+        self.csv_matches = self.csvs / "matches.csv"
+        self.csv_tickets = self.csvs / "tickets.csv"
+        self.csv_ratings = self.csvs / "ratings.csv"
+        self.csv_scores = self.csvs / "scores.csv"
+        self.csvs_readme = self.csvs / "README.md"
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):
@@ -57,7 +63,7 @@ class LeagueDir:
         self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
         self.replays.mkdir(exist_ok=True)
-        self.stats.mkdir(exist_ok=True)
+        self.csvs.mkdir(exist_ok=True)
 
 
 class PackageFiles:
