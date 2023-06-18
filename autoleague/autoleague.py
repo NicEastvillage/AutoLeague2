@@ -5,6 +5,7 @@ from typing import List
 from bot_summary import create_bot_summary
 from bots import load_all_bots, defmt_bot_name, print_details, unzip_all_bots, load_retired_bots, save_retired_bots, \
     load_all_unretired_bots
+from csv_conversion import convert_to_csvs
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem, MatchMaker, make_timestamp
@@ -50,6 +51,7 @@ Usage:
     autoleague retirement retire <bot>             Retire a bot, removing it from play and the leaderboard
     autoleague retirement unretire <bot>           Unretire a bot
     autoleague retirement retireall                Retire all bots
+    autoleague csvs generate                       Generate csv files with league data
     autoleague help                                Print this message"""
 
     if len(args) == 0 or args[0] == "help":
@@ -72,7 +74,10 @@ Usage:
         ld = require_league_dir()
         make_summary(ld, count)
         print(f"Created summary of the last {count} matches")
-
+    elif args[0] == "csvs" and len(args) == 2 and args[1] == "generate":
+        ld = require_league_dir()
+        convert_to_csvs(ld)
+        print("Generated CSV files with league data")
     else:
         print(help_msg)
 

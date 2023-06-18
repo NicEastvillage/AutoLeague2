@@ -1,12 +1,15 @@
+"""
+OUTDATED
+"""
+
 from pathlib import Path
 
-from match import MatchDetails
+import matplotlib.pylab as plt
+import pandas as pd
+
 from paths import LeagueDir
 from ranking_system import RankingSystem
 from settings import PersistentSettings
-import seaborn as sns
-import pandas as pd
-import matplotlib.pylab as plt
 
 settings = PersistentSettings.load()
 ld = LeagueDir(Path(settings.league_dir_raw))

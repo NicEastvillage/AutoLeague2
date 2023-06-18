@@ -1,3 +1,7 @@
+"""
+OUTDATED
+"""
+
 import numpy as np
 import matplotlib.pylab as plt
 from pathlib import Path
