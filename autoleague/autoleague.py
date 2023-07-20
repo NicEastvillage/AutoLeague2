@@ -5,9 +5,10 @@ from typing import List
 from bot_summary import create_bot_summary
 from bots import load_all_bots, defmt_bot_name, print_details, unzip_all_bots, load_retired_bots, save_retired_bots, \
     load_all_unretired_bots
+from bubble_ladder import BubbleLadder
 from csv_conversion import convert_to_csvs
 from leaguesettings import LeagueSettings
-from match import MatchDetails
+from match import MatchDetails, MatchResult
 from match_maker import TicketSystem, MatchMaker, make_timestamp
 from match_runner import run_match
 from overlay import make_summary, make_overlay
@@ -334,31 +335,32 @@ def parse_subcommand_match(args: List[str]):
 
         # Load
         bots = load_all_unretired_bots(ld)
-        rank_sys = RankingSystem.load(ld)
-        ticket_sys = TicketSystem.load(ld)
+        ladder = BubbleLadder.load(ld)
 
         # Run
-        match = MatchMaker.make_next(bots, rank_sys, ticket_sys)
-        make_overlay(ld, match, bots)
+        match = ladder.next_match(bots)
+        #make_overlay(ld, match, bots)
+        print(f"Next match: {match.blue[0]} vs {match.orange[0]}")
         # Ask before starting?
         if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
-            result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
-            rank_sys.update(match, result)
+            #result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
+            won = input("Did " + match.blue[0] + " win? (y/n) ") == "y"
+            result = MatchResult(3, 0) if won else MatchResult(0, 3)
+            ladder.update(match, result)
             match.result = result
-            match.replay_id = replay.replay_id
+            #match.replay_id = replay.replay_id
 
             # Save
             match.save(ld)
-            rank_sys.save(ld, match.time_stamp)
-            ticket_sys.save(ld, match.time_stamp)
+            ladder.save(ld, match.time_stamp)
 
             # Print new ranks
-            rank_sys.print_ranks_and_mmr()
+            ladder.print_ladder()
 
             # Make summary
-            league_settings = LeagueSettings.load(ld)
-            make_summary(ld, league_settings.last_summary + 1)
-            print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+            #league_settings = LeagueSettings.load(ld)
+            #make_summary(ld, league_settings.last_summary + 1)
+            #print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
         else:
             print("Match cancelled.")
 

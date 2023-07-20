@@ -16,7 +16,7 @@ class LeagueDir:
     #     202101151516_bot7_bot8_bot9_vs_bot10_bot11_bot12.json
     #     ...
     # rankings/
-    #     # This direction contains the ranks of all bots
+    #     # This directory contains the ranks of all bots
     #     202101151506_rankings.json
     #     202101151516_rankings.json
     #     ...
@@ -24,6 +24,11 @@ class LeagueDir:
     #     # This direction contains the tickets of all bots
     #     202101151506_tickets.json
     #     202101151516_tickets.json
+    #     ...
+    # bubble_ladders/
+    #     # This directory contains the bubble ladders
+    #     202101151506_bubble_ladder.json
+    #     202101151516_bubble_ladder.json
     #     ...
     # replays/
     #     # This directory contains replays
@@ -47,6 +52,7 @@ class LeagueDir:
         self.rankings = self._league_dir / "rankings"
         self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
+        self.bubble_ladders = self._league_dir / "bubble_ladders"
         self.bot_summary = self._league_dir / "bot_summary.json"
         self.csvs = self._league_dir / "csvs"
         self.csv_bots = self.csvs / "bots.csv"
@@ -63,6 +69,7 @@ class LeagueDir:
         self.tickets.mkdir(exist_ok=True)
         self.bots.mkdir(exist_ok=True)
         self.replays.mkdir(exist_ok=True)
+        self.bubble_ladders.mkdir(exist_ok=True)
         self.csvs.mkdir(exist_ok=True)
 
 
