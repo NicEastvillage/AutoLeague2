@@ -14,7 +14,7 @@ from paths import LeagueDir
 @dataclass
 class BubbleLadder:
     ladder: List[BotID] = field(default_factory=list)
-    cur: int = 0
+    cur: int = -1
     direction: int = -1
 
     def next_match(self, bots: Mapping[BotID, BotConfigBundle]):
@@ -29,7 +29,9 @@ class BubbleLadder:
             return
 
         # Check ladder direction
-        if self.cur <= 0 and self.direction == -1:
+        if self.cur == -1:
+            self.start_from_bottom()
+        elif self.cur <= 0 and self.direction == -1:
             self.direction = 1
         elif self.cur >= len(self.ladder) - 1 and self.direction == 1:
             self.direction = -1
@@ -62,7 +64,8 @@ class BubbleLadder:
     def print_ladder(self):
         print("Bubblesort ladder:")
         for i, bot_id in enumerate(self.ladder):
-            print(f"{i + 1:>4} {bot_id}")
+            marker = ' ' if i != self.cur else ('v' if self.direction == 1 else '^')
+            print(f"{i + 1:>4}{marker} {bot_id}")
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.bubble_ladders / f"{time_stamp}_bubble_ladder.json", 'w') as f:
@@ -71,10 +74,21 @@ class BubbleLadder:
     @staticmethod
     def load(ld: LeagueDir) -> 'BubbleLadder':
         if any(ld.bubble_ladders.iterdir()):
-            # Assume last rankings file is the newest, since they are prefixed with a time stamp
+            # Assume last bubble ladder file is the newest, since they are prefixed with a time stamp
             with open(list(ld.bubble_ladders.iterdir())[-1]) as f:
                 return json.load(f, object_hook=as_bubble_ladder)
         return BubbleLadder()
+
+    @staticmethod
+    def undo(ld: LeagueDir):
+        """
+        Remove latest rankings file
+        """
+        if any(ld.bubble_ladders.iterdir()):
+            # Assume last bubble ladder file is the newest, since they are prefixed with a time stamp
+            list(ld.bubble_ladders.iterdir())[-1].unlink()  # Remove file
+        else:
+            print("No bubble ladders to undo.")
 
 
 # ====== BubbleLadder -> JSON ======

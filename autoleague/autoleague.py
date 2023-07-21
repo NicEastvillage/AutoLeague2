@@ -47,6 +47,7 @@ Usage:
     autoleague match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
+    autoleague bubble startFromBottom              Start the bubble ladder from the bottom
     autoleague summary [n]                         Create a summary of the last [n] matches
     autoleague retirement list                     Print all bots in retirement
     autoleague retirement retire <bot>             Retire a bot, removing it from play and the leaderboard
@@ -69,6 +70,8 @@ Usage:
         parse_subcommand_match(args)
     elif args[0] == "retirement":
         parse_subcommand_retirement(args)
+    elif args[0] == "bubble":
+        parse_subcommand_bubble(args)
     elif args[0] == "summary" and (1 <= len(args) <= 2):
 
         count = int(args[1]) if len(args) == 2 else 0
@@ -379,8 +382,7 @@ def parse_subcommand_match(args: List[str]):
             if prompt_yes_no("Are you sure you want to undo the latest match?"):
 
                 # Undo latest update to all systems
-                RankingSystem.undo(ld)
-                TicketSystem.undo(ld)
+                BubbleLadder.undo(ld)
                 MatchDetails.undo(ld)
 
                 # New latest match
@@ -405,6 +407,40 @@ def parse_subcommand_match(args: List[str]):
             for match in latest_matches:
                 print(
                     f"{match.time_stamp}: {', '.join(match.blue) + ' ':.<46} {match.result.blue_goals} VS {match.result.orange_goals} {' ' + ', '.join(match.orange):.>46}")
+
+    else:
+        print(help_msg)
+
+
+def parse_subcommand_bubble(args: List[str]):
+    assert args[0] == "bubble"
+    help_msg = """Usage:
+    autoleague bubble startFromBottom           Start the bubble ladder from the bottom
+    autoleague bubble list                      Print the current bubble ladder"""
+
+    ld = require_league_dir()
+
+    if len(args) == 1 or args[1] == "help":
+        print(help_msg)
+
+    elif args[1] == "startFromBottom" and len(args) == 2:
+
+        ld = require_league_dir()
+        latest_matches = MatchDetails.latest(ld, 1)
+        ladder = BubbleLadder.load(ld)
+
+        if latest_matches:
+            ladder.start_from_bottom()
+            ladder.save(ld, latest_matches[0].time_stamp)
+
+        print("Restarted the bubble ladder from the bottom")
+        ladder.print_ladder()
+
+    elif args[1] == "list" and len(args) == 2:
+
+        ld = require_league_dir()
+        ladder = BubbleLadder.load(ld)
+        ladder.print_ladder()
 
     else:
         print(help_msg)
