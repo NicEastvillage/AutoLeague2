@@ -342,30 +342,34 @@ def parse_subcommand_match(args: List[str]):
 
         # Run
         match = ladder.next_match(bots)
-        #make_overlay(ld, match, bots)
-        print(f"Next match: {match.blue[0]} vs {match.orange[0]}")
-        # Ask before starting?
-        if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
-            #result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
-            won = input("Did " + match.blue[0] + " win? (y/n) ") == "y"
-            result = MatchResult(3, 0) if won else MatchResult(0, 3)
-            ladder.update(match, result)
-            match.result = result
-            #match.replay_id = replay.replay_id
+        if match is not None:
 
-            # Save
-            match.save(ld)
-            ladder.save(ld, match.time_stamp)
+            #make_overlay(ld, match, bots)
+            print(f"Next match: {match.blue[0]} vs {match.orange[0]}")
+            # Ask before starting?
+            if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
+                #result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
+                won = input("Did " + match.blue[0] + " win? (y/n) ") == "y"
+                result = MatchResult(3, 0) if won else MatchResult(0, 3)
+                ladder.update(match, result)
+                match.result = result
+                #match.replay_id = replay.replay_id
 
-            # Print new ranks
-            ladder.print_ladder()
+                # Save
+                match.save(ld)
+                ladder.save(ld, match.time_stamp)
 
-            # Make summary
-            #league_settings = LeagueSettings.load(ld)
-            #make_summary(ld, league_settings.last_summary + 1)
-            #print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+                # Print new ranks
+                ladder.print_ladder()
+
+                # Make summary
+                #league_settings = LeagueSettings.load(ld)
+                #make_summary(ld, league_settings.last_summary + 1)
+                #print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+            else:
+                print("Match cancelled.")
         else:
-            print("Match cancelled.")
+            ladder.print_ladder()
 
     elif args[1] == "undo" and len(args) == 2:
 
@@ -430,16 +434,20 @@ def parse_subcommand_bubble(args: List[str]):
         ladder = BubbleLadder.load(ld)
 
         if latest_matches:
+            bots = load_all_bots(ld)
+            ladder.ensure_bots(bots)
+            print("Restarting the bubble ladder from the bottom ...")
             ladder.start_from_bottom()
             ladder.save(ld, latest_matches[0].time_stamp)
 
-        print("Restarted the bubble ladder from the bottom")
         ladder.print_ladder()
 
     elif args[1] == "list" and len(args) == 2:
 
         ld = require_league_dir()
+        bots = load_all_bots(ld)
         ladder = BubbleLadder.load(ld)
+        ladder.ensure_bots(bots)
         ladder.print_ladder()
 
     else:
