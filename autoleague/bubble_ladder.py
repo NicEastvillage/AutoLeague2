@@ -137,9 +137,31 @@ class BubbleLadder:
 
     def print_ladder(self):
         print("Bubblesort ladder:")
-        for i, bot_id in enumerate(self.ladder):
-            marker = ' ' if i != self.cur else ('v' if self.direction == 1 else '^')
-            print(f"{i + 1:>4}{marker} {bot_id}")
+        up_cmp = False
+        down_cmp = None
+        for i in range(len(self.ladder)):
+            bot = self.ladder[i]
+            down_cmp = self.known_cmps.compare(self.ladder[i], self.ladder[i + 1]) if i < len(self.ladder) - 1 else True
+            cmps = {
+                True: {
+                    True: '_',   # Better than above and below
+                    False: 'v',   # Better than above, worse than below
+                    None: ' ',   # Better than above, unknown below
+                }[down_cmp],
+                False: {
+                    True: '_',   # Worse than above, better than below
+                    False: 'v',   # Worse than above and below
+                    None: ' ',   # Worse than above, unknown below
+                }[down_cmp],
+                None: {
+                    True: '_',   # Unknown above, better than below
+                    False: 'v',   # Unknown above, worse than below
+                    None: ' ',   # Unknown above and below
+                }[down_cmp],
+            }[up_cmp]
+            dir = ' ' if i != self.cur else ('v' if self.direction == 1 else '^')
+            print(f"{i + 1:>4}{dir}{cmps} {bot}")
+            down_cmp = {True: False, False: True, None: None}[down_cmp]
 
     def save(self, ld: LeagueDir, time_stamp: str):
         with open(ld.bubble_ladders / f"{time_stamp}_bubble_ladder.json", 'w') as f:
