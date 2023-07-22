@@ -420,7 +420,8 @@ def parse_subcommand_bubble(args: List[str]):
     assert args[0] == "bubble"
     help_msg = """Usage:
     autoleague bubble startFromBottom           Start the bubble ladder from the bottom
-    autoleague bubble list                      Print the current bubble ladder"""
+    autoleague bubble list                      Print the current bubble ladder
+    autoleague bubble free <bot>                Remove all known comparisons involving the given bot"""
 
     ld = require_league_dir()
 
@@ -449,6 +450,18 @@ def parse_subcommand_bubble(args: List[str]):
         ladder = BubbleLadder.load(ld)
         ladder.ensure_bots(bots)
         ladder.print_ladder()
+
+    elif args[1] == "free" and len(args) == 3:
+
+        bot = args[2]
+        ld = require_league_dir()
+        latest_matches = MatchDetails.latest(ld, 1)
+        ladder = BubbleLadder.load(ld)
+
+        if latest_matches:
+            cmps_removed = ladder.known_cmps.free([bot])
+            ladder.save(ld, latest_matches[0].time_stamp)
+            print(f"Successfully freed {bot} ({cmps_removed} comparisons removed)")
 
     else:
         print(help_msg)

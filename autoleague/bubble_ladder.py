@@ -38,11 +38,14 @@ class SavedComparisonMatrix:
         assert self.compare(better_bot, worse_bot) is None
         self.comparisons.append(SavedComparison(better_bot, worse_bot))
 
-    def reset(self, bots: List[BotID]):
+    def free(self, bots: List[BotID]) -> int:
         """
         Remove all comparisons that involve any of the given bots.
+        Returns the number of comparisons removed.
         """
+        before = len(self.comparisons)
         self.comparisons = [cmp for cmp in self.comparisons if cmp.better_bot not in bots and cmp.worse_bot not in bots]
+        return before - len(self.comparisons)
 
 
 @dataclass
