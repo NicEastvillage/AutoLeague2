@@ -1,0 +1,35 @@
+.ladder-container {
+    font-family: "Helvetica", "Verdana", sans-serif;
+    color: #C8CCD0;
+}
+
+.ladder-item {
+    display: grid;
+    grid-template-columns: 26px 36px auto;
+    grid-template-rows: auto;
+    grid-template-areas:
+            "rank logo name";
+    align-items: center;
+    background-color: #00381E;
+    font-size: 1.00em;
+    font-weight: bold;
+    padding: 5px;
+    margin: 4px;
+}
+
+.ladder-item p {
+    margin: 4px;
+}
+
+.ladder-item .rank {
+    text-align: right;
+    grid-area: rank;
+}
+
+.ladder-item .bot-logo {
+    grid-area: logo;
+}
+
+.ladder-item .bot-name {
+    grid-area: name;
+}

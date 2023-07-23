@@ -8,6 +8,7 @@ from typing import Mapping
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 from bots import BotID, logo, defmt_bot_name, load_all_bots, fmt_bot_name, load_all_unretired_bots, load_retired_bots
+from bubble_ladder import BubbleLadder, BubbleLadderEncoder
 from leaguesettings import LeagueSettings
 from match import MatchDetails
 from match_maker import TicketSystem
@@ -128,6 +129,15 @@ def make_summary(ld: LeagueDir, count: int):
     league_settings = LeagueSettings.load(ld)
     league_settings.last_summary = count
     league_settings.save(ld)
+
+
+def make_bubble_ladder_overlay(ladder: BubbleLadder):
+    """
+    Make a `bubble_ladder.json` file which contains the details about the current
+    bubble ladder.
+    """
+    with open(PackageFiles.overlay_bubble_ladder, 'w') as f:
+        json.dump(ladder, f, cls=BubbleLadderEncoder, sort_keys=True)
 
 
 # Borrowed from RLBotGUI

@@ -189,6 +189,10 @@ class BubbleLadder:
         else:
             print("No bubble ladders to undo.")
 
+    def export_overlay_data(self):
+        with open(ld.bubble_ladders / f"{time_stamp}_bubble_ladder.json", 'w') as f:
+            json.dump(self, f, cls=BubbleLadderEncoder, sort_keys=True)
+
 
 # ====== BubbleLadder -> JSON ======
 

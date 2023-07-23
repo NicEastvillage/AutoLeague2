@@ -1,0 +1,45 @@
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="bubble_ladder.css"/>
+</head>
+<body>
+    <div class="ladder-container">
+        <div id="ladder-table">
+
+        </div>
+    </div>
+<script>
+    const ladderEl = $("#ladder-table");
+
+    let ladderData = null;
+
+    update();
+    setInterval(update, 1000);
+
+    function update() {
+        $.get("bubble_ladder.json", function (json) {
+            if (json !== ladderData) {
+                try {
+                    _data = JSON.parse(json);
+                } catch (e) {
+                    // When opened as a local file (not in OBS), json is already an object and not a string.
+                    _data = json;
+                }
+                ladderData = _data;
+
+                index = 0;
+                ladderEl.html(ladderData.ladder.map((bot, i) => {
+                    return `
+<div class="ladder-item">
+    <div class="rank"><p class="center"></p>${i + 1}</div>
+    <img class="logo" />
+    <div class="bot-name">${bot}</div>
+</div>`
+                }).join(""));
+            }
+        });
+    }
+</script>
+</body>

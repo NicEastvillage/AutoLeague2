@@ -11,7 +11,7 @@ from leaguesettings import LeagueSettings
 from match import MatchDetails, MatchResult
 from match_maker import TicketSystem, MatchMaker, make_timestamp
 from match_runner import run_match
-from overlay import make_summary, make_overlay
+from overlay import make_summary, make_overlay, make_bubble_ladder_overlay
 from paths import LeagueDir
 from prompt import prompt_yes_no
 from ranking_system import RankingSystem
@@ -362,10 +362,8 @@ def parse_subcommand_match(args: List[str]):
                 # Print new ranks
                 ladder.print_ladder()
 
-                # Make summary
-                #league_settings = LeagueSettings.load(ld)
-                #make_summary(ld, league_settings.last_summary + 1)
-                #print(f"Created summary of the last {league_settings.last_summary + 1} matches.")
+                # Update overlay
+                make_bubble_ladder_overlay(ladder)
             else:
                 print("Match cancelled.")
         else:
@@ -421,7 +419,8 @@ def parse_subcommand_bubble(args: List[str]):
     help_msg = """Usage:
     autoleague bubble startFromBottom           Start the bubble ladder from the bottom
     autoleague bubble list                      Print the current bubble ladder
-    autoleague bubble free <bot>                Remove all known comparisons involving the given bot"""
+    autoleague bubble free <bot>                Remove all known comparisons involving the given bot
+    autoleague bubble overlay                   Update the bubble ladder overlay"""
 
     ld = require_league_dir()
 
@@ -430,7 +429,6 @@ def parse_subcommand_bubble(args: List[str]):
 
     elif args[1] == "startFromBottom" and len(args) == 2:
 
-        ld = require_league_dir()
         latest_matches = MatchDetails.latest(ld, 1)
         ladder = BubbleLadder.load(ld)
 
@@ -442,19 +440,19 @@ def parse_subcommand_bubble(args: List[str]):
             ladder.save(ld, latest_matches[0].time_stamp)
 
         ladder.print_ladder()
+        make_bubble_ladder_overlay(ladder)
 
     elif args[1] == "list" and len(args) == 2:
 
-        ld = require_league_dir()
         bots = load_all_bots(ld)
         ladder = BubbleLadder.load(ld)
         ladder.ensure_bots(bots)
         ladder.print_ladder()
+        make_bubble_ladder_overlay(ladder)
 
     elif args[1] == "free" and len(args) == 3:
 
         bot = args[2]
-        ld = require_league_dir()
         latest_matches = MatchDetails.latest(ld, 1)
         ladder = BubbleLadder.load(ld)
 
@@ -462,6 +460,11 @@ def parse_subcommand_bubble(args: List[str]):
             cmps_removed = ladder.known_cmps.free([bot])
             ladder.save(ld, latest_matches[0].time_stamp)
             print(f"Successfully freed {bot} ({cmps_removed} comparisons removed)")
+
+    elif args[1] == "overlay" and len(args) == 2:
+
+        ladder = BubbleLadder.load(ld)
+        make_bubble_ladder_overlay(ladder)
 
     else:
         print(help_msg)
