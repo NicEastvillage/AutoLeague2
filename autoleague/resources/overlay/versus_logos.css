@@ -75,13 +75,13 @@ body {
 
 #blue-bot-logos .bot-herald>h1 {
     right: 0;
-    background: linear-gradient(50deg, #284DBA00 5%, #284DBAFF 10%, #3362E5FF 100%);
+    background: linear-gradient(50deg, #284DBA00 7%, #284DBAFF 12%, #3362E5FF 100%);
 
 }
 
 #orange-bot-logos .bot-herald>h1 {
     left: 0;
-    background: linear-gradient(130deg, #D86F36FF 0%, #A75325FF 90%, #BC5F2D00 95%);
+    background: linear-gradient(130deg, #D86F36FF 0%, #A75325FF 88%, #BC5F2D00 93%);
 }
 
 #versus-container>img {

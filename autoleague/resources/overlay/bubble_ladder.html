@@ -6,12 +6,16 @@
 </head>
 <body>
     <div class="ladder-container">
+        <div style="position: relative">
+            <img id="cursor" style="position: absolute; right: 4px; top: 14px" src="images/bubble%20arrow.png"/>
+        </div>
         <div id="ladder-table">
-
+            <!-- GENERATED STUFF GOES HERE -->
         </div>
     </div>
 <script>
     const ladderEl = $("#ladder-table");
+    const cursorEl = $("#cursor");
 
     let ladderData = null;
 
@@ -29,7 +33,6 @@
                 }
                 ladderData = _data;
 
-                index = 0;
                 ladderEl.html(ladderData.ladder.map((bot, i) => {
                     return `
 <div class="ladder-item">
@@ -38,6 +41,19 @@
     <div class="bot-name">${bot}</div>
 </div>`
                 }).join(""));
+
+                if (ladderData.cur >= 0) {
+                    cursorEl.show();
+                    if (ladderData.direction === -1) {
+                        cursorEl.css("top", `${ladderData.cur * 36 - 18}px`);
+                        cursorEl.css("transform", "scaleY(1)");
+                    } else {
+                        cursorEl.css("top", `${ladderData.cur * 36 + 10}px`);
+                        cursorEl.css("transform", "scaleY(-1)");
+                    }
+                } else {
+                    cursorEl.hide();
+                }
             }
         });
     }

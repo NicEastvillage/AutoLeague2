@@ -344,7 +344,8 @@ def parse_subcommand_match(args: List[str]):
         match = ladder.next_match(bots)
         if match is not None:
 
-            #make_overlay(ld, match, bots)
+            make_bubble_ladder_overlay(ladder)
+            make_overlay(ld, match, bots)
             print(f"Next match: {match.blue[0]} vs {match.orange[0]}")
             # Ask before starting?
             if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
@@ -432,15 +433,15 @@ def parse_subcommand_bubble(args: List[str]):
         latest_matches = MatchDetails.latest(ld, 1)
         ladder = BubbleLadder.load(ld)
 
-        if latest_matches:
-            bots = load_all_bots(ld)
-            ladder.ensure_bots(bots)
-            print("Restarting the bubble ladder from the bottom ...")
-            ladder.start_from_bottom()
-            ladder.save(ld, latest_matches[0].time_stamp)
-
+        bots = load_all_bots(ld)
+        ladder.ensure_bots(bots)
+        print("Restarting the bubble ladder from the bottom ...")
+        ladder.start_from_bottom()
         ladder.print_ladder()
         make_bubble_ladder_overlay(ladder)
+
+        if latest_matches:
+            ladder.save(ld, latest_matches[0].time_stamp)
 
     elif args[1] == "list" and len(args) == 2:
 
