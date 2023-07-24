@@ -7,7 +7,7 @@
 <body>
     <div class="ladder-container">
         <div style="position: relative">
-            <img id="cursor" style="position: absolute; right: 4px; top: 14px" src="images/bubble%20arrow.png"/>
+            <img id="cursor" style="position: absolute; right: 4px; top: 14px; z-index: 1" src="images/bubble%20arrow.png"/>
         </div>
         <div id="ladder-table">
             <!-- GENERATED STUFF GOES HERE -->
@@ -34,11 +34,22 @@
                 ladderData = _data;
 
                 ladderEl.html(ladderData.ladder.map((bot, i) => {
+
+                    let canMoveDown = true;
+                    for (let cmp of ladderData.known_cmps) {
+                        if (cmp.better === i && cmp.worse === i + 1) {
+                            canMoveDown = false;
+                            break;
+                        }
+                    }
+                    let lock = canMoveDown ? "" : `<img style="position: absolute; right: 32px; bottom: -11px; z-index: 1" src="images/bubble%20lock.png" />`;
+
                     return `
-<div class="ladder-item">
+<div class="ladder-item" style="position: relative">
     <div class="rank"><p class="center"></p>${i + 1}</div>
     <img class="logo" />
     <div class="bot-name">${bot}</div>
+    ${lock}
 </div>`
                 }).join(""));
 

@@ -136,8 +136,17 @@ def make_bubble_ladder_overlay(ladder: BubbleLadder):
     Make a `bubble_ladder.json` file which contains the details about the current
     bubble ladder.
     """
+    data = {}
+    data["ladder"] = [defmt_bot_name(bot) for bot in ladder.ladder]
+    data["cur"] = ladder.cur
+    data["direction"] = ladder.direction
+    data["known_cmps"] = [{
+        "better": ladder.ladder.index(cmp.better_bot),
+         "worse": ladder.ladder.index(cmp.worse_bot)
+    } for cmp in ladder.known_cmps.comparisons]
+
     with open(PackageFiles.overlay_bubble_ladder, 'w') as f:
-        json.dump(ladder, f, cls=BubbleLadderEncoder, sort_keys=True)
+        json.dump(data, f, indent=4)
 
 
 # Borrowed from RLBotGUI

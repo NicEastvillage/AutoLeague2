@@ -3,105 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>title</title>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
-            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="overlay.css"/>
 </head>
 <body>
-<div class="top" style="margin-top: 11px">
-    <div id="header-container">
-        <img src="images/blue banner tall.png" style="grid-area: blue"/>
-        <img src="images/orange banner tall.png" style="grid-area: orange"/>
-        <div style="grid-area: blue; position: relative;">
-            <p id="team-name-blue" class="team-name" style="padding-left: 14px">TBD</p>
-        </div>
-        <div style="grid-area: orange; position: relative;">
-            <p id="team-name-orange" class="team-name" style="padding-right: 14px">TBD</p>
+    <div class="top" style="margin-top: 10px">
+        <div id="header-container">
+            <img src="images/blue bg.png" style="grid-area: blue"/>
+            <img src="images/orange bg.png" style="grid-area: orange"/>
+            <p id="team-name-blue" class="team-name" style="grid-area: blue; padding-left: 24px">TBD</p>
+            <p id="team-name-orange" class="team-name" style="grid-area: orange; padding-right: 24px">TBD</p>
+            <div id="blue-wins" style="grid-area: bluewins; justify-self: right"></div>
+            <div id="orange-wins" style="grid-area: orangewins; justify-self: left"></div>
         </div>
     </div>
-</div>
-<div id="tipcard">
-    <img id="tip-logo" src="" />
-    <div id="tip-title"></div>
-    <div id="tip-text"></div>
-</div>
-
-<script>
-    const blueTeamName = $("#team-name-blue");
-    const orangeTeamName = $("#team-name-orange");
-    let previousData = null;
-    let tipCards;
-
-    setInterval(function () {
-        $.get("current_match.json", function (json) {
-            let comparisonString = '';
-            if (typeof json === 'string') {
-                comparisonString = json;
-            } else {
-                comparisonString = JSON.stringify(json);
-            }
-            if (comparisonString !== previousData) {
-                if (typeof json === 'string') {
-                    data = JSON.parse(json);
-                } else {
-                    // In normal browsers (not OBS), json is already an object and not a string. Not sure why
-                    data = json;
-                }
-                previousData = comparisonString;
-
-                let blueNames = data.blue.map(bot => `${bot.name} [${bot.mmr}]`)
-                let orangeNames = data.orange.map(bot => `${bot.name} [${bot.mmr}]`)
-
-                blueTeamName.html(blueNames.join("<br>").replace(" ", "&nbsp"));
-                orangeTeamName.html(orangeNames.join("<br>").replace(" ", "&nbsp"));
-
-                // Find all possible tip cards
-                tipCards = [];
-				for (let bots of [data.blue, data.orange]) {
-                    for (let bot of bots) {
-                        if (bot.developer != null && bot.developer === "The RLBot community")
-                            // The developer has not added details about their bot
-                            continue
-                        if (bot.developer != null && bot.language != null)
-                            tipCards.push({
-                                title: `${bot.name.trim()}`,
-                                text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`,
-                                logo: bot.logo_path
-                            });
-                        if (bot.description != null && bot.description.trim().length)
-                            tipCards.push({
-                                title: `${bot.name.trim()}`,
-                                text: bot.description.trim(),
-                                logo: bot.logo_path
-                            });
-                        if (bot.fun_fact != null && bot.fun_fact.trim().length)
-                            tipCards.push({
-                                title: `Fun fact about ${bot.name.trim()}`,
-                                text: bot.fun_fact.trim(),
-                                logo: bot.logo_path
-                            });
-                    }
-                }
-            }
-        });
-    }, 1000);
-
-    const tipCardEl = document.getElementById("tipcard");
-    const tipTitleEl = document.getElementById("tip-title");
-    const tipTextEl = document.getElementById("tip-text");
-    const tipLogoEl = document.getElementById("tip-logo");
-    setInterval(function () {
-        if (!tipCards || tipCards.length === 0)
-            return;
-        const tipCard = tipCards[Math.floor(Math.random() * tipCards.length)];
-        tipTitleEl.innerText = tipCard.title;
-        tipTextEl.innerText = tipCard.text;
-        tipLogoEl.src = tipCard.logo || "";
-        tipCardEl.setAttribute("visible", "");
-        setTimeout(_ => tipCardEl.removeAttribute("visible"), 14*1000);
-    }, 68*1000);
-</script>
-
+    <div id="tipcard">
+        <div tip-title></div>
+        <div tip-text></div>
+    </div>
+    <script type="text/javascript" src="overlay.js"></script>
 </body>
 </html>
