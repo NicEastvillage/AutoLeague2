@@ -365,6 +365,12 @@ def parse_subcommand_match(args: List[str]):
 
                 # Update overlay
                 make_bubble_ladder_overlay(ladder)
+
+                next_match = ladder.next_match(bots)
+                if next_match is not None:
+                    make_overlay(ld, next_match, bots, next=True)
+                else:
+                    make_overlay(ld, next_match, bots, next=True, known=False)
             else:
                 print("Match cancelled.")
         else:
@@ -443,6 +449,12 @@ def parse_subcommand_bubble(args: List[str]):
         if latest_matches:
             ladder.save(ld, latest_matches[0].time_stamp)
 
+        next_match = ladder.next_match(bots)
+        if next_match is not None:
+            make_overlay(ld, next_match, bots, next=True)
+        else:
+            make_overlay(ld, next_match, bots, next=True, known=False)
+
     elif args[1] == "list" and len(args) == 2:
 
         bots = load_all_bots(ld)
@@ -450,6 +462,12 @@ def parse_subcommand_bubble(args: List[str]):
         ladder.ensure_bots(bots)
         ladder.print_ladder()
         make_bubble_ladder_overlay(ladder)
+
+        next_match = ladder.next_match(bots)
+        if next_match is not None:
+            make_overlay(ld, next_match, bots, next=True)
+        else:
+            make_overlay(ld, next_match, bots, next=True, known=False)
 
     elif args[1] == "free" and len(args) == 3:
 
@@ -464,8 +482,15 @@ def parse_subcommand_bubble(args: List[str]):
 
     elif args[1] == "overlay" and len(args) == 2:
 
+        bots = load_all_bots(ld)
         ladder = BubbleLadder.load(ld)
+        ladder.ensure_bots(bots)
         make_bubble_ladder_overlay(ladder)
+        next_match = ladder.next_match(bots)
+        if next_match is not None:
+            make_overlay(ld, next_match, bots, next=True)
+        else:
+            make_overlay(ld, next_match, bots, next=True, known=False)
 
     else:
         print(help_msg)

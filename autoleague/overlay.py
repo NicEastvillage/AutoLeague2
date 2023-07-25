@@ -16,39 +16,47 @@ from paths import PackageFiles, LeagueDir
 from ranking_system import RankingSystem
 
 
-def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotConfigBundle]):
+def make_overlay(ld: LeagueDir, match: MatchDetails, bots: Mapping[BotID, BotConfigBundle], next: bool=False, known: bool=True):
     """
     Make a `current_match.json` file which contains the details about the current
     match and its participants.
     """
 
-    retired = load_retired_bots(ld)
-    rankings = RankingSystem.load(ld).ensure_all(list(bots.keys()))
-    rank_list = rankings.as_sorted_list(exclude=retired)
+    if known:
+        retired = load_retired_bots(ld)
+        rankings = RankingSystem.load(ld).ensure_all(list(bots.keys()))
+        rank_list = rankings.as_sorted_list(exclude=retired)
 
-    def bot_data(bot_id):
-        config = bots[bot_id]
-        rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
-        return {
-            "name": config.name,
-            "config_path": str(config.config_path),
-            "logo_path": try_copy_logo(config),
-            "developer": config.base_agent_config.get("Details", "developer"),
-            "description": config.base_agent_config.get("Details", "description"),
-            "fun_fact": config.base_agent_config.get("Details", "fun_fact"),
-            "github": config.base_agent_config.get("Details", "github"),
-            "language": config.base_agent_config.get("Details", "language"),
-            "rank": rank,
-            "mmr": mmr,
+        def bot_data(bot_id):
+            config = bots[bot_id]
+            rank, mmr = [(i + 1, mrr) for i, (id, mrr, sigma) in enumerate(rank_list) if id == bot_id][0]
+            return {
+                "name": config.name,
+                "config_path": str(config.config_path),
+                "logo_path": try_copy_logo(config),
+                "developer": config.base_agent_config.get("Details", "developer"),
+                "description": config.base_agent_config.get("Details", "description"),
+                "fun_fact": config.base_agent_config.get("Details", "fun_fact"),
+                "github": config.base_agent_config.get("Details", "github"),
+                "language": config.base_agent_config.get("Details", "language"),
+                "rank": rank,
+                "mmr": mmr,
+            }
+
+        overlay = {
+            "blue": [bot_data(bot_id) for bot_id in match.blue],
+            "orange": [bot_data(bot_id) for bot_id in match.orange],
+            "map": match.map,
+            "known": True,
+        }
+    else:
+        overlay = {
+            "known": False,
         }
 
-    overlay = {
-        "blue": [bot_data(bot_id) for bot_id in match.blue],
-        "orange": [bot_data(bot_id) for bot_id in match.orange],
-        "map": match.map
-    }
+    path = PackageFiles.overlay_next_match if next else PackageFiles.overlay_current_match
 
-    with open(PackageFiles.overlay_current_match, 'w') as f:
+    with open(path, 'w') as f:
         json.dump(overlay, f, indent=4)
 
 

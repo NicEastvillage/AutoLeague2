@@ -15,7 +15,7 @@
     let previousData = null;
 
     setInterval(function () {
-        $.get("current_match.json", function (json) {
+        $.get("next_match.json", function (json) {
             let comparisonString = '';
             if (typeof json === 'string') {
                 comparisonString = json;
@@ -34,6 +34,9 @@
                 const unknown_image = 'images/ghost_car.png';
 
                 orangeBotLogosEl.innerHTML = ''
+
+                if (!data.known)
+                    return;
 
                 bot = data.orange[0];
                 $(orangeBotLogosEl).append(
