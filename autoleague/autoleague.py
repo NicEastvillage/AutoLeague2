@@ -326,6 +326,7 @@ def parse_subcommand_match(args: List[str]):
     help_msg = """Usage:
     autoleague match run                        Run a standard 3v3 soccer match
     autoleague match prepare                    Run a standard 3v3 soccer match, but confirm match before starting
+    autoleague match runsim                     Simulate next 3v3 soccer match with winner input through terminal
     autoleague match undo                       Undo the last match
     autoleague match list [n]                   Show the latest matches"""
 
@@ -334,7 +335,7 @@ def parse_subcommand_match(args: List[str]):
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif (args[1] == "run" or args[1] == "prepare") and len(args) == 2:
+    elif (args[1] == "run" or args[1] == "prepare" or args[1] == "runsim") and len(args) == 2:
 
         # Load
         bots = load_all_unretired_bots(ld)
@@ -349,12 +350,15 @@ def parse_subcommand_match(args: List[str]):
             print(f"Next match: {match.blue[0]} vs {match.orange[0]}")
             # Ask before starting?
             if args[1] == "run" or prompt_yes_no("Start match?", default="yes"):
-                #result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
-                won = input("Did " + match.blue[0] + " win? (y/n) ") == "y"
-                result = MatchResult(3, 0) if won else MatchResult(0, 3)
+                if args[1] == "runsim":
+                    won = input("Did " + match.blue[0] + " win? (y/n) ") == "y"
+                    result = MatchResult(3, 0) if won else MatchResult(0, 3)
+                else:
+                    result, replay = run_match(ld, match, bots, ReplayPreference.SAVE)
+                    match.replay_id = replay.replay_id
+
                 ladder.update(match, result)
                 match.result = result
-                #match.replay_id = replay.replay_id
 
                 # Save
                 match.save(ld)

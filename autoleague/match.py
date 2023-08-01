@@ -52,10 +52,8 @@ class MatchDetails:
         match_config.player_configs = [
             self.bot_to_config(self.blue[0], bots, Team.BLUE),
             self.bot_to_config(self.blue[1], bots, Team.BLUE),
-            self.bot_to_config(self.blue[2], bots, Team.BLUE),
             self.bot_to_config(self.orange[0], bots, Team.ORANGE),
             self.bot_to_config(self.orange[1], bots, Team.ORANGE),
-            self.bot_to_config(self.orange[2], bots, Team.ORANGE),
         ]
         return match_config
 
