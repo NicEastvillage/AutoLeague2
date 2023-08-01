@@ -46,9 +46,16 @@ class MatchGrader(Grader):
             # 30 seconds passed with no replay
             self.replay_monitor.stop_monitoring()
             return FailDueToNoReplay()
+        elif self.first_to_n_done(tick.game_tick_packet, 3):
+            self.fetch_match_score(tick.game_tick_packet)
+            self.replay_monitor.stop_monitoring()
+            return Pass()
         else:
             self.last_match_time = game_info.seconds_elapsed
             return None
+
+    def first_to_n_done(self, packet: GameTickPacket, n: int) -> bool:
+        return packet.teams[0].score >= n or packet.teams[1].score >= n
 
     def fetch_match_score(self, packet: GameTickPacket):
         self.match_result = MatchResult(
