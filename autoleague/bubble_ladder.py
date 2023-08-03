@@ -106,7 +106,7 @@ class BubbleLadder:
             self.start_from_bottom()
 
         if self.cur == -2:
-            print("No matches left to play. Use startFromBottom to if there should be.")
+            print("No matches left to play. Use restart if there should be.")
             return None
 
         time_stamp = make_timestamp()

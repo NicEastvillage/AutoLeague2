@@ -48,7 +48,7 @@ Usage:
     autoleague match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
-    autoleague bubble startFromBottom              Start the bubble ladder from the bottom
+    autoleague bubble restart                      Start the bubble ladder from the bottom
     autoleague bubble list                         Print the current bubble ladder
     autoleague bubble free <bot>                   Remove all known comparisons involving the given bot
     autoleague bubble overlay                      Update the bubble ladder overlay
@@ -432,7 +432,7 @@ def parse_subcommand_match(args: List[str]):
 def parse_subcommand_bubble(args: List[str]):
     assert args[0] == "bubble"
     help_msg = """Usage:
-    autoleague bubble startFromBottom           Start the bubble ladder from the bottom
+    autoleague bubble restart                   Start the bubble ladder from the bottom
     autoleague bubble list                      Print the current bubble ladder
     autoleague bubble free <bot>                Remove all known comparisons involving the given bot
     autoleague bubble overlay                   Update the bubble ladder overlay"""
@@ -442,7 +442,7 @@ def parse_subcommand_bubble(args: List[str]):
     if len(args) == 1 or args[1] == "help":
         print(help_msg)
 
-    elif args[1] == "startFromBottom" and len(args) == 2:
+    elif args[1] == "restart" and len(args) == 2:
 
         latest_matches = MatchDetails.latest(ld, 1)
         ladder = BubbleLadder.load(ld)

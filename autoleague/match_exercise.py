@@ -2,8 +2,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional
 
+import pywinauto.keyboard as kb
 from rlbot.training.training import Grade, Pass, Fail
 from rlbot.utils.game_state_util import GameState
+from rlbot.utils.rendering.rendering_manager import RenderingManager
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 from rlbottraining.grading.grader import Grader
 from rlbottraining.grading.training_tick_packet import TrainingTickPacket
@@ -27,28 +29,30 @@ class MatchGrader(Grader):
     last_match_time: float = 0
     last_game_tick_packet: GameTickPacket = None
     match_result: Optional[MatchResult] = None
+    game_end_time: float = -1
 
     def on_tick(self, tick: TrainingTickPacket) -> Optional[Grade]:
-        self.replay_monitor.ensure_monitoring()
-        self.last_game_tick_packet = tick.game_tick_packet
-        game_info = tick.game_tick_packet.game_info
-        if game_info.is_match_ended or self.first_to_n(tick.game_tick_packet, 3) or self.mercy_rule(tick.game_tick_packet, 6):
-            self.fetch_match_score(tick.game_tick_packet)
-            # Since a recent update to RLBot and due to how rlbottraining calls on_tick, we only get one
-            # packet where game_info.is_math_ended is True. Now we setup a busy loop to wait for replay
-            game_end_time = time.time()
-            seconds_since_game_end = 0
-            while seconds_since_game_end < 30:
-                seconds_since_game_end = time.time() - game_end_time
-                if self.replay_monitor.replay_id:
-                    self.replay_monitor.stop_monitoring()
-                    return Pass()
-            # 30 seconds passed with no replay
-            self.replay_monitor.stop_monitoring()
-            return FailDueToNoReplay()
+        if self.game_end_time >= 0:
+            # Game has ended, waiting for replay
+            seconds_since_game_end = time.time() - self.game_end_time
+            if seconds_since_game_end >= 30:
+                # 30 seconds passed with no replay
+                self.replay_monitor.stop_monitoring()
+                return FailDueToNoReplay()
+            elif self.replay_monitor.replay_id:
+                self.replay_monitor.stop_monitoring()
+                return Pass()
         else:
+            self.replay_monitor.ensure_monitoring()
+            self.last_game_tick_packet = tick.game_tick_packet
+            game_info = tick.game_tick_packet.game_info
             self.last_match_time = game_info.seconds_elapsed
-            return None
+            if game_info.is_match_ended or self.first_to_n(tick.game_tick_packet, 3) or self.mercy_rule(tick.game_tick_packet, 6):
+                self.game_end_time = time.time()
+                self.fetch_match_score(tick.game_tick_packet)
+                kb.send_keys("{PGUP down}")
+                kb.send_keys("{PGUP up}")
+        return None
 
     def first_to_n(self, packet: GameTickPacket, n: int) -> bool:
         return packet.teams[0].score >= n or packet.teams[1].score >= n
@@ -73,6 +77,12 @@ class MatchGrader(Grader):
                 for i in range(packet.num_cars)
             }
         )
+
+    def render(self, renderer: RenderingManager):
+        if self.game_end_time >= 0 or True:
+            renderer.begin_rendering('MatchGrader')
+            renderer.draw_string_2d(770, 150, 4, 4, "Game Over", renderer.yellow())
+            renderer.end_rendering()
 
 
 @dataclass
