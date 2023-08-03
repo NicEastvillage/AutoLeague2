@@ -6,7 +6,7 @@ from typing import List, Mapping, Optional
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
-from bots import BotID
+from bots import BotID, fmt_bot_name
 from match import MatchDetails, MatchResult
 from match_maker import make_timestamp
 from paths import LeagueDir
@@ -179,7 +179,7 @@ class BubbleLadder:
         ladder = BubbleLadder()
         if ld.seeding.exists():
             with open(ld.seeding) as f:
-                ladder.ladder = [line.strip() for line in f.readlines()]
+                ladder.ladder = [fmt_bot_name(line.strip()) for line in f.readlines()]
         return ladder
 
     @staticmethod
@@ -192,10 +192,6 @@ class BubbleLadder:
             list(ld.bubble_ladders.iterdir())[-1].unlink()  # Remove file
         else:
             print("No bubble ladders to undo.")
-
-    def export_overlay_data(self):
-        with open(ld.bubble_ladders / f"{time_stamp}_bubble_ladder.json", 'w') as f:
-            json.dump(self, f, cls=BubbleLadderEncoder, sort_keys=True)
 
 
 # ====== BubbleLadder -> JSON ======
