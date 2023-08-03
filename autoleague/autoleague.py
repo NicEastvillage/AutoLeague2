@@ -44,10 +44,14 @@ Usage:
     autoleague ticket gameCatchupBoost <boost>     Set the extra ticket increase factor when a bot has played fewer games
     autoleague rank list [showRetired]             Print list of the current leaderboard
     autoleague match run                           Run a standard 3v3 soccer match
+    autoleague match runsim                        Simulate next 3v3 soccer match with winner input through terminal
     autoleague match prepare                       Run a standard 3v3 soccer match, but confirm match before starting
     autoleague match undo                          Undo the last match
     autoleague match list [n]                      Show the latest matches
     autoleague bubble startFromBottom              Start the bubble ladder from the bottom
+    autoleague bubble list                         Print the current bubble ladder
+    autoleague bubble free <bot>                   Remove all known comparisons involving the given bot
+    autoleague bubble overlay                      Update the bubble ladder overlay
     autoleague summary [n]                         Create a summary of the last [n] matches
     autoleague retirement list                     Print all bots in retirement
     autoleague retirement retire <bot>             Retire a bot, removing it from play and the leaderboard
