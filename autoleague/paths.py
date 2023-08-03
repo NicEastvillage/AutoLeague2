@@ -53,6 +53,7 @@ class LeagueDir:
         self.tickets = self._league_dir / "tickets"
         self.replays = self._league_dir / "replays"
         self.bubble_ladders = self._league_dir / "bubble_ladders"
+        self.seeding = self._league_dir / "seeding.txt"
         self.bot_summary = self._league_dir / "bot_summary.json"
         self.csvs = self._league_dir / "csvs"
         self.csv_bots = self.csvs / "bots.csv"

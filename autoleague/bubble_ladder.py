@@ -176,7 +176,11 @@ class BubbleLadder:
             # Assume last bubble ladder file is the newest, since they are prefixed with a time stamp
             with open(list(ld.bubble_ladders.iterdir())[-1]) as f:
                 return json.load(f, object_hook=as_bubble_ladder)
-        return BubbleLadder()
+        ladder = BubbleLadder()
+        if ld.seeding.exists():
+            with open(ld.seeding) as f:
+                ladder.ladder = [line.strip() for line in f.readlines()]
+        return ladder
 
     @staticmethod
     def undo(ld: LeagueDir):
