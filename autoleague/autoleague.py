@@ -168,7 +168,7 @@ def parse_subcommand_bot(args: List[str]):
     elif args[1] == "test" and len(args) == 3:
 
         # Load
-        bots = load_all_bots(ld)
+        bots = load_all_bots(ld, psyonix=True)
         bot = args[2]
         if bot not in bots:
             print(f"Could not find the config file of '{bot}'")
