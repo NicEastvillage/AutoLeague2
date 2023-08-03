@@ -32,7 +32,7 @@ class MatchGrader(Grader):
         self.replay_monitor.ensure_monitoring()
         self.last_game_tick_packet = tick.game_tick_packet
         game_info = tick.game_tick_packet.game_info
-        if game_info.is_match_ended:
+        if game_info.is_match_ended or self.first_to_n(tick.game_tick_packet, 3) or self.mercy_rule(tick.game_tick_packet, 6):
             self.fetch_match_score(tick.game_tick_packet)
             # Since a recent update to RLBot and due to how rlbottraining calls on_tick, we only get one
             # packet where game_info.is_math_ended is True. Now we setup a busy loop to wait for replay
@@ -46,16 +46,15 @@ class MatchGrader(Grader):
             # 30 seconds passed with no replay
             self.replay_monitor.stop_monitoring()
             return FailDueToNoReplay()
-        elif self.first_to_n_done(tick.game_tick_packet, 3):
-            self.fetch_match_score(tick.game_tick_packet)
-            self.replay_monitor.stop_monitoring()
-            return Pass()
         else:
             self.last_match_time = game_info.seconds_elapsed
             return None
 
-    def first_to_n_done(self, packet: GameTickPacket, n: int) -> bool:
+    def first_to_n(self, packet: GameTickPacket, n: int) -> bool:
         return packet.teams[0].score >= n or packet.teams[1].score >= n
+
+    def mercy_rule(self, packet: GameTickPacket, n: int) -> bool:
+        return abs(packet.teams[0].score - packet.teams[1].score) >= n
 
     def fetch_match_score(self, packet: GameTickPacket):
         self.match_result = MatchResult(
