@@ -1,6 +1,8 @@
 
 const blueTeamName = document.getElementById("team-name-blue");
+const blueDevName = document.getElementById("dev-name-blue");
 const orangeTeamName = document.getElementById("team-name-orange");
+const orangeDevName = document.getElementById("dev-name-orange");
 const blueWinContainer = document.getElementById("blue-wins");
 const orangeWinContainer = document.getElementById("orange-wins");
 const winTemplateElement = document.createElement("img");
@@ -16,16 +18,21 @@ function pollMatchInfo() {
 				blueTeamName.innerText = info.blue[0].name;
 				orangeTeamName.innerText = info.orange[0].name;
 
+				blueDevName.innerText = info.blue[0].developer ?? "";
+				orangeDevName.innerText = info.orange[0].developer ?? "";
+				blueDevName.innerText += info.blue[0].language ? ` - ${info.blue[0].language.toLowerCase()}` : "";
+				orangeDevName.innerText += info.orange[0].language ? ` - ${info.orange[0].language.toLowerCase()}` : "";
+
 				blueWinContainer.innerHTML = "";
 				orangeWinContainer.innerHTML = "";
 
 				tipCards = [];
 				for (let bots of [info.blue, info.orange])
 					for (let bot of bots) {
-						tipCards.push({
-							title: `${bot.name.trim()}`,
-							text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`
-						});
+						// tipCards.push({
+						// 	title: `${bot.name.trim()}`,
+						// 	text: `Developed by: ${bot.developer.trim()}\nLanguage: ${bot.language.trim()}`
+						// });
 						if (bot.description.trim().length)
 							tipCards.push({
 								title: `${bot.name.trim()}`,
@@ -58,4 +65,4 @@ setInterval(function () {
 	tipTextEl.innerText = tipCard.text;
 	tipCardEl.setAttribute("visible", "");
 	setTimeout(_ => tipCardEl.removeAttribute("visible"), 10*1000);
-}, 65*1000);
+}, 5*1000);

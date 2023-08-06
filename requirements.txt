@@ -6,3 +6,4 @@ trueskill
 requests
 watchdog
 numpy
+pywinauto
