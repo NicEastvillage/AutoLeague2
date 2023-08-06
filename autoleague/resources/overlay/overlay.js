@@ -65,4 +65,4 @@ setInterval(function () {
 	tipTextEl.innerText = tipCard.text;
 	tipCardEl.setAttribute("visible", "");
 	setTimeout(_ => tipCardEl.removeAttribute("visible"), 10*1000);
-}, 5*1000);
+}, 65*1000);
