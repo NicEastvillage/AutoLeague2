@@ -485,8 +485,11 @@ def parse_subcommand_bubble(args: List[str]):
 
         if latest_matches:
             cmps_removed = ladder.known_cmps.free([bot])
-            ladder.save(ld, latest_matches[0].time_stamp)
-            print(f"Successfully freed {bot} ({cmps_removed} comparisons removed)")
+            if cmps_removed > 0:
+                ladder.save(ld, latest_matches[0].time_stamp)
+                print(f"Successfully freed {bot} ({cmps_removed} comparisons removed)")
+            else:
+                print(f"Could not find any comparisons involving {bot}")
 
     elif args[1] == "overlay" and len(args) == 2:
 
