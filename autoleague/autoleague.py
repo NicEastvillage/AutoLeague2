@@ -346,7 +346,7 @@ def parse_subcommand_match(args: List[str]):
         ladder = BubbleLadder.load(ld)
 
         # Run
-        match = ladder.next_match(bots)
+        match = ladder.next_match(ld, bots)
         if match is not None:
 
             make_bubble_ladder_overlay(ladder)
@@ -374,7 +374,7 @@ def parse_subcommand_match(args: List[str]):
                 # Update overlay
                 make_bubble_ladder_overlay(ladder)
 
-                next_match = ladder.next_match(bots)
+                next_match = ladder.next_match(ld, bots)
                 if next_match is not None:
                     make_overlay(ld, next_match, bots, next=True)
                 else:
@@ -448,7 +448,7 @@ def parse_subcommand_bubble(args: List[str]):
         ladder = BubbleLadder.load(ld)
 
         bots = load_all_bots(ld)
-        ladder.ensure_bots(bots)
+        ladder.ensure_bots(ld, bots)
         print("Restarting the bubble ladder from the bottom ...")
         ladder.start_from_bottom()
         ladder.print_ladder()
@@ -457,7 +457,7 @@ def parse_subcommand_bubble(args: List[str]):
         if latest_matches:
             ladder.save(ld, latest_matches[0].time_stamp)
 
-        next_match = ladder.next_match(bots)
+        next_match = ladder.next_match(ld, bots)
         if next_match is not None:
             make_overlay(ld, next_match, bots, next=True)
         else:
@@ -467,11 +467,10 @@ def parse_subcommand_bubble(args: List[str]):
 
         bots = load_all_bots(ld)
         ladder = BubbleLadder.load(ld)
-        ladder.ensure_bots(bots)
+        next_match = ladder.next_match(ld, bots)
         ladder.print_ladder()
         make_bubble_ladder_overlay(ladder)
 
-        next_match = ladder.next_match(bots)
         if next_match is not None:
             make_overlay(ld, next_match, bots, next=True)
         else:
@@ -497,7 +496,7 @@ def parse_subcommand_bubble(args: List[str]):
         ladder = BubbleLadder.load(ld)
         ladder.ensure_bots(bots)
         make_bubble_ladder_overlay(ladder)
-        next_match = ladder.next_match(bots)
+        next_match = ladder.next_match(ld, bots)
         if next_match is not None:
             make_overlay(ld, next_match, bots, next=True)
         else:

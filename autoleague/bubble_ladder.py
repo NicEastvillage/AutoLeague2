@@ -55,14 +55,23 @@ class BubbleLadder:
     direction: int = -1
     known_cmps: SavedComparisonMatrix = field(default_factory=SavedComparisonMatrix)
 
-    def ensure_bots(self, bots: Mapping[BotID, BotConfigBundle]):
+    def ensure_bots(self, ld, bots: Mapping[BotID, BotConfigBundle]):
+        # Make sure all bots are on the ladder before we begin the match. Use seeding for order
         known_bots = set(self.ladder)
+        bots_to_add = []
         for bot in bots.keys():
             if bot not in known_bots:
-                # Since we only append, we do not mess up the self.cur or self.direction
-                self.ladder.append(bot)
+                bots_to_add.append(bot)
+        if len(bots_to_add) > 0:
+            # Since we only append, we do not mess up the self.cur or self.direction
+            self.cur = max(-1, self.cur)  # Turns -2 into -1
+            if ld.seeding.exists():
+                with open(ld.seeding) as f:
+                    seeding = [fmt_bot_name(line.strip()) for line in f.readlines()]
+                    bots_to_add = sorted(bots_to_add, key=lambda bot: seeding.index(bot))
+            self.ladder += bots_to_add
 
-    def find_next_match(self) -> Optional[MatchDetails]:
+    def _find_next_match(self) -> Optional[MatchDetails]:
         if len(self.ladder) <= 1:
             self.cur = -2
             print("Ladder is too short to play any matches.")
@@ -90,14 +99,8 @@ class BubbleLadder:
                 self.cur = -2
                 return
 
-    def next_match(self, bots: Mapping[BotID, BotConfigBundle]) -> Optional[MatchDetails]:
-        # Make sure all bots are on the ladder before we begin the match
-        known_bots = set(self.ladder)
-        for bot in bots.keys():
-            if bot not in known_bots:
-                # Since we only append, we do not mess up the self.cur or self.direction
-                self.ladder.append(bot)
-                self.cur = max(-1, self.cur)  # Turns -2 into -1
+    def next_match(self, ld: LeagueDir, bots: Mapping[BotID, BotConfigBundle]) -> Optional[MatchDetails]:
+        self.ensure_bots(ld, bots)
 
         if len(self.ladder) <= 1:
             raise ValueError("Not enough bots to play a match.")
@@ -131,12 +134,12 @@ class BubbleLadder:
         else:
             self.known_cmps.register(better_bot=match.orange[0], worse_bot=match.blue[0])
 
-        self.find_next_match()   # Does the swapping
+        self._find_next_match()   # Does the swapping
 
     def start_from_bottom(self):
         self.cur = len(self.ladder) - 1
         self.direction = -1
-        self.find_next_match()
+        self._find_next_match()
 
     def print_ladder(self):
         print("Bubblesort ladder:")
