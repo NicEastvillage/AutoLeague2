@@ -151,7 +151,7 @@ def make_bubble_ladder_overlay(ladder: BubbleLadder):
     data["known_cmps"] = [{
         "better": ladder.ladder.index(cmp.better_bot),
          "worse": ladder.ladder.index(cmp.worse_bot)
-    } for cmp in ladder.known_cmps.comparisons]
+    } for cmp in ladder.known_cmps.comparisons if cmp.better_bot in ladder.ladder and cmp.worse_bot in ladder.ladder]
 
     with open(PackageFiles.overlay_bubble_ladder, 'w') as f:
         json.dump(data, f, indent=4)
