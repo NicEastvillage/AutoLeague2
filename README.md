@@ -10,13 +10,14 @@ AutoLeague2 is a continuation of RLBot's [AutoLeaguePlay](https://github.com/RLB
 ## How to use
 
 * Install [RLBotGUI](http://rlbot.org/).
-* Run `gui-venv.bat`. This opens a RLBotGUI's python as a virtual environment and installs packages used by AutoLeague2.
+* Run `create-gui-venv.bat`. This creates a Python virtual environment based on RLBotGUI and installs the required packages.
+* Run `open-gui-venv.bat`. This opens the virtual environment and takes you to the autoleague directory.
 * Run `autoleague.py setup league <path/to/my/league/>` to create a league in the given directory.
 * Add some bots to `path/to/my/league/bots/`.
 * Check if autoleague2 can find the bots with `autoleague.py bot list`.
 * Test if a bot works with `autoleague.py bot test <bot_id>`.
 * Run `autoleague.py match run` to run a match.
-* Any **unfinished** match (test or not) can be terminated without risk using `ctrl+C`.
+* Any **unfinished** matches (test or not) can be terminated without risk using `ctrl+C`.
 * The folder `autoleague/resources/overlay/` contains various overlays showing the state of the league and current match. Most notably:
   * `summary.html` shows the leaderboard and the latest matches. Update the latter using `autoleague.py summary [n]`.
   * `ingame_leaderboard.html` shows only the leaderboard.
